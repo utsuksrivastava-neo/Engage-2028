@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engage AI — Chief Engagement Officer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-subtle: #f7f7f8;
+      --bg-hover: #ececf1;
+      --border: #e5e5e5;
+      --border-light: #f0f0f0;
+      --text: #0d0d0d;
+      --text-secondary: #6e6e80;
+      --text-muted: #8e8ea0;
+      --accent: #10a37f;
+      --accent-light: #ecfdf5;
+      --accent-dark: #0d8a6a;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.06);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-subtle);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), #059669);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    .new-chat-btn {
+      margin: 12px 16px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .15s;
+    }
+
+    .new-chat-btn:hover { background: var(--bg-hover); }
+
+    .sidebar-section {
+      padding: 8px 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 8px 4px;
+    }
+
+    .sidebar-item {
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background .15s;
+    }
+
+    .sidebar-item:hover { background: var(--bg-hover); }
+    .sidebar-item.active { background: var(--bg); color: var(--text); font-weight: 500; }
+
+    .agent-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background .15s;
+      margin-bottom: 2px;
+    }
+
+    .agent-item:hover { background: var(--bg-hover); }
+
+    .agent-item.active {
+      background: var(--bg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .agent-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .agent-info { flex: 1; min-width: 0; }
+
+    .agent-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .agent-item:not(.active) .agent-name { color: var(--text-secondary); font-weight: 400; }
+
+    .agent-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .agent-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .agent-status.live { background: var(--accent); }
+    .agent-status.idle { background: #d1d5db; }
+
+    .chat-agent-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 0 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .chat-agent-header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .chat-agent-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .chat-agent-header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .sidebar-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar-sm {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* ── Context Bar ── */
+    .context-bar {
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .context-bar::-webkit-scrollbar { display: none; }
+
+    .ctx-block {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .ctx-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .ctx-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .ctx-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .kpi-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg-subtle);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .kpi-pill .current { color: var(--amber); }
+    .kpi-pill .target { color: var(--accent); }
+
+    .trend-up { color: var(--accent); font-size: 11px; }
+    .trend-down { color: var(--red); font-size: 11px; }
+
+    .initiative-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .initiative-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .health-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ── Chat Area ── */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .chat-inner {
+      max-width: 768px;
+      margin: 0 auto;
+      padding: 32px 24px 120px;
+    }
+
+    .message {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      animation: fadeIn .4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .msg-avatar.user {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+    }
+
+    .msg-avatar.agent {
+      background: linear-gradient(135deg, var(--accent), #059669);
+      color: white;
+    }
+
+    .msg-avatar.agent.custom { background: var(--agent-color, var(--accent)); }
+
+    .msg-body { flex: 1; min-width: 0; }
+
+    .msg-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .msg-text {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .msg-text p { margin-bottom: 12px; }
+    .msg-text p:last-child { margin-bottom: 0; }
+
+    .msg-text strong { font-weight: 600; }
+
+    .msg-text ul {
+      margin: 8px 0 12px 20px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .msg-text li { margin-bottom: 4px; }
+
+    /* ── Embedded Cards ── */
+    .embed-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 16px 0;
+      overflow: hidden;
+      background: var(--bg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .embed-card-header {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-subtle);
+    }
+
+    .embed-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .card-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .card-icon.journey { background: var(--purple-light); }
+    .card-icon.execution { background: var(--blue-light); }
+    .card-icon.report { background: var(--amber-light); }
+    .card-icon.explain { background: var(--accent-light); }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge.live { background: var(--accent-light); color: var(--accent-dark); }
+    .status-badge.running { background: var(--blue-light); color: var(--blue); }
+    .status-badge.completed { background: var(--bg-subtle); color: var(--text-secondary); }
+
+    .embed-card-body { padding: 16px; }
+
+    /* Journey Steps */
+    .journey-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+
+    .journey-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 100px;
+      position: relative;
+    }
+
+    .step-node {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-node.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .step-node.done {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+
+    .step-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      text-align: center;
+      max-width: 90px;
+    }
+
+    .step-connector {
+      width: 32px;
+      height: 2px;
+      background: var(--border);
+      flex-shrink: 0;
+      margin-bottom: 22px;
+    }
+
+    .step-connector.done { background: var(--accent); }
+
+    .journey-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .meta-item label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-item span {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Execution Card */
+    .exec-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .exec-event {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      position: relative;
+    }
+
+    .exec-event:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 28px;
+      bottom: -2px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .exec-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: var(--bg);
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .exec-dot.filled { background: var(--accent); }
+
+    .exec-content { flex: 1; }
+
+    .exec-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .exec-desc {
+      font-size: 13px;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    .exec-metric {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Report Card */
+    .report-chart {
+      height: 120px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bar {
+      width: 100%;
+      max-width: 40px;
+      border-radius: 4px 4px 0 0;
+      transition: height .6s ease;
+    }
+
+    .bar.prev { background: #d1d5db; }
+    .bar.curr { background: var(--accent); }
+
+    .bar-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .report-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .stat-box {
+      padding: 10px 12px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .stat-box .label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .stat-box .value {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .stat-box .change {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .change.positive { color: var(--accent); }
+    .change.negative { color: var(--red); }
+
+    /* Explain Card */
+    .explain-reasoning {
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      border-left: 3px solid var(--accent);
+    }
+
+    .explain-factors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .factor-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .card-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      transition: all .15s;
+      color: var(--text-secondary);
+    }
+
+    .card-btn:hover { background: var(--bg-hover); color: var(--text); }
+    .card-btn.primary { background: var(--text); color: white; border-color: var(--text); }
+    .card-btn.primary:hover { background: #333; }
+
+    /* Typing indicator */
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 4px 0;
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: typing 1.4s infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: .2s; }
+    .typing span:nth-child(3) { animation-delay: .4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { opacity: .3; transform: translateY(0); }
+      30% { opacity: 1; transform: translateY(-4px); }
+    }
+
+    /* ── Input Area ── */
+    .input-area {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(transparent, var(--bg) 20%);
+      padding: 0 24px 24px;
+      flex-shrink: 0;
+    }
+
+    .input-wrapper {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+
+    .suggestions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .suggestion {
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .suggestion:hover {
+      background: var(--bg-subtle);
+      color: var(--text);
+      border-color: #ccc;
+    }
+
+    .input-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 12px 12px 16px;
+      box-shadow: var(--shadow-md);
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .input-box:focus-within {
+      border-color: #ccc;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+
+    .input-box textarea {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: none;
+      max-height: 120px;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .input-box textarea::placeholder { color: var(--text-muted); }
+
+    .send-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      background: var(--text);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s, opacity .15s;
+    }
+
+    .send-btn:hover { background: #333; }
+    .send-btn:disabled { opacity: 0.3; cursor: default; }
+
+    .input-footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* ── Welcome ── */
+    .welcome {
+      text-align: center;
+      padding: 60px 0 20px;
+    }
+
+    .welcome h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">E</div>
+        Engage AI
+      </div>
+    </div>
+    <div class="sidebar-section" id="agentList">
+      <div class="sidebar-label">Your Business Agents</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="avatar-sm">US</div>
+      Utsuk Srivastava
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Context Bar -->
+    <div class="context-bar" id="contextBar"></div>
+
+    <!-- Chat -->
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-inner" id="chatInner">
+        <div class="welcome hidden" id="welcome">
+          <h1>Select a business agent</h1>
+          <p>Choose an agent from the left to start a conversation.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <div class="suggestions" id="suggestions"></div>
+        <div class="input-box">
+          <textarea id="userInput" rows="1" placeholder="Select an agent to start..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </div>
+        <div class="input-footer">Engage AI orchestrates journeys and execution — you stay in the conversation.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const chatInner = document.getElementById('chatInner');
+const chatContainer = document.getElementById('chatContainer');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const welcome = document.getElementById('welcome');
+const suggestions = document.getElementById('suggestions');
+const contextBar = document.getElementById('contextBar');
+const agentList = document.getElementById('agentList');
+
+let currentAgentId = null;
+let isAnimating = false;
+
+function journeyCard(title, steps, meta, status = 'Live') {
+  const stepHtml = steps.map((s, i) => {
+    const nodeClass = s.state === 'done' ? 'done' : s.state === 'active' ? 'active' : '';
+    const conn = i < steps.length - 1
+      ? `<div class="step-connector${s.state === 'done' ? ' done' : ''}"></div>` : '';
+    return `
+      <div class="journey-step">
+        <div class="step-node ${nodeClass}">${s.icon}</div>
+        <div class="step-label">${s.label}</div>
+      </div>${conn}`;
+  }).join('');
+
+  const metaHtml = meta.map(m => `
+    <div class="meta-item"><label>${m.label}</label><span>${m.value}</span></div>`).join('');
+
+  return `
+    <div class="embed-card">
+      <div class="embed-card-header">
+        <div class="embed-card-title">
+          <div class="card-icon journey">🗺</div>
+          ${title}
+        </div>
+        <span class="status-badge live">${status}</span>
+      </div>
+      <div class="embed-card-body">
+        <div class="journey-flow">${stepHtml}</div>
+        <div class="journey-meta">${metaHtml}</div>
+      </div>
+      <div class="card-actions">
+        <button class="card-btn">View details</button>
+        <button class="card-btn primary">Approve & Execute</button>
+      </div>
+    </div>`;
+}
+
+function reviewCard(title, findings, score, verdict) {
+  const items = findings.map(f => `
+    <div class="exec-event">
+      <div class="exec-dot ${f.ok ? 'filled' : ''}"></div>
+      <div class="exec-content">
+        <div class="exec-desc">${f.text}</div>
+        <div class="exec-metric">${f.detail}</div>
+      </div>
+    </div>`).join('');
+
+  return `
+    <div class="embed-card">
+      <div class="embed-card-header">
+        <div class="embed-card-title">
+          <div class="card-icon explain">🔍</div>
+          ${title}
+        </div>
+        <span class="status-badge completed">Score ${score}/100</span>
+      </div>
+      <div class="embed-card-body">
+        <div class="exec-timeline">${items}</div>
+        <div class="explain-reasoning" style="margin-top:14px">${verdict}</div>
+      </div>
+    </div>`;
+}
+
+function reportCard(title, stats) {
+  const statHtml = stats.map(s => `
+    <div class="stat-box">
+      <div class="label">${s.label}</div>
+      <div class="value">${s.value}</div>
+      <div class="change ${s.positive ? 'positive' : 'negative'}">${s.change}</div>
+    </div>`).join('');
+
+  return `
+    <div class="embed-card">
+      <div class="embed-card-header">
+        <div class="embed-card-title">
+          <div class="card-icon report">📈</div>
+          ${title}
+        </div>
+        <span class="status-badge completed">Updated</span>
+      </div>
+      <div class="embed-card-body">
+        <div class="report-stats">${statHtml}</div>
+      </div>
+    </div>`;
+}
+
+const AGENTS = {
+  'main-collections': {
+    id: 'main-collections',
+    name: 'Main Collections Agent',
+    initials: 'MC',
+    color: '#10a37f',
+    desc: 'Strategic collections oversight',
+    status: 'live',
+    context: [
+      { label: 'Objective', value: 'Improve collections recovery by 18%' },
+      { label: 'Recovery Rate', kpi: { current: '11.2%', target: '18%', trend: '▼ 2.1%', down: true } },
+      { label: 'Active Journeys', tags: ['WhatsApp Recovery', 'Voice Escalation'] },
+      { label: 'Execution', health: 'Healthy · 3 running' },
+    ],
+    userMessage: 'Recovery rates dropped in Karnataka. Analyze and improve.',
+    reply: () => `
+      <p>I've analyzed the Karnataka recovery drop across all active collection journeys. Here's what I found:</p>
+      <ul>
+        <li>Recovery rate fell from <strong>12.7% → 8.4%</strong> over the last 14 days</li>
+        <li>Primary driver: increased voice call costs during peak hours (+22%)</li>
+        <li>WhatsApp engagement in Karnataka remains strong at <strong>67% open rate</strong></li>
+        <li>4,280 high-risk accounts identified for immediate intervention</li>
+      </ul>
+      <p>I'm recommending a <strong>WhatsApp-first recovery journey</strong> with delayed voice escalation. Here's the journey I've designed:</p>
+      ${journeyCard('WhatsApp-First Recovery Journey', [
+        { icon: '✓', label: 'Segment High-Risk', state: 'done' },
+        { icon: '💬', label: 'WhatsApp Nudge', state: 'done' },
+        { icon: '⏳', label: 'Wait 24h', state: 'active' },
+        { icon: '📞', label: 'Voice Escalation', state: '' },
+        { icon: '📊', label: 'Measure & Adapt', state: '' },
+      ], [
+        { label: 'Audience', value: '4,280 accounts' },
+        { label: 'Region', value: 'Karnataka' },
+        { label: 'Est. Recovery', value: '+3.2%' },
+      ])}
+      <p>Shall I deploy this to the execution engine?</p>`,
+    suggestions: ['Show recovery trends from last week', 'Why did you reduce outbound calls?', 'Deploy the journey now'],
+  },
+
+  'collections': {
+    id: 'collections',
+    name: 'Collections Agent',
+    initials: 'CA',
+    color: '#059669',
+    desc: 'Day-to-day recovery operations',
+    status: 'live',
+    context: [
+      { label: 'Focus', value: 'Overdue accounts · DPD 30–90' },
+      { label: 'Today', kpi: { current: '847', target: 'calls', trend: '▲ 12%', down: false } },
+      { label: 'Recovery Today', value: '₹18.4L collected' },
+      { label: 'Queue', health: '142 accounts pending' },
+    ],
+    userMessage: 'Which accounts should we prioritize for outreach today?',
+    reply: () => `
+      <p>I've ranked today's collection queue by recovery probability and urgency:</p>
+      <ul>
+        <li><strong>312 accounts</strong> — high intent, responded to WhatsApp but didn't pay (best ROI)</li>
+        <li><strong>198 accounts</strong> — first-time defaulters, DPD 30–45 (high cure rate)</li>
+        <li><strong>156 accounts</strong> — payment link opened but abandoned (nudge-ready)</li>
+      </ul>
+      <p>I've prepared a targeted voice + WhatsApp journey for the top segment:</p>
+      ${journeyCard('Priority Outreach — Today', [
+        { icon: '✓', label: 'Rank Queue', state: 'done' },
+        { icon: '📱', label: 'Payment Link WA', state: 'active' },
+        { icon: '⏳', label: 'Wait 4h', state: '' },
+        { icon: '📞', label: 'Agent Call', state: '' },
+      ], [
+        { label: 'Accounts', value: '312' },
+        { label: 'Est. Recovery', value: '₹6.2L' },
+        { label: 'Channel Mix', value: 'WA + Voice' },
+      ], 'Ready')}
+      <p>Want me to launch this now or adjust the segment criteria?</p>`,
+    suggestions: ['Launch priority outreach', 'Show today\'s collection report', 'Why these 312 accounts?'],
+  },
+
+  'main-onboarding': {
+    id: 'main-onboarding',
+    name: 'Main Onboarding Agent',
+    initials: 'MO',
+    color: '#2563eb',
+    desc: 'Onboarding strategy & conversion',
+    status: 'live',
+    context: [
+      { label: 'Objective', value: 'Increase activation rate to 72%' },
+      { label: 'Activation', kpi: { current: '58.3%', target: '72%', trend: '▲ 3.1%', down: false } },
+      { label: 'Active Journeys', tags: ['KYC Nudge', 'Welcome Series'] },
+      { label: 'Drop-off', health: 'Step 3 · Document upload' },
+    ],
+    userMessage: 'Activation rate is stuck at 58%. What\'s blocking users and how do we fix it?',
+    reply: () => `
+      <p>I've traced the onboarding funnel and identified the primary bottleneck:</p>
+      <ul>
+        <li><strong>Step 3 — Document upload</strong> accounts for 41% of all drop-offs</li>
+        <li>Mobile users on slow networks abandon at 2.3× the rate of desktop users</li>
+        <li>Users who receive a WhatsApp reminder within 2h are <strong>2.8× more likely</strong> to complete KYC</li>
+      </ul>
+      <p>Here's the onboarding journey I'd deploy to recover these users:</p>
+      ${journeyCard('KYC Recovery Journey', [
+        { icon: '✓', label: 'Detect Drop-off', state: 'done' },
+        { icon: '💬', label: 'WA Reminder', state: 'done' },
+        { icon: '📲', label: 'SMS Deep Link', state: 'active' },
+        { icon: '📞', label: 'Assist Call', state: '' },
+        { icon: '✅', label: 'Activation', state: '' },
+      ], [
+        { label: 'Stuck Users', value: '2,140' },
+        { label: 'Est. Activation', value: '+8.4%' },
+        { label: 'Time to Impact', value: '72 hours' },
+      ])}
+      <p>This should move activation from 58.3% toward our 72% target within two weeks.</p>`,
+    suggestions: ['Show onboarding funnel report', 'Why WhatsApp over email?', 'Deploy KYC recovery journey'],
+  },
+
+  'onboarding': {
+    id: 'onboarding',
+    name: 'Onboarding Agent',
+    initials: 'OA',
+    color: '#3b82f6',
+    desc: 'User activation & KYC flows',
+    status: 'live',
+    context: [
+      { label: 'Today\'s Signups', value: '384 new users' },
+      { label: 'KYC Pending', kpi: { current: '127', target: 'users', trend: '▼ 8%', down: false } },
+      { label: 'Completion Rate', value: '71% same-day' },
+      { label: 'Active', health: 'Welcome Series running' },
+    ],
+    userMessage: 'A batch of 127 users signed up today but haven\'t completed KYC. What should we do?',
+    reply: () => `
+      <p>I've segmented today's pending KYC users and here's my recommendation:</p>
+      <ul>
+        <li><strong>68 users</strong> started KYC but stopped at document upload — send assist nudge</li>
+        <li><strong>41 users</strong> signed up but never opened the app — send welcome WhatsApp</li>
+        <li><strong>18 users</strong> are repeat visitors — offer live chat support</li>
+      </ul>
+      ${journeyCard('Same-Day KYC Nudge', [
+        { icon: '✓', label: 'Segment Users', state: 'done' },
+        { icon: '💬', label: 'WA Assist Msg', state: 'active' },
+        { icon: '🔗', label: 'Deep Link', state: '' },
+        { icon: '📞', label: 'Support Call', state: '' },
+      ], [
+        { label: 'Users', value: '127' },
+        { label: 'Expected KYC', value: '89 completions' },
+        { label: 'Channel', value: 'WhatsApp-first' },
+      ], 'Ready')}
+      <p>I can trigger this journey now — estimated 70% completion rate by end of day.</p>`,
+    suggestions: ['Trigger KYC nudge now', 'Show signup-to-KYC report', 'Why not email first?'],
+  },
+
+  'journey-review': {
+    id: 'journey-review',
+    name: 'Journey Review Agent',
+    initials: 'JR',
+    color: '#7c3aed',
+    desc: 'Reviews collection & onboarding journeys',
+    status: 'live',
+    context: [
+      { label: 'Reviewing', value: '6 active journeys' },
+      { label: 'Last Audit', value: '2 hours ago' },
+      { label: 'Issues Found', kpi: { current: '2', target: 'warnings', trend: '▼ 1', down: false } },
+      { label: 'Health', health: '4 healthy · 2 need attention' },
+    ],
+    userMessage: 'Review the WhatsApp Recovery Journey and the KYC Recovery Journey. Any issues?',
+    reply: () => `
+      <p>I've completed a full audit of both journeys — checking logic, timing, channel mix, and expected outcomes:</p>
+      ${reviewCard('WhatsApp Recovery Journey — Review', [
+        { ok: true, text: 'Segmentation logic is correct', detail: '4,280 high-risk Karnataka accounts properly matched' },
+        { ok: true, text: 'Channel sequencing is optimal', detail: 'WhatsApp-first before voice saves ~38% cost' },
+        { ok: false, text: 'Wait period may be too long', detail: '24h delay — similar cohorts recovered faster at 18h' },
+      ], 87, 'Approved with one recommendation: reduce wait period from 24h to 18h. Expected recovery lift of +0.4%.')}
+      ${reviewCard('KYC Recovery Journey — Review', [
+        { ok: true, text: 'Drop-off detection is accurate', detail: 'Step 3 upload abandonment correctly identified' },
+        { ok: true, text: 'Reminder timing is effective', detail: '2h WhatsApp window aligns with engagement data' },
+        { ok: true, text: 'Fallback channels configured', detail: 'SMS deep link + assist call properly sequenced' },
+      ], 94, 'Fully approved. No changes needed. Ready for execution.')}
+      <p>Want me to apply the 18h fix to the Recovery Journey automatically?</p>`,
+    suggestions: ['Apply the 18h fix', 'Review all 6 active journeys', 'Why is 18h better than 24h?'],
+  },
+
+  'proactive-support': {
+    id: 'proactive-support',
+    name: 'Proactive Support Agent',
+    initials: 'PS',
+    color: '#d97706',
+    desc: 'Anticipates & resolves customer issues',
+    status: 'live',
+    context: [
+      { label: 'Monitoring', value: '12,400 active customers' },
+      { label: 'At-Risk', kpi: { current: '234', target: 'accounts', trend: '▲ 18', down: true } },
+      { label: 'Proactive Actions', tags: ['Payment Failures', 'Service Alerts'] },
+      { label: 'Resolution', health: '91% self-serve rate' },
+    ],
+    userMessage: 'Are there any customers likely to churn or complain today? Get ahead of it.',
+    reply: () => `
+      <p>I've scanned behavioral signals across all active accounts. Here are the proactive interventions I'd recommend:</p>
+      <ul>
+        <li><strong>89 customers</strong> — payment failed twice in 48h (likely to churn without outreach)</li>
+        <li><strong>67 customers</strong> — opened support page but didn't submit ticket (frustration signal)</li>
+        <li><strong>78 customers</strong> — service outage affected their region yesterday</li>
+      </ul>
+      ${journeyCard('Proactive Support Outreach', [
+        { icon: '✓', label: 'Detect Signals', state: 'done' },
+        { icon: '💬', label: 'WA Proactive Msg', state: 'active' },
+        { icon: '🔄', label: 'Retry Payment', state: '' },
+        { icon: '📞', label: 'Escalate if Needed', state: '' },
+      ], [
+        { label: 'Customers', value: '234' },
+        { label: 'Est. Save Rate', value: '78%' },
+        { label: 'Channel', value: 'WhatsApp + IVR' },
+      ])}
+      ${executionCard('Proactive Support — Live Updates', [
+        { time: 'Just now', desc: '234 at-risk customers identified', metric: 'Behavioral scoring complete' },
+        { time: 'In progress', desc: 'WhatsApp proactive messages sending', metric: 'Batch 1: 89 payment-failure cases' },
+        { time: 'Scheduled', desc: 'Follow-up for non-responders', metric: 'IVR callback in 6 hours' },
+      ])}
+      <p>This should prevent ~180 potential churn events before they become support tickets.</p>`,
+    suggestions: ['Show at-risk customer report', 'Why WhatsApp for payment failures?', 'Pause proactive outreach'],
+  },
+
+  'lead-acquisition': {
+    id: 'lead-acquisition',
+    name: 'Lead Acquisition Agent',
+    initials: 'LA',
+    color: '#dc2626',
+    desc: 'New customer & lead generation',
+    status: 'live',
+    context: [
+      { label: 'Objective', value: 'Acquire 2,000 qualified leads this month' },
+      { label: 'Progress', kpi: { current: '1,247', target: '2,000', trend: '▲ 14%', down: false } },
+      { label: 'Active Campaigns', tags: ['Referral Push', 'Lookalike WA'] },
+      { label: 'Cost per Lead', health: '₹142 · under budget' },
+    ],
+    userMessage: 'We\'re at 1,247 leads against a 2,000 target. How do we accelerate acquisition?',
+    reply: () => `
+      <p>I've analyzed our lead pipeline and identified three high-impact opportunities:</p>
+      <ul>
+        <li><strong>Referral program</strong> — existing customers with NPS 9+ haven't been asked to refer (est. +340 leads)</li>
+        <li><strong>Lookalike audience</strong> — top 500 converters share patterns we can target on WhatsApp (est. +280 leads)</li>
+        <li><strong>Re-engage cold leads</strong> — 1,800 leads from last quarter went silent (est. +190 recoverable)</li>
+      </ul>
+      ${journeyCard('Referral + Lookalike Acquisition', [
+        { icon: '✓', label: 'Build Audiences', state: 'done' },
+        { icon: '💬', label: 'Referral WA Blast', state: 'active' },
+        { icon: '🎯', label: 'Lookalike Target', state: '' },
+        { icon: '📋', label: 'Lead Capture', state: '' },
+        { icon: '🔄', label: 'Auto-Onboard', state: '' },
+      ], [
+        { label: 'Est. New Leads', value: '+620' },
+        { label: 'Cost per Lead', value: '₹118' },
+        { label: 'Time to Goal', value: '12 days' },
+      ])}
+      ${reportCard('Lead Pipeline — This Month', [
+        { label: 'Total Leads', value: '1,247', change: '▲ 14% vs last month', positive: true },
+        { label: 'Qualified Rate', value: '34%', change: '▲ 2.1%', positive: true },
+        { label: 'Gap to Target', value: '753', change: '▼ 38% remaining', positive: false },
+      ])}
+      <p>Deploying the referral + lookalike journey should close the gap within 12 days. Shall I go live?</p>`,
+    suggestions: ['Deploy acquisition journey', 'Show lead source breakdown', 'Why referral over paid ads?'],
+  },
+};
+
+userInput.addEventListener('input', () => {
+  sendBtn.disabled = !userInput.value.trim() || !currentAgentId;
+});
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function scrollToBottom() {
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function renderContextBar(agent) {
+  contextBar.innerHTML = agent.context.map((item, i) => {
+    let content = '';
+    if (item.kpi) {
+      content = `<span class="kpi-pill">
+        <span class="current">${item.kpi.current}</span>
+        <span style="color:var(--text-muted)">→</span>
+        <span class="target">${item.kpi.target}</span>
+        <span class="${item.kpi.down ? 'trend-down' : 'trend-up'}">${item.kpi.trend}</span>
+      </span>`;
+    } else if (item.tags) {
+      content = item.tags.map(t => `<span class="initiative-tag">${t}</span>`).join('');
+    } else if (item.health) {
+      content = `<span class="health-dot"></span><span class="ctx-value" style="font-size:12px;color:var(--accent)">${item.health}</span>`;
+    } else {
+      content = `<span class="ctx-value">${item.value}</span>`;
+    }
+    const divider = i < agent.context.length - 1 ? '<div class="ctx-divider"></div>' : '';
+    return `<div class="ctx-block">
+      <span class="ctx-label">${item.label}</span>
+      ${content}
+    </div>${divider}`;
+  }).join('');
+}
+
+function renderAgentList() {
+  const items = Object.values(AGENTS).map(agent => `
+    <div class="agent-item${agent.id === currentAgentId ? ' active' : ''}" data-agent="${agent.id}" onclick="selectAgent('${agent.id}')">
+      <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
+      <div class="agent-info">
+        <div class="agent-name">${agent.name}</div>
+        <div class="agent-desc">${agent.desc}</div>
+      </div>
+      <div class="agent-status ${agent.status}"></div>
+    </div>`).join('');
+  agentList.innerHTML = `<div class="sidebar-label">Your Business Agents</div>${items}`;
+}
+
+function renderSuggestions(agent) {
+  suggestions.innerHTML = agent.suggestions.map(s =>
+    `<div class="suggestion" onclick="sendSuggestion(this)">${s}</div>`
+  ).join('');
+  suggestions.style.display = 'flex';
+}
+
+function renderAgentHeader(agent) {
+  return `
+    <div class="chat-agent-header">
+      <div class="chat-agent-header-icon" style="background:${agent.color}">${agent.initials}</div>
+      <div>
+        <h2>${agent.name}</h2>
+        <p>${agent.desc}</p>
+      </div>
+    </div>`;
+}
+
+function addMessage(role, html, agent) {
+  if (welcome) welcome.classList.add('hidden');
+
+  const agentName = agent ? agent.name : 'Engage AI';
+  const avatarContent = role === 'user' ? 'US' : agent.initialials;
+  const avatarStyle = role === 'agent' && agent ? `style="background:${agent.color}"` : '';
+
+  const div = document.createElement('div');
+  div.className = 'message';
+  div.innerHTML = `
+    <div class="msg-avatar ${role}" ${avatarStyle}>${avatarContent}</div>
+    <div class="msg-body">
+      <div class="msg-name">${role === 'user' ? 'You' : agentName}</div>
+      <div class="msg-text">${html}</div>
+    </div>`;
+  chatInner.appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function showTyping(agent) {
+  const div = document.createElement('div');
+  div.className = 'message';
+  div.id = 'typingIndicator';
+  div.innerHTML = `
+    <div class="msg-avatar agent" style="background:${agent.color}">${agent.initials}</div>
+    <div class="msg-body">
+      <div class="msg-name">${agent.name}</div>
+      <div class="typing"><span></span><span></span><span></span></div>
+    </div>`;
+  chatInner.appendChild(div);
+  scrollToBottom();
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function executionCard(title, events) {
+  const eventHtml = events.map((e, i) => `
+    <div class="exec-event">
+      <div class="exec-dot ${i < events.length - 1 ? 'filled' : ''}"></div>
+      <div class="exec-content">
+        <div class="exec-time">${e.time}</div>
+        <div class="exec-desc">${e.desc}</div>
+        <div class="exec-metric">${e.metric}</div>
+      </div>
+    </div>`).join('');
+
+  return `
+    <div class="embed-card">
+      <div class="embed-card-header">
+        <div class="embed-card-title">
+          <div class="card-icon execution">⚡</div>
+          ${title}
+        </div>
+        <span class="status-badge running">Running</span>
+      </div>
+      <div class="embed-card-body">
+        <div class="exec-timeline">${eventHtml}</div>
+      </div>
+    </div>`;
+}
+
+function findFollowUpResponse(text, agent) {
+  const lower = text.toLowerCase();
+  if (lower.includes('why') || lower.includes('explain')) {
+    return `<p>Here's my reasoning:</p>
+      <div class="embed-card"><div class="embed-card-body">
+        <div class="explain-reasoning">This decision is based on historical performance data, channel engagement patterns, and cost efficiency analysis for your current business context.</div>
+        <div class="explain-factors">
+          <span class="factor-tag">Historical data</span>
+          <span class="factor-tag">Channel preference</span>
+          <span class="factor-tag">Cost optimization</span>
+        </div>
+      </div></div>
+      <p>Happy to adjust the approach if you'd like a different strategy.</p>`;
+  }
+  if (lower.includes('deploy') || lower.includes('launch') || lower.includes('trigger') || lower.includes('approve') || lower.includes('go live')) {
+    return `<p>Done — deployed to the execution engine. I'll keep you updated:</p>
+      ${executionCard(`${agent.name} — Live`, [
+        { time: 'Just now', desc: 'Journey approved and deployed', metric: 'Execution engine processing' },
+        { time: 'In progress', desc: 'First batch queued', metric: 'Monitoring delivery rates' },
+        { time: 'Scheduled', desc: 'Performance review', metric: 'Auto-report in 24 hours' },
+      ])}`;
+  }
+  if (lower.includes('report') || lower.includes('trend') || lower.includes('show')) {
+    return `<p>Here's the latest performance snapshot:</p>
+      ${reportCard('Performance Report', [
+        { label: 'Primary KPI', value: 'On track', change: '▲ improving', positive: true },
+        { label: 'This Week', value: '+4.2%', change: '▲ vs last week', positive: true },
+        { label: 'Cost Efficiency', value: '38% saved', change: '▲ vs voice-only', positive: true },
+      ])}`;
+  }
+  return `<p>I can help with that. Try asking me to analyze performance, create a journey, deploy an action, or explain a decision.</p>`;
+}
+
+async function selectAgent(agentId) {
+  if (isAnimating || agentId === currentAgentId) return;
+  isAnimating = true;
+
+  const agent = AGENTS[agentId];
+  currentAgentId = agentId;
+
+  renderAgentList();
+  renderContextBar(agent);
+  renderSuggestions(agent);
+
+  userInput.placeholder = `Message ${agent.name}...`;
+  userInput.disabled = false;
+  sendBtn.disabled = true;
+
+  chatInner.innerHTML = renderAgentHeader(agent);
+  chatContainer.scrollTop = 0;
+
+  await new Promise(r => setTimeout(r, 400));
+  addMessage('user', `<p>${agent.userMessage}</p>`, agent);
+
+  showTyping(agent);
+  await new Promise(r => setTimeout(r, 1400 + Math.random() * 600));
+  removeTyping();
+
+  addMessage('agent', agent.reply(), agent);
+  isAnimating = false;
+}
+
+function sendSuggestion(el) {
+  if (!currentAgentId || isAnimating) return;
+  userInput.value = el.textContent;
+  sendBtn.disabled = false;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text || !currentAgentId || isAnimating) return;
+
+  const agent = AGENTS[currentAgentId];
+  userInput.value = '';
+  userInput.style.height = 'auto';
+  sendBtn.disabled = true;
+
+  addMessage('user', `<p>${text}</p>`, agent);
+
+  showTyping(agent);
+  await new Promise(r => setTimeout(r, 1000 + Math.random() * 800));
+  removeTyping();
+
+  addMessage('agent', findFollowUpResponse(text, agent), agent);
+}
+
+window.addEventListener('load', () => {
+  renderAgentList();
+  selectAgent('main-collections');
+});
+</script>
+</body>
+</html>
