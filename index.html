@@ -115,6 +115,25 @@
       padding: 8px 4px;
     }
 
+    .agent-group {
+      margin-top: 10px;
+      margin-bottom: 8px;
+    }
+
+    .agent-group-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 4px 2px;
+    }
+
+    .agent-group-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin: 0 4px 8px;
+      line-height: 1.35;
+    }
+
     .sidebar-item {
       padding: 9px 12px;
       border-radius: var(--radius-sm);
@@ -193,6 +212,67 @@
 
     .agent-status.live { background: var(--accent); }
     .agent-status.idle { background: #d1d5db; }
+
+    .agent-type-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 4px;
+      width: fit-content;
+    }
+
+    .agent-type-pill.draft {
+      background: var(--amber-light);
+      color: var(--amber);
+    }
+
+    .agent-type-pill.live {
+      background: var(--accent-light);
+      color: var(--accent-dark);
+    }
+
+    .architecture-card {
+      margin: 8px 0 0;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+    }
+
+    .architecture-title {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .architecture-layer {
+      padding: 7px 8px;
+      border-radius: 8px;
+      background: var(--bg-subtle);
+      margin-bottom: 6px;
+    }
+
+    .architecture-layer:last-child { margin-bottom: 0; }
+
+    .architecture-layer strong {
+      font-size: 10px;
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .architecture-layer span {
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.35;
+      display: block;
+    }
 
     .chat-agent-header {
       display: flex;
@@ -902,6 +982,21 @@
     </div>
     <div class="sidebar-section" id="agentList">
       <div class="sidebar-label">Your Business Agents</div>
+      <div class="architecture-card">
+        <div class="architecture-title">Architecture of Agentic Engagement</div>
+        <div class="architecture-layer">
+          <strong>1. Business Agent Layer</strong>
+          <span>Converts enterprise goals into Business Journeys (CJO).</span>
+        </div>
+        <div class="architecture-layer">
+          <strong>2. Central Orchestration & Execution</strong>
+          <span>Executes signed-off journeys with enterprise-wide resource optimization.</span>
+        </div>
+        <div class="architecture-layer">
+          <strong>3. Intelligence & Memory Layer</strong>
+          <span>Learns from outcomes and feeds signals back to agents for adaptation.</span>
+        </div>
+      </div>
     </div>
     <div class="sidebar-footer">
       <div class="avatar-sm">US</div>
@@ -1043,8 +1138,10 @@ const AGENTS = {
     initials: 'MC',
     color: '#10a37f',
     desc: 'Strategic collections oversight',
-    status: 'live',
+    status: 'idle',
+    agentType: 'draft',
     context: [
+      { label: 'Journey Status', value: 'Type 1 · In creation (not executed yet)' },
       { label: 'Objective', value: 'Improve collections recovery by 18%' },
       { label: 'Recovery Rate', kpi: { current: '11.2%', target: '18%', trend: '▼ 2.1%', down: true } },
       { label: 'Active Journeys', tags: ['WhatsApp Recovery', 'Voice Escalation'] },
@@ -1071,7 +1168,7 @@ const AGENTS = {
         { label: 'Region', value: 'Karnataka' },
         { label: 'Est. Recovery', value: '+3.2%' },
       ])}
-      <p>Shall I deploy this to the execution engine?</p>`,
+      <p>This is a <strong>Type 1 agent draft journey</strong>. Once you sign-off, I will package required data and send it to the <strong>Central Orchestration & Execution Layer</strong>.</p>`,
     suggestions: ['Show recovery trends from last week', 'Why did you reduce outbound calls?', 'Deploy the journey now'],
   },
 
@@ -1082,6 +1179,7 @@ const AGENTS = {
     color: '#059669',
     desc: 'Day-to-day recovery operations',
     status: 'live',
+    agentType: 'live',
     context: [
       { label: 'Focus', value: 'Overdue accounts · DPD 30–90' },
       { label: 'Today', kpi: { current: '847', target: 'calls', trend: '▲ 12%', down: false } },
@@ -1117,8 +1215,10 @@ const AGENTS = {
     initials: 'MO',
     color: '#2563eb',
     desc: 'Onboarding strategy & conversion',
-    status: 'live',
+    status: 'idle',
+    agentType: 'draft',
     context: [
+      { label: 'Journey Status', value: 'Type 1 · In creation (not executed yet)' },
       { label: 'Objective', value: 'Increase activation rate to 72%' },
       { label: 'Activation', kpi: { current: '58.3%', target: '72%', trend: '▲ 3.1%', down: false } },
       { label: 'Active Journeys', tags: ['KYC Nudge', 'Welcome Series'] },
@@ -1144,7 +1244,7 @@ const AGENTS = {
         { label: 'Est. Activation', value: '+8.4%' },
         { label: 'Time to Impact', value: '72 hours' },
       ])}
-      <p>This should move activation from 58.3% toward our 72% target within two weeks.</p>`,
+      <p>This is a <strong>Type 1 draft</strong>. After your sign-off, I will hand this journey and source data to the <strong>Central Orchestration & Execution Layer</strong> for first-time execution.</p>`,
     suggestions: ['Show onboarding funnel report', 'Why WhatsApp over email?', 'Deploy KYC recovery journey'],
   },
 
@@ -1155,6 +1255,7 @@ const AGENTS = {
     color: '#3b82f6',
     desc: 'User activation & KYC flows',
     status: 'live',
+    agentType: 'live',
     context: [
       { label: 'Today\'s Signups', value: '384 new users' },
       { label: 'KYC Pending', kpi: { current: '127', target: 'users', trend: '▼ 8%', down: false } },
@@ -1190,6 +1291,7 @@ const AGENTS = {
     color: '#7c3aed',
     desc: 'Reviews collection & onboarding journeys',
     status: 'live',
+    agentType: 'live',
     context: [
       { label: 'Reviewing', value: '6 active journeys' },
       { label: 'Last Audit', value: '2 hours ago' },
@@ -1220,6 +1322,7 @@ const AGENTS = {
     color: '#d97706',
     desc: 'Anticipates & resolves customer issues',
     status: 'live',
+    agentType: 'live',
     context: [
       { label: 'Monitoring', value: '12,400 active customers' },
       { label: 'At-Risk', kpi: { current: '234', target: 'accounts', trend: '▲ 18', down: true } },
@@ -1259,8 +1362,10 @@ const AGENTS = {
     initials: 'LA',
     color: '#dc2626',
     desc: 'New customer & lead generation',
-    status: 'live',
+    status: 'idle',
+    agentType: 'draft',
     context: [
+      { label: 'Journey Status', value: 'Type 1 · In creation (not executed yet)' },
       { label: 'Objective', value: 'Acquire 2,000 qualified leads this month' },
       { label: 'Progress', kpi: { current: '1,247', target: '2,000', trend: '▲ 14%', down: false } },
       { label: 'Active Campaigns', tags: ['Referral Push', 'Lookalike WA'] },
@@ -1290,7 +1395,7 @@ const AGENTS = {
         { label: 'Qualified Rate', value: '34%', change: '▲ 2.1%', positive: true },
         { label: 'Gap to Target', value: '753', change: '▼ 38% remaining', positive: false },
       ])}
-      <p>Deploying the referral + lookalike journey should close the gap within 12 days. Shall I go live?</p>`,
+      <p>This is currently a <strong>Type 1 draft journey</strong>. Approve it and I will submit it to the <strong>Central Orchestration & Execution Layer</strong> for initial run.</p>`,
     suggestions: ['Deploy acquisition journey', 'Show lead source breakdown', 'Why referral over paid ads?'],
   },
 };
@@ -1341,16 +1446,51 @@ function renderContextBar(agent) {
 }
 
 function renderAgentList() {
-  const items = Object.values(AGENTS).map(agent => `
-    <div class="agent-item${agent.id === currentAgentId ? ' active' : ''}" data-agent="${agent.id}" onclick="selectAgent('${agent.id}')">
-      <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
-      <div class="agent-info">
-        <div class="agent-name">${agent.name}</div>
-        <div class="agent-desc">${agent.desc}</div>
+  const renderItems = (type) => Object.values(AGENTS)
+    .filter(agent => agent.agentType === type)
+    .map(agent => `
+      <div class="agent-item${agent.id === currentAgentId ? ' active' : ''}" data-agent="${agent.id}" onclick="selectAgent('${agent.id}')">
+        <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
+        <div class="agent-info">
+          <div class="agent-name">${agent.name}</div>
+          <div class="agent-desc">${agent.desc}</div>
+          <div class="agent-type-pill ${agent.agentType}">
+            ${agent.agentType === 'draft' ? 'Type 1 · In Creation' : 'Type 2 · Learning & Optimization'}
+          </div>
+        </div>
+        <div class="agent-status ${agent.status}"></div>
+      </div>`).join('');
+
+  const typeOne = renderItems('draft');
+  const typeTwo = renderItems('live');
+
+  agentList.innerHTML = `
+    <div class="sidebar-label">Your Business Agents</div>
+    <div class="agent-group">
+      <div class="agent-group-title">Type 1 · Pre-Execution Agents</div>
+      <div class="agent-group-subtitle">Business Journey not executed yet. These agents are still in creation/sign-off stage.</div>
+      ${typeOne}
+    </div>
+    <div class="agent-group">
+      <div class="agent-group-title">Type 2 · Post Sign-off Agents</div>
+      <div class="agent-group-subtitle">Journey signed-off and handed to Central Orchestration & Execution Layer for continuous improvement.</div>
+      ${typeTwo}
+    </div>
+    <div class="architecture-card">
+      <div class="architecture-title">Architecture of Agentic Engagement</div>
+      <div class="architecture-layer">
+        <strong>1. Business Agent Layer</strong>
+        <span>Transforms enterprise goals into executable Business Journeys (CJO).</span>
       </div>
-      <div class="agent-status ${agent.status}"></div>
-    </div>`).join('');
-  agentList.innerHTML = `<div class="sidebar-label">Your Business Agents</div>${items}`;
+      <div class="architecture-layer">
+        <strong>2. Central Orchestration & Execution</strong>
+        <span>Coordinates and executes journeys across channels, infra, and workforce capacity.</span>
+      </div>
+      <div class="architecture-layer">
+        <strong>3. Intelligence & Memory Layer</strong>
+        <span>Learns from outcomes and feeds adaptive signals back to business agents.</span>
+      </div>
+    </div>`;
 }
 
 function renderSuggestions(agent) {
@@ -1375,7 +1515,7 @@ function addMessage(role, html, agent) {
   if (welcome) welcome.classList.add('hidden');
 
   const agentName = agent ? agent.name : 'Engage AI';
-  const avatarContent = role === 'user' ? 'US' : agent.initialials;
+  const avatarContent = role === 'user' ? 'US' : agent.initials;
   const avatarStyle = role === 'agent' && agent ? `style="background:${agent.color}"` : '';
 
   const div = document.createElement('div');
@@ -1451,11 +1591,21 @@ function findFollowUpResponse(text, agent) {
       <p>Happy to adjust the approach if you'd like a different strategy.</p>`;
   }
   if (lower.includes('deploy') || lower.includes('launch') || lower.includes('trigger') || lower.includes('approve') || lower.includes('go live')) {
-    return `<p>Done — deployed to the execution engine. I'll keep you updated:</p>
-      ${executionCard(`${agent.name} — Live`, [
-        { time: 'Just now', desc: 'Journey approved and deployed', metric: 'Execution engine processing' },
-        { time: 'In progress', desc: 'First batch queued', metric: 'Monitoring delivery rates' },
-        { time: 'Scheduled', desc: 'Performance review', metric: 'Auto-report in 24 hours' },
+    if (agent.agentType === 'draft') {
+      return `<p>Sign-off captured. Your <strong>Type 1 draft</strong> is now converted to a first-run business journey and sent to the <strong>Central Orchestration & Execution Layer</strong>.</p>
+        ${executionCard(`${agent.name} — Initial Execution`, [
+          { time: 'Just now', desc: 'Business journey signed-off by user', metric: 'Draft locked as version 1.0' },
+          { time: 'In progress', desc: 'Context data extracted from connected sources', metric: 'Preparing execution payload' },
+          { time: 'Queued', desc: 'Handed off to central orchestration', metric: 'Awaiting channel/resource scheduling' },
+        ])}
+        <p>On next runs, this agent will behave as <strong>Type 2</strong> and focus on learning, adaptation, and optimization.</p>`;
+    }
+
+    return `<p>Done — updates applied to this <strong>Type 2 live agent</strong>. I'll keep you updated:</p>
+      ${executionCard(`${agent.name} — Live Optimization`, [
+        { time: 'Just now', desc: 'Journey update approved and dispatched', metric: 'Central orchestration accepted delta changes' },
+        { time: 'In progress', desc: 'Execution priorities recalibrated', metric: 'Monitoring channel utilization and outcomes' },
+        { time: 'Scheduled', desc: 'Learning loop refresh', metric: 'New intelligence signals in next cycle' },
       ])}`;
   }
   if (lower.includes('report') || lower.includes('trend') || lower.includes('show')) {
