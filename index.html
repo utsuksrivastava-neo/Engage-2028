@@ -83,6 +83,25 @@
       font-size: 14px;
     }
 
+    .create-agent-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--text);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .create-agent-btn:hover { background: #242424; }
+
     .new-chat-btn {
       margin: 12px 16px;
       padding: 10px 14px;
@@ -272,6 +291,17 @@
       color: var(--text-secondary);
       line-height: 1.35;
       display: block;
+    }
+
+    .vision-note {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.35;
+      padding: 7px 8px;
+      border-radius: 8px;
+      background: #fdfcf7;
+      border: 1px solid #f2ead6;
     }
 
     .chat-agent-header {
@@ -968,6 +998,109 @@
     }
 
     .hidden { display: none !important; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 12, 14, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .template-modal {
+      width: min(920px, 95vw);
+      max-height: 85vh;
+      overflow-y: auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.18);
+    }
+
+    .template-modal-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .template-modal-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .template-modal-header p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    .close-modal-btn {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--text-secondary);
+    }
+
+    .template-grid {
+      padding: 14px 16px 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .template-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s, transform .12s;
+    }
+
+    .template-card:hover {
+      border-color: #ccc;
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+
+    .template-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      letter-spacing: -0.01em;
+    }
+
+    .template-card p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      min-height: 34px;
+    }
+
+    .template-chip {
+      margin-top: 8px;
+      display: inline-flex;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--blue-light);
+      color: var(--blue);
+    }
   </style>
 </head>
 <body>
@@ -979,6 +1112,10 @@
         <div class="logo-icon">E</div>
         Engage AI
       </div>
+      <button class="create-agent-btn" onclick="openTemplateModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Create New Business Agent
+      </button>
     </div>
     <div class="sidebar-section" id="agentList">
       <div class="sidebar-label">Your Business Agents</div>
@@ -1034,6 +1171,19 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="templateModal" onclick="handleModalBackdrop(event)">
+    <div class="template-modal">
+      <div class="template-modal-header">
+        <div>
+          <h3>Choose a Business Agent Template</h3>
+          <p>Start from an approved enterprise template and configure goals, policies, tools, and guardrails.</p>
+        </div>
+        <button class="close-modal-btn" onclick="closeTemplateModal()">×</button>
+      </div>
+      <div class="template-grid" id="templateGrid"></div>
+    </div>
+  </div>
+
 <script>
 const chatInner = document.getElementById('chatInner');
 const chatContainer = document.getElementById('chatContainer');
@@ -1043,6 +1193,8 @@ const welcome = document.getElementById('welcome');
 const suggestions = document.getElementById('suggestions');
 const contextBar = document.getElementById('contextBar');
 const agentList = document.getElementById('agentList');
+const templateModal = document.getElementById('templateModal');
+const templateGrid = document.getElementById('templateGrid');
 
 let currentAgentId = null;
 let isAnimating = false;
@@ -1131,7 +1283,7 @@ function reportCard(title, stats) {
     </div>`;
 }
 
-const AGENTS = {
+let AGENTS = {
   'main-collections': {
     id: 'main-collections',
     name: 'Main Collections Agent',
@@ -1139,9 +1291,9 @@ const AGENTS = {
     color: '#10a37f',
     desc: 'Strategic collections oversight',
     status: 'idle',
-    agentType: 'draft',
+    lifecycle: 'pre',
     context: [
-      { label: 'Journey Status', value: 'Type 1 · In creation (not executed yet)' },
+      { label: 'Journey Status', value: 'Pre-execution · Awaiting sign-off' },
       { label: 'Objective', value: 'Improve collections recovery by 18%' },
       { label: 'Recovery Rate', kpi: { current: '11.2%', target: '18%', trend: '▼ 2.1%', down: true } },
       { label: 'Active Journeys', tags: ['WhatsApp Recovery', 'Voice Escalation'] },
@@ -1168,7 +1320,7 @@ const AGENTS = {
         { label: 'Region', value: 'Karnataka' },
         { label: 'Est. Recovery', value: '+3.2%' },
       ])}
-      <p>This is a <strong>Type 1 agent draft journey</strong>. Once you sign-off, I will package required data and send it to the <strong>Central Orchestration & Execution Layer</strong>.</p>`,
+      <p>This is a <strong>pre-execution agent</strong>. Once you sign-off, I will package required data and send it to the <strong>Central Orchestration & Execution Layer</strong>.</p>`,
     suggestions: ['Show recovery trends from last week', 'Why did you reduce outbound calls?', 'Deploy the journey now'],
   },
 
@@ -1179,7 +1331,7 @@ const AGENTS = {
     color: '#059669',
     desc: 'Day-to-day recovery operations',
     status: 'live',
-    agentType: 'live',
+    lifecycle: 'running',
     context: [
       { label: 'Focus', value: 'Overdue accounts · DPD 30–90' },
       { label: 'Today', kpi: { current: '847', target: 'calls', trend: '▲ 12%', down: false } },
@@ -1216,9 +1368,9 @@ const AGENTS = {
     color: '#2563eb',
     desc: 'Onboarding strategy & conversion',
     status: 'idle',
-    agentType: 'draft',
+    lifecycle: 'pre',
     context: [
-      { label: 'Journey Status', value: 'Type 1 · In creation (not executed yet)' },
+      { label: 'Journey Status', value: 'Pre-execution · Awaiting sign-off' },
       { label: 'Objective', value: 'Increase activation rate to 72%' },
       { label: 'Activation', kpi: { current: '58.3%', target: '72%', trend: '▲ 3.1%', down: false } },
       { label: 'Active Journeys', tags: ['KYC Nudge', 'Welcome Series'] },
@@ -1244,7 +1396,7 @@ const AGENTS = {
         { label: 'Est. Activation', value: '+8.4%' },
         { label: 'Time to Impact', value: '72 hours' },
       ])}
-      <p>This is a <strong>Type 1 draft</strong>. After your sign-off, I will hand this journey and source data to the <strong>Central Orchestration & Execution Layer</strong> for first-time execution.</p>`,
+      <p>This is a <strong>pre-execution journey</strong>. After your sign-off, I will hand this journey and source data to the <strong>Central Orchestration & Execution Layer</strong> for first-time execution.</p>`,
     suggestions: ['Show onboarding funnel report', 'Why WhatsApp over email?', 'Deploy KYC recovery journey'],
   },
 
@@ -1255,7 +1407,7 @@ const AGENTS = {
     color: '#3b82f6',
     desc: 'User activation & KYC flows',
     status: 'live',
-    agentType: 'live',
+    lifecycle: 'running',
     context: [
       { label: 'Today\'s Signups', value: '384 new users' },
       { label: 'KYC Pending', kpi: { current: '127', target: 'users', trend: '▼ 8%', down: false } },
@@ -1291,7 +1443,7 @@ const AGENTS = {
     color: '#7c3aed',
     desc: 'Reviews collection & onboarding journeys',
     status: 'live',
-    agentType: 'live',
+    lifecycle: 'running',
     context: [
       { label: 'Reviewing', value: '6 active journeys' },
       { label: 'Last Audit', value: '2 hours ago' },
@@ -1322,7 +1474,7 @@ const AGENTS = {
     color: '#d97706',
     desc: 'Anticipates & resolves customer issues',
     status: 'live',
-    agentType: 'live',
+    lifecycle: 'running',
     context: [
       { label: 'Monitoring', value: '12,400 active customers' },
       { label: 'At-Risk', kpi: { current: '234', target: 'accounts', trend: '▲ 18', down: true } },
@@ -1363,9 +1515,9 @@ const AGENTS = {
     color: '#dc2626',
     desc: 'New customer & lead generation',
     status: 'idle',
-    agentType: 'draft',
+    lifecycle: 'pre',
     context: [
-      { label: 'Journey Status', value: 'Type 1 · In creation (not executed yet)' },
+      { label: 'Journey Status', value: 'Pre-execution · Awaiting sign-off' },
       { label: 'Objective', value: 'Acquire 2,000 qualified leads this month' },
       { label: 'Progress', kpi: { current: '1,247', target: '2,000', trend: '▲ 14%', down: false } },
       { label: 'Active Campaigns', tags: ['Referral Push', 'Lookalike WA'] },
@@ -1395,10 +1547,143 @@ const AGENTS = {
         { label: 'Qualified Rate', value: '34%', change: '▲ 2.1%', positive: true },
         { label: 'Gap to Target', value: '753', change: '▼ 38% remaining', positive: false },
       ])}
-      <p>This is currently a <strong>Type 1 draft journey</strong>. Approve it and I will submit it to the <strong>Central Orchestration & Execution Layer</strong> for initial run.</p>`,
+      <p>This is currently a <strong>pre-execution journey</strong>. Approve it and I will submit it to the <strong>Central Orchestration & Execution Layer</strong> for initial run.</p>`,
     suggestions: ['Deploy acquisition journey', 'Show lead source breakdown', 'Why referral over paid ads?'],
   },
 };
+
+const AGENT_TEMPLATES = [
+  {
+    id: 'retention-template',
+    name: 'Retention Agent',
+    desc: 'Prevent churn using behavior signals and proactive interventions.',
+    category: 'Lifecycle Engagement',
+    color: '#8b5cf6',
+    initials: 'RA',
+    lifecycle: 'pre',
+    objective: 'Reduce monthly churn by 20%',
+    prompt: 'Design a retention strategy for customers showing early churn signals.',
+  },
+  {
+    id: 'churn-template',
+    name: 'Churn Prevention Agent',
+    desc: 'Detect churn risk early and orchestrate save journeys.',
+    category: 'Retention',
+    color: '#7c3aed',
+    initials: 'CP',
+    lifecycle: 'running',
+    objective: 'Improve save rate in high-risk cohorts',
+    prompt: 'Show churn-risk clusters and optimize save journeys for this week.',
+  },
+  {
+    id: 'lifecycle-template',
+    name: 'Lifecycle Engagement Agent',
+    desc: 'Coordinate cross-stage engagement from onboarding to renewal.',
+    category: 'Lifecycle',
+    color: '#0ea5e9',
+    initials: 'LE',
+    lifecycle: 'pre',
+    objective: 'Improve full lifecycle engagement quality',
+    prompt: 'Create a lifecycle journey across onboarding, activation, and retention.',
+  },
+  {
+    id: 'collections-plus-template',
+    name: 'Collections Optimization Agent',
+    desc: 'Improve recovery outcomes with adaptive channel orchestration.',
+    category: 'Collections',
+    color: '#059669',
+    initials: 'CO',
+    lifecycle: 'running',
+    objective: 'Increase collections ROI',
+    prompt: 'Optimize currently running recovery journeys for cost and conversion.',
+  },
+  {
+    id: 'onboarding-plus-template',
+    name: 'Onboarding Completion Agent',
+    desc: 'Reduce onboarding drop-offs and accelerate first-value activation.',
+    category: 'Onboarding',
+    color: '#2563eb',
+    initials: 'OC',
+    lifecycle: 'pre',
+    objective: 'Lift onboarding completion to 75%',
+    prompt: 'Build an adaptive onboarding journey for incomplete KYC users.',
+  },
+];
+
+function renderTemplateGrid() {
+  templateGrid.innerHTML = AGENT_TEMPLATES.map(template => `
+    <div class="template-card" onclick="createAgentFromTemplate('${template.id}')">
+      <h4>${template.name}</h4>
+      <p>${template.desc}</p>
+      <div class="template-chip">${template.category}</div>
+    </div>
+  `).join('');
+}
+
+function openTemplateModal() {
+  renderTemplateGrid();
+  templateModal.classList.add('open');
+}
+
+function closeTemplateModal() {
+  templateModal.classList.remove('open');
+}
+
+function handleModalBackdrop(event) {
+  if (event.target === templateModal) closeTemplateModal();
+}
+
+function createAgentFromTemplate(templateId) {
+  const template = AGENT_TEMPLATES.find(t => t.id === templateId);
+  if (!template) return;
+
+  const generatedId = `${template.id}-${Date.now()}`;
+
+  AGENTS[generatedId] = {
+    id: generatedId,
+    name: template.name,
+    initials: template.initials,
+    color: template.color,
+    desc: `${template.desc} (Custom)`,
+    status: template.lifecycle === 'pre' ? 'idle' : 'live',
+    lifecycle: template.lifecycle,
+    context: [
+      { label: 'Objective', value: template.objective },
+      { label: 'Governance', value: 'Policies, compliance, and budget guardrails active' },
+      { label: 'Data Access', value: 'Approved enterprise systems and customer permissions' },
+      { label: 'Journey Status', value: template.lifecycle === 'pre' ? 'Pre-execution · Awaiting sign-off' : 'Running · Under continuous optimization' },
+    ],
+    userMessage: template.prompt,
+    reply: () => `
+      <p>I am now configured as your <strong>${template.name}</strong> with enterprise goals, policy guardrails, approved tools, and communication permissions.</p>
+      <ul>
+        <li>Business objective mapped to measurable KPIs and ROI</li>
+        <li>Operational boundaries and budget controls are active</li>
+        <li>Connected data sources and APIs validated for orchestration</li>
+      </ul>
+      ${journeyCard(`${template.name} — Initial Journey`, [
+        { icon: '🎯', label: 'Define Goal', state: 'done' },
+        { icon: '📚', label: 'Load Signals', state: 'done' },
+        { icon: '🗺', label: 'Draft Journey', state: 'active' },
+        { icon: '🛡', label: 'Policy Check', state: '' },
+        { icon: '⚡', label: 'Orchestrate', state: '' },
+      ], [
+        { label: 'Objective', value: template.objective },
+        { label: 'Stage', value: template.lifecycle === 'pre' ? 'Pre-execution' : 'Running' },
+        { label: 'Mode', value: 'AI-driven with human governance' },
+      ], template.lifecycle === 'pre' ? 'Drafted' : 'Running')}
+      <p>Ask me to refine this journey, explain decisions, or deploy through central orchestration.</p>`,
+    suggestions: [
+      'Explain the journey logic',
+      'Show KPI and ROI projection',
+      template.lifecycle === 'pre' ? 'Sign-off and deploy this journey' : 'Optimize the running journey',
+    ],
+  };
+
+  closeTemplateModal();
+  renderAgentList();
+  selectAgent(generatedId);
+}
 
 userInput.addEventListener('input', () => {
   sendBtn.disabled = !userInput.value.trim() || !currentAgentId;
@@ -1447,49 +1732,50 @@ function renderContextBar(agent) {
 
 function renderAgentList() {
   const renderItems = (type) => Object.values(AGENTS)
-    .filter(agent => agent.agentType === type)
+    .filter(agent => agent.lifecycle === type)
     .map(agent => `
       <div class="agent-item${agent.id === currentAgentId ? ' active' : ''}" data-agent="${agent.id}" onclick="selectAgent('${agent.id}')">
         <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
         <div class="agent-info">
           <div class="agent-name">${agent.name}</div>
           <div class="agent-desc">${agent.desc}</div>
-          <div class="agent-type-pill ${agent.agentType}">
-            ${agent.agentType === 'draft' ? 'Type 1 · In Creation' : 'Type 2 · Learning & Optimization'}
+          <div class="agent-type-pill ${agent.lifecycle === 'pre' ? 'draft' : 'live'}">
+            ${agent.lifecycle === 'pre' ? 'Pre-Execution' : 'Running'}
           </div>
         </div>
         <div class="agent-status ${agent.status}"></div>
       </div>`).join('');
 
-  const typeOne = renderItems('draft');
-  const typeTwo = renderItems('live');
+  const preExecutionAgents = renderItems('pre');
+  const runningAgents = renderItems('running');
 
   agentList.innerHTML = `
     <div class="sidebar-label">Your Business Agents</div>
     <div class="agent-group">
-      <div class="agent-group-title">Type 1 · Pre-Execution Agents</div>
-      <div class="agent-group-subtitle">Business Journey not executed yet. These agents are still in creation/sign-off stage.</div>
-      ${typeOne}
+      <div class="agent-group-title">Pre-Execution Agents</div>
+      <div class="agent-group-subtitle">Business journeys are still being designed, validated, and prepared for sign-off.</div>
+      ${preExecutionAgents}
     </div>
     <div class="agent-group">
-      <div class="agent-group-title">Type 2 · Post Sign-off Agents</div>
-      <div class="agent-group-subtitle">Journey signed-off and handed to Central Orchestration & Execution Layer for continuous improvement.</div>
-      ${typeTwo}
+      <div class="agent-group-title">Running Agents</div>
+      <div class="agent-group-subtitle">Signed-off journeys are running through central orchestration and continuously adapting.</div>
+      ${runningAgents}
     </div>
     <div class="architecture-card">
       <div class="architecture-title">Architecture of Agentic Engagement</div>
       <div class="architecture-layer">
         <strong>1. Business Agent Layer</strong>
-        <span>Transforms enterprise goals into executable Business Journeys (CJO).</span>
+        <span>Transforms enterprise goals into Business Journeys with policy, KPI, and guardrail awareness.</span>
       </div>
       <div class="architecture-layer">
         <strong>2. Central Orchestration & Execution</strong>
-        <span>Coordinates and executes journeys across channels, infra, and workforce capacity.</span>
+        <span>Coordinates journeys across communication channels, infra capacity, and workforce bandwidth.</span>
       </div>
       <div class="architecture-layer">
         <strong>3. Intelligence & Memory Layer</strong>
         <span>Learns from outcomes and feeds adaptive signals back to business agents.</span>
       </div>
+      <div class="vision-note">Exotel Engage shifts teams from manually operating campaigns to supervising AI business operators with governance and approvals.</div>
     </div>`;
 }
 
@@ -1591,17 +1877,17 @@ function findFollowUpResponse(text, agent) {
       <p>Happy to adjust the approach if you'd like a different strategy.</p>`;
   }
   if (lower.includes('deploy') || lower.includes('launch') || lower.includes('trigger') || lower.includes('approve') || lower.includes('go live')) {
-    if (agent.agentType === 'draft') {
-      return `<p>Sign-off captured. Your <strong>Type 1 draft</strong> is now converted to a first-run business journey and sent to the <strong>Central Orchestration & Execution Layer</strong>.</p>
+    if (agent.lifecycle === 'pre') {
+      return `<p>Sign-off captured. Your <strong>pre-execution agent</strong> is now converted to a first-run business journey and sent to the <strong>Central Orchestration & Execution Layer</strong>.</p>
         ${executionCard(`${agent.name} — Initial Execution`, [
           { time: 'Just now', desc: 'Business journey signed-off by user', metric: 'Draft locked as version 1.0' },
           { time: 'In progress', desc: 'Context data extracted from connected sources', metric: 'Preparing execution payload' },
           { time: 'Queued', desc: 'Handed off to central orchestration', metric: 'Awaiting channel/resource scheduling' },
         ])}
-        <p>On next runs, this agent will behave as <strong>Type 2</strong> and focus on learning, adaptation, and optimization.</p>`;
+        <p>After activation, this becomes a <strong>running agent</strong> focused on learning, adaptation, and optimization.</p>`;
     }
 
-    return `<p>Done — updates applied to this <strong>Type 2 live agent</strong>. I'll keep you updated:</p>
+    return `<p>Done — updates applied to this <strong>running agent</strong>. I'll keep you updated:</p>
       ${executionCard(`${agent.name} — Live Optimization`, [
         { time: 'Just now', desc: 'Journey update approved and dispatched', metric: 'Central orchestration accepted delta changes' },
         { time: 'In progress', desc: 'Execution priorities recalibrated', metric: 'Monitoring channel utilization and outcomes' },
