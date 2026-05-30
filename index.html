@@ -3,63 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engage AI — Chief Engagement Officer</title>
+  <title>Engage 2028 - Pre-Execution Agent Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #fcfcfd;
-      --bg-subtle: #f7f8fb;
-      --bg-hover: #eef1f6;
-      --border: #e4e8f0;
-      --border-light: #edf1f7;
-      --text: #111827;
-      --text-secondary: #4b5563;
-      --text-muted: #7b8191;
-      --accent: #10a37f;
-      --accent-light: #ecfdf5;
-      --accent-dark: #0d8a6a;
-      --blue: #2563eb;
-      --blue-light: #eff6ff;
-      --amber: #d97706;
-      --amber-light: #fffbeb;
-      --red: #dc2626;
-      --red-light: #fef2f2;
-      --purple: #7c3aed;
-      --purple-light: #f5f3ff;
-      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --bg: #f6f8fc;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --green: #059669;
+      --amber: #b45309;
+      --shadow: 0 14px 38px rgba(15, 23, 42, 0.12);
       --radius: 14px;
       --radius-sm: 10px;
-      --sidebar-w: 280px;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top right, #f7fbff 0%, var(--bg) 35%);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
       color: var(--text);
+      background: radial-gradient(circle at top right, #eef4ff 0%, var(--bg) 38%);
       height: 100vh;
-      overflow: hidden;
       display: flex;
+      overflow: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Sidebar ── */
     .sidebar {
-      width: var(--sidebar-w);
-      background: linear-gradient(180deg, #fbfcff 0%, #f6f8fc 100%);
+      width: 310px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      flex-shrink: 0;
-      box-shadow: inset -1px 0 0 rgba(255,255,255,.7);
     }
 
     .sidebar-header {
-      padding: 18px 16px 14px;
+      padding: 18px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -68,2358 +53,703 @@
       align-items: center;
       gap: 10px;
       font-weight: 700;
-      font-size: 15px;
       letter-spacing: -0.02em;
     }
 
-    .logo-icon {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, var(--accent), #059669);
-      border-radius: 8px;
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 14px;
+      font-size: 13px;
     }
 
-    .create-agent-btn {
+    .create-btn {
       margin-top: 12px;
       width: 100%;
-      padding: 10px 12px;
-      background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%);
-      color: #fff;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #0f172a;
+      color: #fff;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
 
-    .create-agent-btn:hover { filter: brightness(1.05); }
+    .create-btn:hover { filter: brightness(1.05); }
 
-    .new-chat-btn {
-      margin: 12px 16px;
-      padding: 10px 14px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background .15s;
-    }
-
-    .new-chat-btn:hover { background: var(--bg-hover); }
-
-    .sidebar-section {
-      padding: 8px 12px;
+    .sidebar-body {
       flex: 1;
       overflow-y: auto;
+      padding: 12px;
     }
 
-    .sidebar-label {
+    .group {
+      margin-bottom: 14px;
+    }
+
+    .group h4 {
       font-size: 11px;
-      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-muted);
-      padding: 8px 4px;
+      color: var(--muted);
+      margin: 0 6px 8px;
     }
 
-    .agent-group {
-      margin-top: 10px;
-      margin-bottom: 8px;
-    }
-
-    .agent-group-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text);
-      margin: 0 4px 2px;
-    }
-
-    .agent-group-subtitle {
-      font-size: 10px;
-      color: var(--text-muted);
-      margin: 0 4px 8px;
-      line-height: 1.35;
-    }
-
-    .sidebar-item {
-      padding: 9px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: background .15s;
-    }
-
-    .sidebar-item:hover { background: var(--bg-hover); }
-    .sidebar-item.active { background: var(--bg); color: var(--text); font-weight: 500; }
-
-    .agent-item {
+    .agent-row {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 10px;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: background .15s, border-color .15s, transform .15s, box-shadow .15s;
       margin-bottom: 6px;
-      border: 1px solid transparent;
+      background: transparent;
+      transition: all .15s;
     }
 
-    .agent-item:hover {
-      background: #f4f7fc;
-      border-color: #dbe3ef;
+    .agent-row:hover {
+      border-color: #dbe4f3;
+      background: #f5f8ff;
       transform: translateY(-1px);
     }
 
-    .agent-item.active {
+    .agent-row.active {
       background: #ffffff;
-      border-color: #d8e2f0;
-      box-shadow: 0 6px 16px rgba(148, 163, 184, 0.16);
+      border-color: #cfdcf0;
+      box-shadow: 0 8px 18px rgba(148, 163, 184, 0.2);
     }
 
     .agent-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 11px;
       font-weight: 700;
-      color: white;
       flex-shrink: 0;
-      letter-spacing: -0.02em;
     }
 
-    .agent-info { flex: 1; min-width: 0; }
-
+    .agent-meta { min-width: 0; flex: 1; }
     .agent-name {
       font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    .agent-item:not(.active) .agent-name { color: var(--text-secondary); font-weight: 400; }
-
-    .agent-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 1px;
-    }
-
-    .agent-status {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .agent-status.live { background: var(--accent); }
-    .agent-status.idle { background: #d1d5db; }
-
-    .agent-type-pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 6px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 600;
-      margin-top: 4px;
-      width: fit-content;
-    }
-
-    .agent-type-pill.draft {
-      background: var(--amber-light);
-      color: var(--amber);
-    }
-
-    .agent-type-pill.live {
-      background: var(--accent-light);
-      color: var(--accent-dark);
-    }
-
-    .architecture-card {
-      margin: 12px 0 0;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%);
-      box-shadow: 0 4px 16px rgba(148, 163, 184, 0.1);
-    }
-
-    .architecture-title {
-      font-size: 11px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .architecture-layer {
-      padding: 7px 8px;
-      border-radius: 8px;
-      background: var(--bg-subtle);
-      margin-bottom: 6px;
-    }
-
-    .architecture-layer:last-child { margin-bottom: 0; }
-
-    .architecture-layer strong {
-      font-size: 10px;
-      display: block;
-      margin-bottom: 2px;
-      color: var(--text);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .architecture-layer span {
-      font-size: 10px;
-      color: var(--text-secondary);
-      line-height: 1.35;
-      display: block;
-    }
-
-    .vision-note {
-      margin-top: 8px;
-      font-size: 10px;
-      color: var(--text-secondary);
-      line-height: 1.35;
-      padding: 7px 8px;
-      border-radius: 8px;
-      background: #fdfcf7;
-      border: 1px solid #f2ead6;
-    }
-
-    .chat-agent-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 20px 0 8px;
-      margin-bottom: 8px;
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .chat-agent-header-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: white;
-    }
-
-    .chat-agent-header h2 {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .chat-agent-header p {
-      font-size: 13px;
-      color: var(--text-secondary);
+    .agent-sub {
       margin-top: 2px;
-    }
-
-    .milestone-section {
-      margin-top: 12px;
-      width: 100%;
-    }
-
-    .milestone-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .milestone-head strong {
       font-size: 11px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .milestone-head span {
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
-    .milestone-tabs {
-      display: flex;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .milestone-tab {
-      border: 1px solid #d7e1ef;
-      background: #fff;
+    .pill {
+      margin-top: 4px;
+      display: inline-flex;
+      padding: 2px 7px;
       border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 11px;
-      color: #334155;
-      cursor: pointer;
-      transition: all .15s;
-    }
-
-    .milestone-tab:hover {
-      border-color: #b9c9df;
-      background: #f2f7ff;
-    }
-
-    .milestone-tab.active {
-      background: #111827;
-      color: #fff;
-      border-color: #111827;
-    }
-
-    .milestone-modules {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .module-btn {
-      border: 1px solid #d7e1ef;
-      background: #fff;
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 11px;
-      color: #334155;
-      line-height: 1.35;
-      cursor: pointer;
-      transition: all .15s;
-      text-align: left;
-    }
-
-    .module-btn:hover {
-      border-color: #b9c9df;
-      background: #f6f9ff;
-    }
-
-    .milestone-note {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .sidebar-footer {
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .avatar-sm {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: white;
       font-size: 10px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
+    .pill.pre { background: #fff7ed; color: var(--amber); }
+    .pill.run { background: #ecfdf5; color: var(--green); }
 
-    /* ── Main ── */
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-width: 0;
-      background: linear-gradient(180deg, #f9fbff 0%, #fcfcfd 30%);
     }
 
-    /* ── Context Bar ── */
-    .context-bar {
+    .studio-top {
+      padding: 18px 22px 14px;
       border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.82);
       backdrop-filter: blur(8px);
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      flex-shrink: 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-      position: sticky;
-      top: 0;
-      z-index: 4;
     }
 
-    .context-bar::-webkit-scrollbar { display: none; }
-
-    .ctx-block {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .ctx-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
-
-    .ctx-value {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .ctx-divider {
-      width: 1px;
-      height: 20px;
-      background: var(--border);
-      flex-shrink: 0;
-    }
-
-    .kpi-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: var(--bg-subtle);
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .kpi-pill .current { color: var(--amber); }
-    .kpi-pill .target { color: var(--accent); }
-
-    .trend-up { color: var(--accent); font-size: 11px; }
-    .trend-down { color: var(--red); font-size: 11px; }
-
-    .initiative-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 8px;
-      background: var(--accent-light);
-      color: var(--accent-dark);
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-
-    .initiative-tag::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .health-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-
-    /* ── Chat Area ── */
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-    }
-
-    .chat-inner {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 38px 28px 130px;
-    }
-
-    .message {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 26px;
-      animation: fadeIn .4s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .msg-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .msg-avatar.user {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: white;
-    }
-
-    .msg-avatar.agent {
-      background: linear-gradient(135deg, var(--accent), #059669);
-      color: white;
-    }
-
-    .msg-avatar.agent.custom { background: var(--agent-color, var(--accent)); }
-
-    .msg-body { flex: 1; min-width: 0; }
-
-    .message.user .msg-body {
-      background: #f3f6fc;
-      border: 1px solid #dbe5f2;
-      border-radius: 14px;
-      padding: 12px 14px;
-    }
-
-    .message.agent .msg-body {
-      padding-top: 2px;
-    }
-
-    .msg-name {
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 7px;
-      color: var(--text-secondary);
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-    }
-
-    .msg-text {
-      font-size: 14px;
-      line-height: 1.72;
-      color: var(--text);
-    }
-
-    .msg-text p { margin-bottom: 12px; }
-    .msg-text p:last-child { margin-bottom: 0; }
-
-    .msg-text strong { font-weight: 600; }
-
-    .msg-text ul {
-      margin: 8px 0 12px 20px;
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .msg-text li { margin-bottom: 4px; }
-
-    /* ── Embedded Cards ── */
-    .embed-card {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      margin: 18px 0;
-      overflow: hidden;
-      background: #ffffff;
-      box-shadow: 0 10px 28px rgba(148, 163, 184, 0.14);
-    }
-
-    .embed-card-header {
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-light);
-      background: linear-gradient(180deg, #fafcff 0%, #f6f9ff 100%);
-    }
-
-    .embed-card-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .card-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-    }
-
-    .card-icon.journey { background: var(--purple-light); }
-    .card-icon.execution { background: var(--blue-light); }
-    .card-icon.report { background: var(--amber-light); }
-    .card-icon.explain { background: var(--accent-light); }
-
-    .status-badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .status-badge.live { background: var(--accent-light); color: var(--accent-dark); }
-    .status-badge.running { background: var(--blue-light); color: var(--blue); }
-    .status-badge.completed { background: var(--bg-subtle); color: var(--text-secondary); }
-
-    .embed-card-body { padding: 18px; }
-
-    /* Journey Steps */
-    .journey-flow {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      overflow-x: auto;
-      padding: 4px 0;
-    }
-
-    .journey-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 100px;
-      position: relative;
-    }
-
-    .step-node {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      border: 2px solid var(--border);
-      background: var(--bg);
-      position: relative;
-      z-index: 1;
-    }
-
-    .step-node.active {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-
-    .step-node.done {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: white;
-    }
-
-    .step-label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      margin-top: 6px;
-      text-align: center;
-      max-width: 90px;
-    }
-
-    .step-connector {
-      width: 32px;
-      height: 2px;
-      background: var(--border);
-      flex-shrink: 0;
-      margin-bottom: 22px;
-    }
-
-    .step-connector.done { background: var(--accent); }
-
-    .journey-meta {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-light);
-    }
-
-    .meta-item label {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .meta-item span {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-
-    /* Execution Card */
-    .exec-timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .exec-event {
-      display: flex;
-      gap: 12px;
-      padding: 10px 0;
-      position: relative;
-    }
-
-    .exec-event:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 7px;
-      top: 28px;
-      bottom: -2px;
-      width: 2px;
-      background: var(--border);
-    }
-
-    .exec-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      background: var(--bg);
-      flex-shrink: 0;
-      margin-top: 2px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .exec-dot.filled { background: var(--accent); }
-
-    .exec-content { flex: 1; }
-
-    .exec-time {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .exec-desc {
-      font-size: 13px;
-      color: var(--text);
-      margin-top: 2px;
-    }
-
-    .exec-metric {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    /* Report Card */
-    .report-chart {
-      height: 120px;
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      padding: 8px 0;
-    }
-
-    .bar-group {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .bar {
-      width: 100%;
-      max-width: 40px;
-      border-radius: 4px 4px 0 0;
-      transition: height .6s ease;
-    }
-
-    .bar.prev { background: #d1d5db; }
-    .bar.curr { background: var(--accent); }
-
-    .bar-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .report-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .stat-box {
-      padding: 10px 12px;
-      background: var(--bg-subtle);
-      border-radius: var(--radius-sm);
-    }
-
-    .stat-box .label {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .stat-box .value {
-      font-size: 18px;
-      font-weight: 700;
-      margin-top: 2px;
-    }
-
-    .stat-box .change {
-      font-size: 11px;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-
-    .change.positive { color: var(--accent); }
-    .change.negative { color: var(--red); }
-
-    /* Explain Card */
-    .explain-reasoning {
-      background: var(--bg-subtle);
-      border-radius: var(--radius-sm);
-      padding: 14px 16px;
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--text-secondary);
-      border-left: 3px solid var(--accent);
-    }
-
-    .explain-factors {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 12px;
-    }
-
-    .factor-tag {
-      font-size: 11px;
-      padding: 4px 10px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      border-top: 1px solid var(--border-light);
-    }
-
-    .card-btn {
-      padding: 6px 14px;
-      font-size: 12px;
-      font-weight: 500;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--bg);
-      cursor: pointer;
-      transition: all .15s;
-      color: var(--text-secondary);
-    }
-
-    .card-btn:hover { background: var(--bg-hover); color: var(--text); }
-    .card-btn.primary { background: var(--text); color: white; border-color: var(--text); }
-    .card-btn.primary:hover { background: #333; }
-
-    /* Typing indicator */
-    .typing {
-      display: flex;
-      gap: 4px;
-      padding: 4px 0;
-    }
-
-    .typing span {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--text-muted);
-      animation: typing 1.4s infinite;
-    }
-
-    .typing span:nth-child(2) { animation-delay: .2s; }
-    .typing span:nth-child(3) { animation-delay: .4s; }
-
-    @keyframes typing {
-      0%, 60%, 100% { opacity: .3; transform: translateY(0); }
-      30% { opacity: 1; transform: translateY(-4px); }
-    }
-
-    /* ── Input Area ── */
-    .input-area {
-      position: sticky;
-      bottom: 0;
-      background: linear-gradient(transparent, rgba(252, 252, 253, 0.92) 18%, rgba(252, 252, 253, 0.98) 42%);
-      padding: 0 24px 20px;
-      flex-shrink: 0;
-    }
-
-    .input-wrapper {
-      max-width: 768px;
-      margin: 0 auto;
-    }
-
-    .suggestions {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .suggestion {
-      padding: 7px 14px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: #ffffff;
-      border: 1px solid #dce4f1;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all .15s;
-      white-space: nowrap;
-    }
-
-    .suggestion:hover {
-      background: #f2f7ff;
-      color: var(--text);
-      border-color: #cfd9e8;
-    }
-
-    .input-box {
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid #d8e1ef;
-      border-radius: 16px;
-      padding: 12px 12px 12px 16px;
-      box-shadow: 0 12px 30px rgba(148, 163, 184, 0.2);
-      transition: border-color .15s, box-shadow .15s;
-      backdrop-filter: blur(6px);
-    }
-
-    .input-box:focus-within {
-      border-color: #b8c8df;
-      box-shadow: 0 14px 30px rgba(125, 148, 181, 0.3);
-    }
-
-    .input-box textarea {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-family: inherit;
-      font-size: 15px;
-      line-height: 1.5;
-      resize: none;
-      max-height: 120px;
-      background: transparent;
-      color: var(--text);
-    }
-
-    .input-box textarea::placeholder { color: var(--text-muted); }
-
-    .send-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      border: none;
-      background: var(--text);
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background .15s, opacity .15s;
-    }
-
-    .send-btn:hover { background: #333; }
-    .send-btn:disabled { opacity: 0.3; cursor: default; }
-
-    .input-footer {
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 8px;
-    }
-
-    /* ── Welcome ── */
-    .welcome {
-      text-align: center;
-      padding: 60px 0 20px;
-    }
-
-    .welcome h1 {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      margin-bottom: 8px;
-    }
-
-    .welcome p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      max-width: 420px;
-      margin: 0 auto;
-      line-height: 1.5;
-    }
-
-    .hidden { display: none !important; }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(12, 12, 14, 0.35);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      padding: 20px;
-    }
-
-    .modal-backdrop.open { display: flex; }
-
-    .template-modal {
-      width: min(920px, 95vw);
-      max-height: 85vh;
-      overflow-y: auto;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.18);
-    }
-
-    .template-modal-header {
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--border);
+    .studio-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      margin-bottom: 10px;
     }
 
-    .template-modal-header h3 {
-      font-size: 16px;
+    .studio-title h1 {
+      font-size: 20px;
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
 
-    .template-modal-header p {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 3px;
-    }
-
-    .close-modal-btn {
+    .status-chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
       border: 1px solid var(--border);
-      background: var(--bg);
-      border-radius: 8px;
-      width: 30px;
-      height: 30px;
-      font-size: 16px;
-      line-height: 1;
-      cursor: pointer;
-      color: var(--text-secondary);
+      background: #fff;
+      color: var(--muted);
     }
 
-    .template-grid {
-      padding: 14px 16px 18px;
+    .status-chip.pre { color: var(--amber); background: #fff7ed; border-color: #fed7aa; }
+    .status-chip.run { color: var(--green); background: #ecfdf5; border-color: #bbf7d0; }
+
+    .brief-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
 
-    .template-card {
+    .brief-card {
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      background: var(--bg);
-      cursor: pointer;
-      transition: border-color .15s, box-shadow .15s, transform .12s;
+      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 10px 11px;
     }
 
-    .template-card:hover {
-      border-color: #ccc;
-      box-shadow: var(--shadow-sm);
-      transform: translateY(-1px);
-    }
-
-    .template-card h4 {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 5px;
-      letter-spacing: -0.01em;
-    }
-
-    .template-card p {
-      font-size: 12px;
-      color: var(--text-secondary);
-      line-height: 1.4;
-      min-height: 34px;
-    }
-
-    .template-chip {
-      margin-top: 8px;
-      display: inline-flex;
-      padding: 3px 8px;
-      border-radius: 999px;
+    .brief-card label {
+      display: block;
       font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 5px;
       font-weight: 600;
-      background: var(--blue-light);
-      color: var(--blue);
     }
+
+    .brief-card p {
+      font-size: 12px;
+      color: #334155;
+      line-height: 1.4;
+    }
+
+    .phase-strip {
+      padding: 12px 22px 10px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fbff;
+    }
+
+    .phase-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+    }
+
+    .phase-tab {
+      border: 1px solid #d7e3f3;
+      background: #fff;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .15s;
+    }
+
+    .phase-tab:hover { background: #f0f6ff; }
+    .phase-tab.active {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
+
+    .modules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .module-btn {
+      border: 1px solid #d7e3f3;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 11px;
+      color: #334155;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .module-btn:hover {
+      background: #f3f8ff;
+      border-color: #bfd2ea;
+    }
+
+    .workspace {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 22px 130px;
+    }
+
+    .thread {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .msg {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .msg-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .msg-name {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .msg-content {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #fff;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #1f2937;
+    }
+
+    .msg-content ul { margin: 8px 0 0 18px; }
+
+    .composer {
+      position: sticky;
+      bottom: 0;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(transparent, #f6f8fc 22%, #f6f8fc 100%);
+      padding: 10px 22px 18px;
+    }
+
+    .suggestions {
+      max-width: 860px;
+      margin: 0 auto 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .suggestion {
+      border: 1px solid #d7e3f3;
+      background: #fff;
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 11px;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .input-box {
+      max-width: 860px;
+      margin: 0 auto;
+      border: 1px solid #cfdbeb;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      padding: 10px 10px 10px 14px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    textarea {
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+      max-height: 120px;
+      color: var(--text);
+    }
+
+    .send {
+      border: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: #0f172a;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .send:disabled { opacity: .35; cursor: default; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <div class="logo">
-        <div class="logo-icon">E</div>
-        Engage AI
-      </div>
-      <button class="create-agent-btn" onclick="openTemplateModal()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        Create New Business Agent
-      </button>
+      <div class="logo"><div class="logo-mark">E</div>Engage AI Studio</div>
+      <button class="create-btn" id="createBtn">Create New Business Agent</button>
     </div>
-    <div class="sidebar-section" id="agentList">
-      <div class="sidebar-label">Your Business Agents</div>
-      <div class="architecture-card">
-        <div class="architecture-title">Architecture of Agentic Engagement</div>
-        <div class="architecture-layer">
-          <strong>1. Business Agent Layer</strong>
-          <span>Converts enterprise goals into Business Journeys (CJO).</span>
-        </div>
-        <div class="architecture-layer">
-          <strong>2. Central Orchestration & Execution</strong>
-          <span>Executes signed-off journeys with enterprise-wide resource optimization.</span>
-        </div>
-        <div class="architecture-layer">
-          <strong>3. Intelligence & Memory Layer</strong>
-          <span>Learns from outcomes and feeds signals back to agents for adaptation.</span>
-        </div>
+    <div class="sidebar-body">
+      <div class="group">
+        <h4>Pre-Execution Agents</h4>
+        <div id="preList"></div>
       </div>
-    </div>
-    <div class="sidebar-footer">
-      <div class="avatar-sm">US</div>
-      Utsuk Srivastava
+      <div class="group">
+        <h4>Running Agents</h4>
+        <div id="runList"></div>
+      </div>
     </div>
   </aside>
 
-  <!-- Main -->
-  <div class="main">
-    <!-- Context Bar -->
-    <div class="context-bar" id="contextBar"></div>
-
-    <!-- Chat -->
-    <div class="chat-container" id="chatContainer">
-      <div class="chat-inner" id="chatInner">
-        <div class="welcome hidden" id="welcome">
-          <h1>Select a business agent</h1>
-          <p>Choose an agent from the left to start a conversation.</p>
-        </div>
+  <main class="main">
+    <section class="studio-top">
+      <div class="studio-title">
+        <h1 id="agentTitle">Select an Agent</h1>
+        <span class="status-chip" id="agentStatus">Status</span>
       </div>
-    </div>
-
-    <!-- Input -->
-    <div class="input-area">
-      <div class="input-wrapper">
-        <div class="suggestions" id="suggestions"></div>
-        <div class="input-box">
-          <textarea id="userInput" rows="1" placeholder="Select an agent to start..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          </button>
-        </div>
-        <div class="input-footer">Engage AI orchestrates journeys and execution — you stay in the conversation.</div>
+      <div class="brief-grid">
+        <div class="brief-card"><label>Objective</label><p id="briefObjective">-</p></div>
+        <div class="brief-card"><label>Approved Inputs</label><p id="briefInputs">-</p></div>
+        <div class="brief-card"><label>Guardrails</label><p id="briefGuardrails">-</p></div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <div class="modal-backdrop" id="templateModal" onclick="handleModalBackdrop(event)">
-    <div class="template-modal">
-      <div class="template-modal-header">
-        <div>
-          <h3>Choose a Business Agent Template</h3>
-          <p>Start from an approved enterprise template and configure goals, policies, tools, and guardrails.</p>
-        </div>
-        <button class="close-modal-btn" onclick="closeTemplateModal()">×</button>
+    <section class="phase-strip" id="phaseStrip">
+      <div class="phase-tabs" id="phaseTabs"></div>
+      <div class="modules" id="moduleButtons"></div>
+    </section>
+
+    <section class="workspace" id="workspace">
+      <div class="thread" id="thread"></div>
+    </section>
+
+    <section class="composer">
+      <div class="suggestions" id="suggestions"></div>
+      <div class="input-box">
+        <textarea id="input" rows="1" placeholder="Ask this business agent..."></textarea>
+        <button class="send" id="sendBtn">↑</button>
       </div>
-      <div class="template-grid" id="templateGrid"></div>
-    </div>
-  </div>
+    </section>
+  </main>
 
-<script>
-const chatInner = document.getElementById('chatInner');
-const chatContainer = document.getElementById('chatContainer');
-const userInput = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
-const welcome = document.getElementById('welcome');
-const suggestions = document.getElementById('suggestions');
-const contextBar = document.getElementById('contextBar');
-const agentList = document.getElementById('agentList');
-const templateModal = document.getElementById('templateModal');
-const templateGrid = document.getElementById('templateGrid');
+  <script>
+    const PHASES = [
+      { id: "p1", title: "1. Planning Phase Agent(s)", modules: [
+        { id: "objective", label: "Objective Clarification Agent(s)" },
+        { id: "audience-data", label: "Agent(s) to Fetch Audience Data and Variable Values" },
+        { id: "channel-precheck", label: "Organization Channel Pre-Check Agent(s)" },
+      ]},
+      { id: "p2", title: "2. Create Business Journey (without Configurations) Agent(s)", modules: [
+        { id: "brief-outcome", label: "Journey Brief and Outcome Agent" },
+        { id: "touchpoint-planner", label: "Channel and Touchpoint Planner Agent(s)" },
+        { id: "design-journey", label: "Design Business Journey Agent" },
+        { id: "idea-generator", label: "User Communication Idea Generator Agent(s) (SMS, WhatsApp, IVR, Voicebot)" },
+      ]},
+      { id: "p3", title: "3. Business Journey Node Configuration Agents", modules: [
+        { id: "trigger-node", label: "Trigger Node Configuration Agent(s)" },
+        { id: "template-creation", label: "Template Creation Agent(s)" },
+        { id: "action-nodes", label: "Configure Action Nodes (SMS / WhatsApp / IVR / Voicebot / Dialler) Agent(s)" },
+        { id: "process-node", label: "Configure Process Node Configuration Agent(s)" },
+        { id: "end-node", label: "End Node Agent(s)" },
+      ]},
+      { id: "p4", title: "4. Test Business Journey Agent(s)", modules: [
+        { id: "test-journey", label: "Test Business Journey Agent(s)" },
+      ]},
+      { id: "p5", title: "5. Business Journey Execution Checks and Validation Agent(s)", modules: [
+        { id: "execution-validation", label: "Business Journey Execution Checks and Validation Agent(s)" },
+        { id: "genai-defaults", label: "Estimate Default Values of Gen AI Variables" },
+      ]},
+      { id: "p6", title: "6. Go Live", modules: [
+        { id: "approval-plan", label: "Get Customer Approval on Business Journey Execution Plan" },
+      ]},
+    ];
 
-let currentAgentId = null;
-let isAnimating = false;
-const currentTabByAgent = {};
+    const PRE_TEMPLATES = [
+      { name: "Retention Agent", color: "#7c3aed", initials: "RA", objective: "Reduce churn by 20%" },
+      { name: "Lifecycle Engagement Agent", color: "#0ea5e9", initials: "LE", objective: "Improve lifecycle conversion quality" },
+      { name: "Collections Strategy Agent", color: "#059669", initials: "CS", objective: "Improve collections recovery by 18%" },
+    ];
 
-const PRE_EXECUTION_TABS = [
-  {
-    id: 'planning-phase',
-    title: '1. Planning Phase Agent(s)',
-    modules: [
-      { id: 'objective-clarification', label: 'Objective Clarification Agent(s)' },
-      { id: 'audience-data-fetch', label: 'Agent(s) to Fetch Audience Data and Variable Values' },
-      { id: 'org-channel-precheck', label: 'Organization Channel Pre-Check Agent(s)' },
-    ],
-  },
-  {
-    id: 'create-journey',
-    title: '2. Create Business Journey (without Configurations) Agent(s)',
-    modules: [
-      { id: 'journey-brief-outcome', label: 'Journey Brief and Outcome Agent' },
-      { id: 'channel-touchpoint-planner', label: 'Channel and Touchpoint Planner Agent(s)' },
-      { id: 'design-business-journey', label: 'Design Business Journey Agent' },
-      { id: 'comm-idea-generator', label: 'User Communication Idea Generator Agent(s) (SMS, WhatsApp, IVR, Voicebot)' },
-    ],
-  },
-  {
-    id: 'node-configuration',
-    title: '3. Business Journey Node Configuration Agents',
-    modules: [
-      { id: 'trigger-node-config', label: 'Trigger Node Configuration Agent(s)' },
-      { id: 'template-creation', label: 'Template Creation Agent(s)' },
-      { id: 'action-nodes-config', label: 'Configure Action Nodes (SMS / WhatsApp / IVR / Voicebot / Dialler) Agent(s)' },
-      { id: 'process-node-config', label: 'Configure Process Node Configuration Agent(s)' },
-      { id: 'end-node-agent', label: 'End Node Agent(s)' },
-    ],
-  },
-  {
-    id: 'test-journey',
-    title: '4. Test Business Journey Agent(s)',
-    modules: [
-      { id: 'test-business-journey', label: 'Test Business Journey Agent(s)' },
-    ],
-  },
-  {
-    id: 'execution-validation',
-    title: '5. Business Journey Execution Checks and Validation Agent(s)',
-    modules: [
-      { id: 'execution-checks-validation', label: 'Business Journey Execution Checks and Validation Agent(s)' },
-      { id: 'estimate-gen-ai-defaults', label: 'Estimate Default Values of Gen AI Variables' },
-    ],
-  },
-  {
-    id: 'go-live',
-    title: '6. Go Live',
-    modules: [
-      { id: 'customer-approval-plan', label: 'Get Customer Approval on Business Journey Execution Plan' },
-    ],
-  },
-];
+    let AGENTS = {
+      "main-collections": {
+        id: "main-collections",
+        name: "Main Collections Agent",
+        initials: "MC",
+        color: "#0f766e",
+        lifecycle: "pre",
+        objective: "Improve collections recovery by 18%",
+        inputs: "Audience lake, payment behavior, historical outreach logs",
+        guardrails: "Budget caps, channel policy, compliance constraints",
+        suggestions: ["Open Planning Phase", "Open Node Configuration", "Go live now"],
+      },
+      "main-onboarding": {
+        id: "main-onboarding",
+        name: "Main Onboarding Agent",
+        initials: "MO",
+        color: "#2563eb",
+        lifecycle: "pre",
+        objective: "Raise onboarding activation to 72%",
+        inputs: "KYC events, app session patterns, drop-off cohorts",
+        guardrails: "Approved channel permissions, communication frequency limits",
+        suggestions: ["Open Objective Clarification", "Open Test Journey", "Review go-live checklist"],
+      },
+      "collections-running": {
+        id: "collections-running",
+        name: "Collections Agent",
+        initials: "CA",
+        color: "#059669",
+        lifecycle: "running",
+        objective: "Drive day-to-day collection outcomes",
+        inputs: "Live orchestration telemetry",
+        guardrails: "Running budget policy",
+        suggestions: ["Show execution updates", "Why did performance change?", "Show ROI trend"],
+      },
+      "support-running": {
+        id: "support-running",
+        name: "Proactive Support Agent",
+        initials: "PS",
+        color: "#d97706",
+        lifecycle: "running",
+        objective: "Prevent avoidable support escalations",
+        inputs: "Intent signals and support telemetry",
+        guardrails: "Escalation policy and workforce constraints",
+        suggestions: ["Show at-risk users", "Optimize channel mix", "Explain latest actions"],
+      },
+    };
 
-function journeyCard(title, steps, meta, status = 'Live') {
-  const stepHtml = steps.map((s, i) => {
-    const nodeClass = s.state === 'done' ? 'done' : s.state === 'active' ? 'active' : '';
-    const conn = i < steps.length - 1
-      ? `<div class="step-connector${s.state === 'done' ? ' done' : ''}"></div>` : '';
-    return `
-      <div class="journey-step">
-        <div class="step-node ${nodeClass}">${s.icon}</div>
-        <div class="step-label">${s.label}</div>
-      </div>${conn}`;
-  }).join('');
+    let currentAgentId = null;
+    let currentPhaseByAgent = {};
 
-  const metaHtml = meta.map(m => `
-    <div class="meta-item"><label>${m.label}</label><span>${m.value}</span></div>`).join('');
+    const preList = document.getElementById("preList");
+    const runList = document.getElementById("runList");
+    const phaseStrip = document.getElementById("phaseStrip");
+    const phaseTabs = document.getElementById("phaseTabs");
+    const moduleButtons = document.getElementById("moduleButtons");
+    const thread = document.getElementById("thread");
+    const suggestions = document.getElementById("suggestions");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
 
-  return `
-    <div class="embed-card">
-      <div class="embed-card-header">
-        <div class="embed-card-title">
-          <div class="card-icon journey">🗺</div>
-          ${title}
-        </div>
-        <span class="status-badge live">${status}</span>
-      </div>
-      <div class="embed-card-body">
-        <div class="journey-flow">${stepHtml}</div>
-        <div class="journey-meta">${metaHtml}</div>
-      </div>
-      <div class="card-actions">
-        <button class="card-btn">View details</button>
-        <button class="card-btn primary">Approve & Execute</button>
-      </div>
-    </div>`;
-}
-
-function reviewCard(title, findings, score, verdict) {
-  const items = findings.map(f => `
-    <div class="exec-event">
-      <div class="exec-dot ${f.ok ? 'filled' : ''}"></div>
-      <div class="exec-content">
-        <div class="exec-desc">${f.text}</div>
-        <div class="exec-metric">${f.detail}</div>
-      </div>
-    </div>`).join('');
-
-  return `
-    <div class="embed-card">
-      <div class="embed-card-header">
-        <div class="embed-card-title">
-          <div class="card-icon explain">🔍</div>
-          ${title}
-        </div>
-        <span class="status-badge completed">Score ${score}/100</span>
-      </div>
-      <div class="embed-card-body">
-        <div class="exec-timeline">${items}</div>
-        <div class="explain-reasoning" style="margin-top:14px">${verdict}</div>
-      </div>
-    </div>`;
-}
-
-function reportCard(title, stats) {
-  const statHtml = stats.map(s => `
-    <div class="stat-box">
-      <div class="label">${s.label}</div>
-      <div class="value">${s.value}</div>
-      <div class="change ${s.positive ? 'positive' : 'negative'}">${s.change}</div>
-    </div>`).join('');
-
-  return `
-    <div class="embed-card">
-      <div class="embed-card-header">
-        <div class="embed-card-title">
-          <div class="card-icon report">📈</div>
-          ${title}
-        </div>
-        <span class="status-badge completed">Updated</span>
-      </div>
-      <div class="embed-card-body">
-        <div class="report-stats">${statHtml}</div>
-      </div>
-    </div>`;
-}
-
-let AGENTS = {
-  'main-collections': {
-    id: 'main-collections',
-    name: 'Main Collections Agent',
-    initials: 'MC',
-    color: '#10a37f',
-    desc: 'Strategic collections oversight',
-    status: 'idle',
-    lifecycle: 'pre',
-    context: [
-      { label: 'Journey Status', value: 'Pre-execution · Awaiting sign-off' },
-      { label: 'Objective', value: 'Improve collections recovery by 18%' },
-      { label: 'Recovery Rate', kpi: { current: '11.2%', target: '18%', trend: '▼ 2.1%', down: true } },
-      { label: 'Active Journeys', tags: ['WhatsApp Recovery', 'Voice Escalation'] },
-      { label: 'Execution', health: 'Healthy · 3 running' },
-    ],
-    userMessage: 'Recovery rates dropped in Karnataka. Analyze and improve.',
-    reply: () => `
-      <p>I've analyzed the Karnataka recovery drop across all active collection journeys. Here's what I found:</p>
-      <ul>
-        <li>Recovery rate fell from <strong>12.7% → 8.4%</strong> over the last 14 days</li>
-        <li>Primary driver: increased voice call costs during peak hours (+22%)</li>
-        <li>WhatsApp engagement in Karnataka remains strong at <strong>67% open rate</strong></li>
-        <li>4,280 high-risk accounts identified for immediate intervention</li>
-      </ul>
-      <p>I'm recommending a <strong>WhatsApp-first recovery journey</strong> with delayed voice escalation. Here's the journey I've designed:</p>
-      ${journeyCard('WhatsApp-First Recovery Journey', [
-        { icon: '✓', label: 'Segment High-Risk', state: 'done' },
-        { icon: '💬', label: 'WhatsApp Nudge', state: 'done' },
-        { icon: '⏳', label: 'Wait 24h', state: 'active' },
-        { icon: '📞', label: 'Voice Escalation', state: '' },
-        { icon: '📊', label: 'Measure & Adapt', state: '' },
-      ], [
-        { label: 'Audience', value: '4,280 accounts' },
-        { label: 'Region', value: 'Karnataka' },
-        { label: 'Est. Recovery', value: '+3.2%' },
-      ])}
-      <p>This is a <strong>pre-execution agent</strong>. Once you sign-off, I will package required data and send it to the <strong>Central Orchestration & Execution Layer</strong>.</p>`,
-    suggestions: ['Show recovery trends from last week', 'Why did you reduce outbound calls?', 'Deploy the journey now'],
-  },
-
-  'collections': {
-    id: 'collections',
-    name: 'Collections Agent',
-    initials: 'CA',
-    color: '#059669',
-    desc: 'Day-to-day recovery operations',
-    status: 'live',
-    lifecycle: 'running',
-    context: [
-      { label: 'Focus', value: 'Overdue accounts · DPD 30–90' },
-      { label: 'Today', kpi: { current: '847', target: 'calls', trend: '▲ 12%', down: false } },
-      { label: 'Recovery Today', value: '₹18.4L collected' },
-      { label: 'Queue', health: '142 accounts pending' },
-    ],
-    userMessage: 'Which accounts should we prioritize for outreach today?',
-    reply: () => `
-      <p>I've ranked today's collection queue by recovery probability and urgency:</p>
-      <ul>
-        <li><strong>312 accounts</strong> — high intent, responded to WhatsApp but didn't pay (best ROI)</li>
-        <li><strong>198 accounts</strong> — first-time defaulters, DPD 30–45 (high cure rate)</li>
-        <li><strong>156 accounts</strong> — payment link opened but abandoned (nudge-ready)</li>
-      </ul>
-      <p>I've prepared a targeted voice + WhatsApp journey for the top segment:</p>
-      ${journeyCard('Priority Outreach — Today', [
-        { icon: '✓', label: 'Rank Queue', state: 'done' },
-        { icon: '📱', label: 'Payment Link WA', state: 'active' },
-        { icon: '⏳', label: 'Wait 4h', state: '' },
-        { icon: '📞', label: 'Agent Call', state: '' },
-      ], [
-        { label: 'Accounts', value: '312' },
-        { label: 'Est. Recovery', value: '₹6.2L' },
-        { label: 'Channel Mix', value: 'WA + Voice' },
-      ], 'Ready')}
-      <p>Want me to launch this now or adjust the segment criteria?</p>`,
-    suggestions: ['Launch priority outreach', 'Show today\'s collection report', 'Why these 312 accounts?'],
-  },
-
-  'main-onboarding': {
-    id: 'main-onboarding',
-    name: 'Main Onboarding Agent',
-    initials: 'MO',
-    color: '#2563eb',
-    desc: 'Onboarding strategy & conversion',
-    status: 'idle',
-    lifecycle: 'pre',
-    context: [
-      { label: 'Journey Status', value: 'Pre-execution · Awaiting sign-off' },
-      { label: 'Objective', value: 'Increase activation rate to 72%' },
-      { label: 'Activation', kpi: { current: '58.3%', target: '72%', trend: '▲ 3.1%', down: false } },
-      { label: 'Active Journeys', tags: ['KYC Nudge', 'Welcome Series'] },
-      { label: 'Drop-off', health: 'Step 3 · Document upload' },
-    ],
-    userMessage: 'Activation rate is stuck at 58%. What\'s blocking users and how do we fix it?',
-    reply: () => `
-      <p>I've traced the onboarding funnel and identified the primary bottleneck:</p>
-      <ul>
-        <li><strong>Step 3 — Document upload</strong> accounts for 41% of all drop-offs</li>
-        <li>Mobile users on slow networks abandon at 2.3× the rate of desktop users</li>
-        <li>Users who receive a WhatsApp reminder within 2h are <strong>2.8× more likely</strong> to complete KYC</li>
-      </ul>
-      <p>Here's the onboarding journey I'd deploy to recover these users:</p>
-      ${journeyCard('KYC Recovery Journey', [
-        { icon: '✓', label: 'Detect Drop-off', state: 'done' },
-        { icon: '💬', label: 'WA Reminder', state: 'done' },
-        { icon: '📲', label: 'SMS Deep Link', state: 'active' },
-        { icon: '📞', label: 'Assist Call', state: '' },
-        { icon: '✅', label: 'Activation', state: '' },
-      ], [
-        { label: 'Stuck Users', value: '2,140' },
-        { label: 'Est. Activation', value: '+8.4%' },
-        { label: 'Time to Impact', value: '72 hours' },
-      ])}
-      <p>This is a <strong>pre-execution journey</strong>. After your sign-off, I will hand this journey and source data to the <strong>Central Orchestration & Execution Layer</strong> for first-time execution.</p>`,
-    suggestions: ['Show onboarding funnel report', 'Why WhatsApp over email?', 'Deploy KYC recovery journey'],
-  },
-
-  'onboarding': {
-    id: 'onboarding',
-    name: 'Onboarding Agent',
-    initials: 'OA',
-    color: '#3b82f6',
-    desc: 'User activation & KYC flows',
-    status: 'live',
-    lifecycle: 'running',
-    context: [
-      { label: 'Today\'s Signups', value: '384 new users' },
-      { label: 'KYC Pending', kpi: { current: '127', target: 'users', trend: '▼ 8%', down: false } },
-      { label: 'Completion Rate', value: '71% same-day' },
-      { label: 'Active', health: 'Welcome Series running' },
-    ],
-    userMessage: 'A batch of 127 users signed up today but haven\'t completed KYC. What should we do?',
-    reply: () => `
-      <p>I've segmented today's pending KYC users and here's my recommendation:</p>
-      <ul>
-        <li><strong>68 users</strong> started KYC but stopped at document upload — send assist nudge</li>
-        <li><strong>41 users</strong> signed up but never opened the app — send welcome WhatsApp</li>
-        <li><strong>18 users</strong> are repeat visitors — offer live chat support</li>
-      </ul>
-      ${journeyCard('Same-Day KYC Nudge', [
-        { icon: '✓', label: 'Segment Users', state: 'done' },
-        { icon: '💬', label: 'WA Assist Msg', state: 'active' },
-        { icon: '🔗', label: 'Deep Link', state: '' },
-        { icon: '📞', label: 'Support Call', state: '' },
-      ], [
-        { label: 'Users', value: '127' },
-        { label: 'Expected KYC', value: '89 completions' },
-        { label: 'Channel', value: 'WhatsApp-first' },
-      ], 'Ready')}
-      <p>I can trigger this journey now — estimated 70% completion rate by end of day.</p>`,
-    suggestions: ['Trigger KYC nudge now', 'Show signup-to-KYC report', 'Why not email first?'],
-  },
-
-  'journey-review': {
-    id: 'journey-review',
-    name: 'Journey Review Agent',
-    initials: 'JR',
-    color: '#7c3aed',
-    desc: 'Reviews collection & onboarding journeys',
-    status: 'live',
-    lifecycle: 'running',
-    context: [
-      { label: 'Reviewing', value: '6 active journeys' },
-      { label: 'Last Audit', value: '2 hours ago' },
-      { label: 'Issues Found', kpi: { current: '2', target: 'warnings', trend: '▼ 1', down: false } },
-      { label: 'Health', health: '4 healthy · 2 need attention' },
-    ],
-    userMessage: 'Review the WhatsApp Recovery Journey and the KYC Recovery Journey. Any issues?',
-    reply: () => `
-      <p>I've completed a full audit of both journeys — checking logic, timing, channel mix, and expected outcomes:</p>
-      ${reviewCard('WhatsApp Recovery Journey — Review', [
-        { ok: true, text: 'Segmentation logic is correct', detail: '4,280 high-risk Karnataka accounts properly matched' },
-        { ok: true, text: 'Channel sequencing is optimal', detail: 'WhatsApp-first before voice saves ~38% cost' },
-        { ok: false, text: 'Wait period may be too long', detail: '24h delay — similar cohorts recovered faster at 18h' },
-      ], 87, 'Approved with one recommendation: reduce wait period from 24h to 18h. Expected recovery lift of +0.4%.')}
-      ${reviewCard('KYC Recovery Journey — Review', [
-        { ok: true, text: 'Drop-off detection is accurate', detail: 'Step 3 upload abandonment correctly identified' },
-        { ok: true, text: 'Reminder timing is effective', detail: '2h WhatsApp window aligns with engagement data' },
-        { ok: true, text: 'Fallback channels configured', detail: 'SMS deep link + assist call properly sequenced' },
-      ], 94, 'Fully approved. No changes needed. Ready for execution.')}
-      <p>Want me to apply the 18h fix to the Recovery Journey automatically?</p>`,
-    suggestions: ['Apply the 18h fix', 'Review all 6 active journeys', 'Why is 18h better than 24h?'],
-  },
-
-  'proactive-support': {
-    id: 'proactive-support',
-    name: 'Proactive Support Agent',
-    initials: 'PS',
-    color: '#d97706',
-    desc: 'Anticipates & resolves customer issues',
-    status: 'live',
-    lifecycle: 'running',
-    context: [
-      { label: 'Monitoring', value: '12,400 active customers' },
-      { label: 'At-Risk', kpi: { current: '234', target: 'accounts', trend: '▲ 18', down: true } },
-      { label: 'Proactive Actions', tags: ['Payment Failures', 'Service Alerts'] },
-      { label: 'Resolution', health: '91% self-serve rate' },
-    ],
-    userMessage: 'Are there any customers likely to churn or complain today? Get ahead of it.',
-    reply: () => `
-      <p>I've scanned behavioral signals across all active accounts. Here are the proactive interventions I'd recommend:</p>
-      <ul>
-        <li><strong>89 customers</strong> — payment failed twice in 48h (likely to churn without outreach)</li>
-        <li><strong>67 customers</strong> — opened support page but didn't submit ticket (frustration signal)</li>
-        <li><strong>78 customers</strong> — service outage affected their region yesterday</li>
-      </ul>
-      ${journeyCard('Proactive Support Outreach', [
-        { icon: '✓', label: 'Detect Signals', state: 'done' },
-        { icon: '💬', label: 'WA Proactive Msg', state: 'active' },
-        { icon: '🔄', label: 'Retry Payment', state: '' },
-        { icon: '📞', label: 'Escalate if Needed', state: '' },
-      ], [
-        { label: 'Customers', value: '234' },
-        { label: 'Est. Save Rate', value: '78%' },
-        { label: 'Channel', value: 'WhatsApp + IVR' },
-      ])}
-      ${executionCard('Proactive Support — Live Updates', [
-        { time: 'Just now', desc: '234 at-risk customers identified', metric: 'Behavioral scoring complete' },
-        { time: 'In progress', desc: 'WhatsApp proactive messages sending', metric: 'Batch 1: 89 payment-failure cases' },
-        { time: 'Scheduled', desc: 'Follow-up for non-responders', metric: 'IVR callback in 6 hours' },
-      ])}
-      <p>This should prevent ~180 potential churn events before they become support tickets.</p>`,
-    suggestions: ['Show at-risk customer report', 'Why WhatsApp for payment failures?', 'Pause proactive outreach'],
-  },
-
-  'lead-acquisition': {
-    id: 'lead-acquisition',
-    name: 'Lead Acquisition Agent',
-    initials: 'LA',
-    color: '#dc2626',
-    desc: 'New customer & lead generation',
-    status: 'idle',
-    lifecycle: 'pre',
-    context: [
-      { label: 'Journey Status', value: 'Pre-execution · Awaiting sign-off' },
-      { label: 'Objective', value: 'Acquire 2,000 qualified leads this month' },
-      { label: 'Progress', kpi: { current: '1,247', target: '2,000', trend: '▲ 14%', down: false } },
-      { label: 'Active Campaigns', tags: ['Referral Push', 'Lookalike WA'] },
-      { label: 'Cost per Lead', health: '₹142 · under budget' },
-    ],
-    userMessage: 'We\'re at 1,247 leads against a 2,000 target. How do we accelerate acquisition?',
-    reply: () => `
-      <p>I've analyzed our lead pipeline and identified three high-impact opportunities:</p>
-      <ul>
-        <li><strong>Referral program</strong> — existing customers with NPS 9+ haven't been asked to refer (est. +340 leads)</li>
-        <li><strong>Lookalike audience</strong> — top 500 converters share patterns we can target on WhatsApp (est. +280 leads)</li>
-        <li><strong>Re-engage cold leads</strong> — 1,800 leads from last quarter went silent (est. +190 recoverable)</li>
-      </ul>
-      ${journeyCard('Referral + Lookalike Acquisition', [
-        { icon: '✓', label: 'Build Audiences', state: 'done' },
-        { icon: '💬', label: 'Referral WA Blast', state: 'active' },
-        { icon: '🎯', label: 'Lookalike Target', state: '' },
-        { icon: '📋', label: 'Lead Capture', state: '' },
-        { icon: '🔄', label: 'Auto-Onboard', state: '' },
-      ], [
-        { label: 'Est. New Leads', value: '+620' },
-        { label: 'Cost per Lead', value: '₹118' },
-        { label: 'Time to Goal', value: '12 days' },
-      ])}
-      ${reportCard('Lead Pipeline — This Month', [
-        { label: 'Total Leads', value: '1,247', change: '▲ 14% vs last month', positive: true },
-        { label: 'Qualified Rate', value: '34%', change: '▲ 2.1%', positive: true },
-        { label: 'Gap to Target', value: '753', change: '▼ 38% remaining', positive: false },
-      ])}
-      <p>This is currently a <strong>pre-execution journey</strong>. Approve it and I will submit it to the <strong>Central Orchestration & Execution Layer</strong> for initial run.</p>`,
-    suggestions: ['Deploy acquisition journey', 'Show lead source breakdown', 'Why referral over paid ads?'],
-  },
-};
-
-const AGENT_TEMPLATES = [
-  {
-    id: 'retention-template',
-    name: 'Retention Agent',
-    desc: 'Prevent churn using behavior signals and proactive interventions.',
-    category: 'Lifecycle Engagement',
-    color: '#8b5cf6',
-    initials: 'RA',
-    lifecycle: 'pre',
-    objective: 'Reduce monthly churn by 20%',
-    prompt: 'Design a retention strategy for customers showing early churn signals.',
-  },
-  {
-    id: 'churn-template',
-    name: 'Churn Prevention Agent',
-    desc: 'Detect churn risk early and orchestrate save journeys.',
-    category: 'Retention',
-    color: '#7c3aed',
-    initials: 'CP',
-    lifecycle: 'running',
-    objective: 'Improve save rate in high-risk cohorts',
-    prompt: 'Show churn-risk clusters and optimize save journeys for this week.',
-  },
-  {
-    id: 'lifecycle-template',
-    name: 'Lifecycle Engagement Agent',
-    desc: 'Coordinate cross-stage engagement from onboarding to renewal.',
-    category: 'Lifecycle',
-    color: '#0ea5e9',
-    initials: 'LE',
-    lifecycle: 'pre',
-    objective: 'Improve full lifecycle engagement quality',
-    prompt: 'Create a lifecycle journey across onboarding, activation, and retention.',
-  },
-  {
-    id: 'collections-plus-template',
-    name: 'Collections Optimization Agent',
-    desc: 'Improve recovery outcomes with adaptive channel orchestration.',
-    category: 'Collections',
-    color: '#059669',
-    initials: 'CO',
-    lifecycle: 'running',
-    objective: 'Increase collections ROI',
-    prompt: 'Optimize currently running recovery journeys for cost and conversion.',
-  },
-  {
-    id: 'onboarding-plus-template',
-    name: 'Onboarding Completion Agent',
-    desc: 'Reduce onboarding drop-offs and accelerate first-value activation.',
-    category: 'Onboarding',
-    color: '#2563eb',
-    initials: 'OC',
-    lifecycle: 'pre',
-    objective: 'Lift onboarding completion to 75%',
-    prompt: 'Build an adaptive onboarding journey for incomplete KYC users.',
-  },
-];
-
-function renderTemplateGrid() {
-  templateGrid.innerHTML = AGENT_TEMPLATES.map(template => `
-    <div class="template-card" onclick="createAgentFromTemplate('${template.id}')">
-      <h4>${template.name}</h4>
-      <p>${template.desc}</p>
-      <div class="template-chip">${template.category}</div>
-    </div>
-  `).join('');
-}
-
-function openTemplateModal() {
-  renderTemplateGrid();
-  templateModal.classList.add('open');
-}
-
-function closeTemplateModal() {
-  templateModal.classList.remove('open');
-}
-
-function handleModalBackdrop(event) {
-  if (event.target === templateModal) closeTemplateModal();
-}
-
-function createAgentFromTemplate(templateId) {
-  const template = AGENT_TEMPLATES.find(t => t.id === templateId);
-  if (!template) return;
-
-  const generatedId = `${template.id}-${Date.now()}`;
-
-  AGENTS[generatedId] = {
-    id: generatedId,
-    name: template.name,
-    initials: template.initials,
-    color: template.color,
-    desc: `${template.desc} (Custom)`,
-    status: template.lifecycle === 'pre' ? 'idle' : 'live',
-    lifecycle: template.lifecycle,
-    context: [
-      { label: 'Objective', value: template.objective },
-      { label: 'Governance', value: 'Policies, compliance, and budget guardrails active' },
-      { label: 'Data Access', value: 'Approved enterprise systems and customer permissions' },
-      { label: 'Journey Status', value: template.lifecycle === 'pre' ? 'Pre-execution · Awaiting sign-off' : 'Running · Under continuous optimization' },
-    ],
-    userMessage: template.prompt,
-    reply: () => `
-      <p>I am now configured as your <strong>${template.name}</strong> with enterprise goals, policy guardrails, approved tools, and communication permissions.</p>
-      <ul>
-        <li>Business objective mapped to measurable KPIs and ROI</li>
-        <li>Operational boundaries and budget controls are active</li>
-        <li>Connected data sources and APIs validated for orchestration</li>
-      </ul>
-      ${journeyCard(`${template.name} — Initial Journey`, [
-        { icon: '🎯', label: 'Define Goal', state: 'done' },
-        { icon: '📚', label: 'Load Signals', state: 'done' },
-        { icon: '🗺', label: 'Draft Journey', state: 'active' },
-        { icon: '🛡', label: 'Policy Check', state: '' },
-        { icon: '⚡', label: 'Orchestrate', state: '' },
-      ], [
-        { label: 'Objective', value: template.objective },
-        { label: 'Stage', value: template.lifecycle === 'pre' ? 'Pre-execution' : 'Running' },
-        { label: 'Mode', value: 'AI-driven with human governance' },
-      ], template.lifecycle === 'pre' ? 'Drafted' : 'Running')}
-      <p>Ask me to refine this journey, explain decisions, or deploy through central orchestration.</p>`,
-    suggestions: [
-      'Explain the journey logic',
-      'Show KPI and ROI projection',
-      template.lifecycle === 'pre' ? 'Sign-off and deploy this journey' : 'Optimize the running journey',
-    ],
-  };
-
-  closeTemplateModal();
-  renderAgentList();
-  selectAgent(generatedId);
-}
-
-userInput.addEventListener('input', () => {
-  sendBtn.disabled = !userInput.value.trim() || !currentAgentId;
-});
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-}
-
-function scrollToBottom() {
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-
-function renderContextBar(agent) {
-  contextBar.innerHTML = agent.context.map((item, i) => {
-    let content = '';
-    if (item.kpi) {
-      content = `<span class="kpi-pill">
-        <span class="current">${item.kpi.current}</span>
-        <span style="color:var(--text-muted)">→</span>
-        <span class="target">${item.kpi.target}</span>
-        <span class="${item.kpi.down ? 'trend-down' : 'trend-up'}">${item.kpi.trend}</span>
-      </span>`;
-    } else if (item.tags) {
-      content = item.tags.map(t => `<span class="initiative-tag">${t}</span>`).join('');
-    } else if (item.health) {
-      content = `<span class="health-dot"></span><span class="ctx-value" style="font-size:12px;color:var(--accent)">${item.health}</span>`;
-    } else {
-      content = `<span class="ctx-value">${item.value}</span>`;
+    function byLifecycle(type) {
+      return Object.values(AGENTS).filter(a => a.lifecycle === type);
     }
-    const divider = i < agent.context.length - 1 ? '<div class="ctx-divider"></div>' : '';
-    return `<div class="ctx-block">
-      <span class="ctx-label">${item.label}</span>
-      ${content}
-    </div>${divider}`;
-  }).join('');
-}
 
-function renderAgentList() {
-  const renderItems = (type) => Object.values(AGENTS)
-    .filter(agent => agent.lifecycle === type)
-    .map(agent => `
-      <div class="agent-item${agent.id === currentAgentId ? ' active' : ''}" data-agent="${agent.id}" onclick="selectAgent('${agent.id}')">
-        <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
-        <div class="agent-info">
-          <div class="agent-name">${agent.name}</div>
-          <div class="agent-desc">${agent.desc}</div>
-          <div class="agent-type-pill ${agent.lifecycle === 'pre' ? 'draft' : 'live'}">
-            ${agent.lifecycle === 'pre' ? 'Pre-Execution' : 'Running'}
+    function renderSidebar() {
+      const renderRows = (agents) => agents.map(agent => `
+        <div class="agent-row ${agent.id === currentAgentId ? "active" : ""}" onclick="selectAgent('${agent.id}')">
+          <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
+          <div class="agent-meta">
+            <div class="agent-name">${agent.name}</div>
+            <div class="agent-sub">${agent.objective}</div>
+            <div class="pill ${agent.lifecycle === "pre" ? "pre" : "run"}">${agent.lifecycle === "pre" ? "Pre-Execution" : "Running"}</div>
           </div>
         </div>
-        <div class="agent-status ${agent.status}"></div>
-      </div>`).join('');
-
-  const preExecutionAgents = renderItems('pre');
-  const runningAgents = renderItems('running');
-
-  agentList.innerHTML = `
-    <div class="sidebar-label">Your Business Agents</div>
-    <div class="agent-group">
-      <div class="agent-group-title">Pre-Execution Agents</div>
-      <div class="agent-group-subtitle">Business journeys are still being designed, validated, and prepared for sign-off.</div>
-      ${preExecutionAgents}
-    </div>
-    <div class="agent-group">
-      <div class="agent-group-title">Running Agents</div>
-      <div class="agent-group-subtitle">Signed-off journeys are running through central orchestration and continuously adapting.</div>
-      ${runningAgents}
-    </div>
-    <div class="architecture-card">
-      <div class="architecture-title">Architecture of Agentic Engagement</div>
-      <div class="architecture-layer">
-        <strong>1. Business Agent Layer</strong>
-        <span>Transforms enterprise goals into Business Journeys with policy, KPI, and guardrail awareness.</span>
-      </div>
-      <div class="architecture-layer">
-        <strong>2. Central Orchestration & Execution</strong>
-        <span>Coordinates journeys across communication channels, infra capacity, and workforce bandwidth.</span>
-      </div>
-      <div class="architecture-layer">
-        <strong>3. Intelligence & Memory Layer</strong>
-        <span>Learns from outcomes and feeds adaptive signals back to business agents.</span>
-      </div>
-      <div class="vision-note">Exotel Engage shifts teams from manually operating campaigns to supervising AI business operators with governance and approvals.</div>
-    </div>`;
-}
-
-function renderSuggestions(agent) {
-  suggestions.innerHTML = agent.suggestions.map(s =>
-    `<div class="suggestion" onclick="sendSuggestion(this)">${s}</div>`
-  ).join('');
-  suggestions.style.display = 'flex';
-}
-
-function renderMilestoneThreads(agent) {
-  if (agent.lifecycle !== 'pre') return '';
-  const selectedTab = currentTabByAgent[agent.id] || PRE_EXECUTION_TABS[0].id;
-  const tabChips = PRE_EXECUTION_TABS.map(tab =>
-    `<button class="milestone-tab ${tab.id === selectedTab ? 'active' : ''}" data-tab="${tab.id}" onclick="openPreExecutionTab('${tab.id}')">${tab.title}</button>`
-  ).join('');
-  const tab = PRE_EXECUTION_TABS.find(t => t.id === selectedTab) || PRE_EXECUTION_TABS[0];
-  const moduleButtons = tab.modules.map(module =>
-    `<button class="module-btn" onclick="openSubmoduleThread('${tab.id}','${module.id}')">${module.label}</button>`
-  ).join('');
-
-  return `
-    <div class="milestone-section">
-      <div class="milestone-head">
-        <strong>Pre-Execution Workspace</strong>
-        <span>6 tabs with agent modules. Open any thread and iterate before go-live.</span>
-      </div>
-      <div class="milestone-tabs">${tabChips}</div>
-      <div class="milestone-modules">${moduleButtons}</div>
-      <div class="milestone-note">You can jump across tabs and revise any sub-module until execution approval.</div>
-    </div>`;
-}
-
-function renderAgentHeader(agent) {
-  return `
-    <div class="chat-agent-header">
-      <div class="chat-agent-header-icon" style="background:${agent.color}">${agent.initials}</div>
-      <div>
-        <h2>${agent.name}</h2>
-        <p>${agent.desc}</p>
-        ${renderMilestoneThreads(agent)}
-      </div>
-    </div>`;
-}
-
-function syncMilestoneButtons() {
-  const agent = AGENTS[currentAgentId];
-  if (!agent || agent.lifecycle !== 'pre') return;
-  const selectedTab = currentTabByAgent[agent.id] || PRE_EXECUTION_TABS[0].id;
-  document.querySelectorAll('.milestone-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === selectedTab);
-  });
-}
-
-function refreshAgentHeader(agent) {
-  const currentHeader = chatInner.querySelector('.chat-agent-header');
-  if (!currentHeader) return;
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = renderAgentHeader(agent).trim();
-  const nextHeader = wrapper.firstElementChild;
-  currentHeader.replaceWith(nextHeader);
-  syncMilestoneButtons();
-}
-
-function addMessage(role, html, agent) {
-  if (welcome) welcome.classList.add('hidden');
-
-  const agentName = agent ? agent.name : 'Engage AI';
-  const avatarContent = role === 'user' ? 'US' : agent.initials;
-  const avatarStyle = role === 'agent' && agent ? `style="background:${agent.color}"` : '';
-
-  const div = document.createElement('div');
-  div.className = `message ${role}`;
-  div.innerHTML = `
-    <div class="msg-avatar ${role}" ${avatarStyle}>${avatarContent}</div>
-    <div class="msg-body">
-      <div class="msg-name">${role === 'user' ? 'You' : agentName}</div>
-      <div class="msg-text">${html}</div>
-    </div>`;
-  chatInner.appendChild(div);
-  scrollToBottom();
-  return div;
-}
-
-function showTyping(agent) {
-  const div = document.createElement('div');
-  div.className = 'message agent';
-  div.id = 'typingIndicator';
-  div.innerHTML = `
-    <div class="msg-avatar agent" style="background:${agent.color}">${agent.initials}</div>
-    <div class="msg-body">
-      <div class="msg-name">${agent.name}</div>
-      <div class="typing"><span></span><span></span><span></span></div>
-    </div>`;
-  chatInner.appendChild(div);
-  scrollToBottom();
-}
-
-function removeTyping() {
-  const t = document.getElementById('typingIndicator');
-  if (t) t.remove();
-}
-
-function executionCard(title, events) {
-  const eventHtml = events.map((e, i) => `
-    <div class="exec-event">
-      <div class="exec-dot ${i < events.length - 1 ? 'filled' : ''}"></div>
-      <div class="exec-content">
-        <div class="exec-time">${e.time}</div>
-        <div class="exec-desc">${e.desc}</div>
-        <div class="exec-metric">${e.metric}</div>
-      </div>
-    </div>`).join('');
-
-  return `
-    <div class="embed-card">
-      <div class="embed-card-header">
-        <div class="embed-card-title">
-          <div class="card-icon execution">⚡</div>
-          ${title}
-        </div>
-        <span class="status-badge running">Running</span>
-      </div>
-      <div class="embed-card-body">
-        <div class="exec-timeline">${eventHtml}</div>
-      </div>
-    </div>`;
-}
-
-function getMilestoneReply(agent, milestoneId) {
-  const responses = {
-    'objective-clarification': `
-      <p><strong>Objective Clarification</strong> thread opened. I translated your business intent into measurable operating outcomes:</p>
-      ${reportCard('Objective Definition Snapshot', [
-        { label: 'Primary KPI', value: 'Recovery Rate', change: 'Target: 18%', positive: true },
-        { label: 'Secondary KPI', value: 'Cost / Recovery', change: 'Reduce by 22%', positive: true },
-        { label: 'Constraint', value: 'Budget & compliance', change: 'Hard guardrails active', positive: false },
-      ])}
-      <p>You can update this thread anytime and I will re-align all downstream phases automatically.</p>`,
-    'audience-data-fetch': `
-      <p><strong>Audience Data & Variable Values</strong> module opened.</p>
-      <ul>
-        <li>Connected data systems validated and permission-scoped</li>
-        <li>Audience slices generated with variable enrichment</li>
-        <li>Missing variables flagged for intelligent defaulting</li>
-      </ul>
-      <p>You can update audience assumptions here anytime before go-live.</p>`,
-    'org-channel-precheck': `
-      <p><strong>Organization Channel Pre-Check</strong> module opened.</p>
-      ${reviewCard('Channel Readiness', [
-        { ok: true, text: 'WhatsApp capacity check', detail: 'Within approved throughput limits' },
-        { ok: true, text: 'SMS vendor fallback route', detail: 'Configured for failover' },
-        { ok: false, text: 'Voicebot concurrency threshold', detail: 'Needs updated cap for peak hours' },
-      ], 88, 'One channel capacity parameter needs adjustment before final sign-off.')}
-      <p>Would you like me to auto-correct voicebot caps now?</p>`,
-    'phase-1': `
-      <p><strong>Planning Phase</strong> opened. I have prepared a planning blueprint based on enterprise policy and available systems:</p>
-      <ul>
-        <li>Confirmed approved data systems, tools, and customer permission scopes</li>
-        <li>Mapped policy guardrails and communication boundaries</li>
-        <li>Defined measurement framework for KPI and ROI tracking</li>
-      </ul>
-      <p>Tell me what to adjust in planning and I will immediately update subsequent phases.</p>`,
-    'journey-brief-outcome': `
-      <p><strong>Journey Brief and Outcome</strong> module opened. I’ve created a measurable journey brief:</p>
-      ${reportCard('Journey Brief Snapshot', [
-        { label: 'Business Outcome', value: 'Recovery Lift', change: 'Target +3.2%', positive: true },
-        { label: 'ROI Goal', value: '1.8x', change: 'Within budget constraints', positive: true },
-        { label: 'Risk Watch', value: 'Channel saturation', change: 'Needs pacing control', positive: false },
-      ])}
-      <p>Update objective framing here and I’ll re-generate downstream logic.</p>`,
-    'channel-touchpoint-planner': `
-      <p><strong>Channel and Touchpoint Planner</strong> module opened.</p>
-      <ul>
-        <li>Primary touchpoint: WhatsApp (high engagement)</li>
-        <li>Secondary touchpoint: SMS fallback for unresponsive users</li>
-        <li>Tertiary touchpoint: voice escalation with time-window controls</li>
-      </ul>
-      <p>I can re-plan touchpoint order by cost, conversion, or customer experience priority.</p>`,
-    'design-business-journey': `
-      <p><strong>Design Business Journey</strong> module opened.</p>
-      ${journeyCard('Designed Business Journey', [
-        { icon: '🧭', label: 'Map Path', state: 'done' },
-        { icon: '🔀', label: 'Branch Logic', state: 'active' },
-        { icon: '📬', label: 'Channel Flow', state: '' },
-        { icon: '✅', label: 'Outcome Gates', state: '' },
-      ], [
-        { label: 'Design Stage', value: 'Journey architecture' },
-        { label: 'Config Stage', value: 'Pending next tab' },
-        { label: 'Status', value: 'In review' },
-      ], 'Designed')}
-      <p>You can tweak branches and outcomes before moving to node configuration.</p>`,
-    'comm-idea-generator': `
-      <p><strong>User Communication Idea Generator</strong> module opened. Generated campaign concepts:</p>
-      <ul>
-        <li>SMS: concise payment urgency copy for low-engagement users</li>
-        <li>WhatsApp: conversational intent-led reminders with CTA</li>
-        <li>IVR: short compliance-safe script for escalations</li>
-        <li>Voicebot: adaptive response tree by payment intent</li>
-      </ul>
-      <p>Ask me to generate sample scripts for any channel.</p>`,
-    'phase-2': `
-      <p><strong>Create Business Journey (without configurations)</strong> thread opened.</p>
-      ${journeyCard('Business Journey Skeleton', [
-        { icon: '🎯', label: 'Define objective', state: 'done' },
-        { icon: '👥', label: 'Choose segments', state: 'active' },
-        { icon: '🧭', label: 'Journey logic path', state: '' },
-        { icon: '📏', label: 'Success criteria', state: '' },
-      ], [
-        { label: 'Journey Stage', value: 'Structure only' },
-        { label: 'Configurations', value: 'Not applied yet' },
-        { label: 'Status', value: 'Drafted' },
-      ], 'Drafted')}
-      <p>This is intentionally config-free. We’ll define node-level intelligence in the next phase.</p>`,
-    'trigger-node-config': `
-      <p><strong>Trigger Node Configuration</strong> module opened. Trigger logic can be configured by:</p>
-      <ul>
-        <li>Time-based events</li>
-        <li>Behavior and event signals</li>
-        <li>KPI threshold breaches</li>
-      </ul>
-      <p>Tell me your preferred trigger strategy and I’ll configure the node blueprint.</p>`,
-    'template-creation': `
-      <p><strong>Template Creation</strong> module opened.</p>
-      <p>I can create reusable templates for recurring journey patterns (e.g., reminder-escalate-recovery). This reduces future setup time and maintains policy consistency.</p>`,
-    'action-nodes-config': `
-      <p><strong>Configure Action Nodes</strong> module opened.</p>
-      ${executionCard('Action Node Setup', [
-        { time: 'Configured', desc: 'WhatsApp action node', metric: 'Template + personalization variables linked' },
-        { time: 'Configured', desc: 'SMS fallback action node', metric: 'Delivery retry and suppression rules active' },
-        { time: 'Pending', desc: 'IVR / Voicebot / Dialler', metric: 'Awaiting final compliance constraints' },
-      ])}
-      <p>Action nodes can be tuned per channel by cost, speed, or conversion preference.</p>`,
-    'process-node-config': `
-      <p><strong>Process Node Configuration</strong> module opened.</p>
-      <ul>
-        <li>Wait nodes and branching logic aligned to response behavior</li>
-        <li>Decision nodes connected to Gen AI variables</li>
-        <li>Escalation conditions mapped to policy boundaries</li>
-      </ul>`,
-    'end-node-agent': `
-      <p><strong>End Node Agent</strong> module opened.</p>
-      <p>I’ve configured end states for success, timeout, and escalation outcomes. These feed the Intelligence & Memory layer for adaptation.</p>`,
-    'phase-3': `
-      <p><strong>Node Configuration Agents</strong> thread opened. I’m ready to configure each node using specialized micro-agents:</p>
-      <ul>
-        <li>Eligibility/segment logic agent</li>
-        <li>Channel policy and timing agent</li>
-        <li>Cost-control and budget guardrail agent</li>
-        <li>Compliance verification agent</li>
-      </ul>
-      <p>Say “configure nodes now” and I’ll apply recommendations with explainability for each node.</p>`,
-    'test-business-journey': `
-      <p><strong>Test Business Journey</strong> module opened.</p>
-      ${executionCard('Journey Test Pack', [
-        { time: 'Test 1', desc: 'Happy path test', metric: 'Passed in simulation' },
-        { time: 'Test 2', desc: 'Fallback path test', metric: 'Passed with retry behavior' },
-        { time: 'Test 3', desc: 'Failure path test', metric: '1 warning: edge-case timeout' },
-      ])}
-      <p>You can iterate fixes and rerun tests directly from this module.</p>`,
-    'phase-4': `
-      <p><strong>Test Each Flow</strong> thread opened. I’ve queued pre-live tests for every journey branch:</p>
-      ${executionCard('Flow Test Matrix', [
-        { time: 'Queued', desc: 'Happy-path simulation', metric: 'Nominal customer progression' },
-        { time: 'Queued', desc: 'Edge-case simulation', metric: 'Policy and fallback coverage' },
-        { time: 'Queued', desc: 'Failure-path simulation', metric: 'Retry and escalation correctness' },
-      ])}
-      <p>Any failed test here can be routed back to earlier phases for correction.</p>`,
-    'execution-checks-validation': `
-      <p><strong>Business Journey Execution Checks and Validation</strong> module opened.</p>
-      ${reviewCard('Execution Validation Review', [
-        { ok: true, text: 'Channel governance checks', detail: 'Policy guardrails satisfied' },
-        { ok: true, text: 'Operational capacity checks', detail: 'Resource plan validated' },
-        { ok: false, text: 'Latency tolerance threshold', detail: 'Needs stakeholder acknowledgement' },
-      ], 90, 'Execution readiness is strong. One final tolerance check is pending.')}
-      <p>You can return to any earlier tab for corrections before final approval.</p>`,
-    'estimate-gen-ai-defaults': `
-      <p><strong>Estimate Default Values of Gen AI Variables</strong> module opened.</p>
-      <ul>
-        <li>Default confidence thresholds estimated from historical cohorts</li>
-        <li>Fallback variable values generated for sparse profiles</li>
-        <li>Variance controls applied to protect KPI stability</li>
-      </ul>
-      <p>Ask me to show full variable defaults table if you want a detailed review.</p>`,
-    'phase-5': `
-      <p><strong>Execution Checks & Validation</strong> thread opened. Pre-go-live validation controls are active:</p>
-      ${reviewCard('Go-Live Readiness Review', [
-        { ok: true, text: 'Policy compliance checks', detail: 'Passed against current enterprise guardrails' },
-        { ok: true, text: 'Channel and budget constraints', detail: 'Within approved operating boundaries' },
-        { ok: false, text: 'Variance tolerance check', detail: 'Need stakeholder confirmation on fallback threshold' },
-      ], 89, 'Ready with one outstanding decision. Resolve this and we can proceed to go-live.')}
-      <p>You can still revisit any earlier milestone before final sign-off.</p>`,
-    'customer-approval-plan': `
-      <p><strong>Get Customer Approval on Business Journey Execution Plan</strong> module opened.</p>
-      ${executionCard(`${agent.name} — Approval Checklist`, [
-        { time: 'Ready', desc: 'Business objective and KPI package', metric: 'Compiled for approval' },
-        { time: 'Ready', desc: 'Journey design and configuration summary', metric: 'Traceability links included' },
-        { time: 'Ready', desc: 'Execution and rollback plan', metric: 'Operational controls documented' },
-      ])}
-      <p>Once approved, select go-live and this agent transitions to Running.</p>`,
-    'phase-6': `
-      <p><strong>Go Live</strong> thread opened. This is the final checkpoint before becoming a running agent.</p>
-      ${executionCard(`${agent.name} — Go Live Checklist`, [
-        { time: 'Step 1', desc: 'Confirm sign-off package', metric: 'Objective + journey + policy references' },
-        { time: 'Step 2', desc: 'Send to Central Orchestration & Execution', metric: 'Resource-aware scheduling enabled' },
-        { time: 'Step 3', desc: 'Activate learning loop', metric: 'Intelligence & Memory feedback starts' },
-      ])}
-      <p>Say <strong>“go live now”</strong> anytime. Until then, you can go back and revise any milestone thread.</p>`,
-  };
-  return responses[milestoneId] || `<p>This milestone thread is ready for updates.</p>`;
-}
-
-function openPreExecutionTab(tabId) {
-  if (!currentAgentId || isAnimating) return;
-  const agent = AGENTS[currentAgentId];
-  if (!agent || agent.lifecycle !== 'pre') return;
-  currentTabByAgent[agent.id] = tabId;
-  refreshAgentHeader(agent);
-}
-
-function openSubmoduleThread(tabId, moduleId) {
-  if (!currentAgentId || isAnimating) return;
-  const agent = AGENTS[currentAgentId];
-  if (!agent || agent.lifecycle !== 'pre') return;
-
-  const tab = PRE_EXECUTION_TABS.find(t => t.id === tabId);
-  if (!tab) return;
-  const module = tab.modules.find(m => m.id === moduleId);
-  if (!module) return;
-  currentTabByAgent[agent.id] = tabId;
-  refreshAgentHeader(agent);
-
-  addMessage('user', `<p>Open thread: <strong>${module.label}</strong> from <strong>${tab.title}</strong>. I want to review and update this module.</p>`, agent);
-  showTyping(agent);
-  setTimeout(() => {
-    removeTyping();
-    addMessage('agent', getMilestoneReply(agent, moduleId), agent);
-  }, 850);
-}
-
-function findFollowUpResponse(text, agent) {
-  const lower = text.toLowerCase();
-  if (lower.includes('why') || lower.includes('explain')) {
-    return `<p>Here's my reasoning:</p>
-      <div class="embed-card"><div class="embed-card-body">
-        <div class="explain-reasoning">This decision is based on historical performance data, channel engagement patterns, and cost efficiency analysis for your current business context.</div>
-        <div class="explain-factors">
-          <span class="factor-tag">Historical data</span>
-          <span class="factor-tag">Channel preference</span>
-          <span class="factor-tag">Cost optimization</span>
-        </div>
-      </div></div>
-      <p>Happy to adjust the approach if you'd like a different strategy.</p>`;
-  }
-  if (lower.includes('deploy') || lower.includes('launch') || lower.includes('trigger') || lower.includes('approve') || lower.includes('go live')) {
-    if (agent.lifecycle === 'pre') {
-      return `<p>Sign-off captured. Your <strong>pre-execution agent</strong> is now converted to a first-run business journey and sent to the <strong>Central Orchestration & Execution Layer</strong>.</p>
-        ${executionCard(`${agent.name} — Initial Execution`, [
-          { time: 'Just now', desc: 'Business journey signed-off by user', metric: 'Draft locked as version 1.0' },
-          { time: 'In progress', desc: 'Context data extracted from connected sources', metric: 'Preparing execution payload' },
-          { time: 'Queued', desc: 'Handed off to central orchestration', metric: 'Awaiting channel/resource scheduling' },
-        ])}
-        <p>After activation, this becomes a <strong>running agent</strong> focused on learning, adaptation, and optimization.</p>`;
+      `).join("");
+      preList.innerHTML = renderRows(byLifecycle("pre"));
+      runList.innerHTML = renderRows(byLifecycle("running"));
     }
 
-    return `<p>Done — updates applied to this <strong>running agent</strong>. I'll keep you updated:</p>
-      ${executionCard(`${agent.name} — Live Optimization`, [
-        { time: 'Just now', desc: 'Journey update approved and dispatched', metric: 'Central orchestration accepted delta changes' },
-        { time: 'In progress', desc: 'Execution priorities recalibrated', metric: 'Monitoring channel utilization and outcomes' },
-        { time: 'Scheduled', desc: 'Learning loop refresh', metric: 'New intelligence signals in next cycle' },
-      ])}`;
-  }
-  if (lower.includes('report') || lower.includes('trend') || lower.includes('show')) {
-    return `<p>Here's the latest performance snapshot:</p>
-      ${reportCard('Performance Report', [
-        { label: 'Primary KPI', value: 'On track', change: '▲ improving', positive: true },
-        { label: 'This Week', value: '+4.2%', change: '▲ vs last week', positive: true },
-        { label: 'Cost Efficiency', value: '38% saved', change: '▲ vs voice-only', positive: true },
-      ])}`;
-  }
-  return `<p>I can help with that. Try asking me to analyze performance, create a journey, deploy an action, or explain a decision.</p>`;
-}
+    function setTopPanel(agent) {
+      document.getElementById("agentTitle").textContent = agent.name;
+      const status = document.getElementById("agentStatus");
+      status.textContent = agent.lifecycle === "pre" ? "Pre-Execution Studio" : "Running Agent Workspace";
+      status.className = `status-chip ${agent.lifecycle === "pre" ? "pre" : "run"}`;
+      document.getElementById("briefObjective").textContent = agent.objective;
+      document.getElementById("briefInputs").textContent = agent.inputs;
+      document.getElementById("briefGuardrails").textContent = agent.guardrails;
+    }
 
-function isGoLiveIntent(text) {
-  const lower = text.toLowerCase();
-  return lower.includes('go live') || lower.includes('deploy') || lower.includes('launch') || lower.includes('approve');
-}
+    function renderPhases(agent) {
+      if (agent.lifecycle !== "pre") {
+        phaseStrip.classList.add("hidden");
+        return;
+      }
+      phaseStrip.classList.remove("hidden");
+      const activePhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
+      currentPhaseByAgent[agent.id] = activePhase;
 
-function promoteAgentToRunning(agent) {
-  agent.lifecycle = 'running';
-  agent.status = 'live';
-  agent.context = agent.context.map(item =>
-    item.label === 'Journey Status'
-      ? { ...item, value: 'Running · Live with continuous optimization' }
-      : item
-  );
-  agent.suggestions = [
-    'Show latest execution update',
-    'Explain optimization decisions',
-    'Show KPI and ROI trend',
-  ];
-}
+      phaseTabs.innerHTML = PHASES.map(phase => `
+        <button class="phase-tab ${phase.id === activePhase ? "active" : ""}" onclick="setPhase('${phase.id}')">${phase.title}</button>
+      `).join("");
 
-async function selectAgent(agentId) {
-  if (isAnimating || agentId === currentAgentId) return;
-  isAnimating = true;
+      const selected = PHASES.find(p => p.id === activePhase) || PHASES[0];
+      moduleButtons.innerHTML = selected.modules.map(m => `
+        <button class="module-btn" onclick="openModule('${selected.id}','${m.id}','${escapeHtml(m.label)}')">${m.label}</button>
+      `).join("");
+    }
 
-  const agent = AGENTS[agentId];
-  currentAgentId = agentId;
+    function escapeHtml(s) {
+      return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("'", "&#39;").replaceAll('"', "&quot;");
+    }
 
-  renderAgentList();
-  renderContextBar(agent);
-  renderSuggestions(agent);
+    function message(role, name, avatar, color, html) {
+      const bubble = document.createElement("div");
+      bubble.className = "msg";
+      bubble.innerHTML = `
+        <div class="avatar" style="background:${color}">${avatar}</div>
+        <div class="msg-body">
+          <div class="msg-name">${name}</div>
+          <div class="msg-content">${html}</div>
+        </div>`;
+      thread.appendChild(bubble);
+      document.getElementById("workspace").scrollTop = document.getElementById("workspace").scrollHeight;
+    }
 
-  userInput.placeholder = `Message ${agent.name}...`;
-  userInput.disabled = false;
-  sendBtn.disabled = true;
+    function openModule(phaseId, moduleId, moduleLabel) {
+      const agent = AGENTS[currentAgentId];
+      currentPhaseByAgent[agent.id] = phaseId;
+      renderPhases(agent);
 
-  if (agent.lifecycle === 'pre' && !currentTabByAgent[agent.id]) {
-    currentTabByAgent[agent.id] = PRE_EXECUTION_TABS[0].id;
-  }
+      message("user", "You", "US", "#6366f1", `<p>Open module: <strong>${moduleLabel}</strong></p>`);
+      message("agent", agent.name, agent.initials, agent.color, moduleReply(agent, phaseId, moduleId));
+    }
 
-  chatInner.innerHTML = renderAgentHeader(agent);
-  chatContainer.scrollTop = 0;
-  syncMilestoneButtons();
+    function moduleReply(agent, phaseId, moduleId) {
+      const replies = {
+        "objective": `<p>Objective clarification is now active. I mapped your business goal to measurable KPIs, cost constraints, and review cadence.</p>`,
+        "audience-data": `<p>Audience data fetch module is active.</p><ul><li>Connected approved data systems</li><li>Resolved customer variable coverage</li><li>Flagged missing values for default estimation in Phase 5</li></ul>`,
+        "channel-precheck": `<p>Organization channel pre-check complete. WhatsApp and SMS are ready; IVR needs peak-hour throughput confirmation.</p>`,
+        "brief-outcome": `<p>Journey brief drafted with target outcome, ROI goal, and business success criteria.</p>`,
+        "touchpoint-planner": `<p>Touchpoint plan prepared: WhatsApp-first, SMS fallback, voice escalation under policy thresholds.</p>`,
+        "design-journey": `<p>Business journey design drafted with branch logic and measurable outcomes. Ready for node-level configuration.</p>`,
+        "idea-generator": `<p>Communication ideas generated for SMS, WhatsApp, IVR, and Voicebot with policy-safe variants.</p>`,
+        "trigger-node": `<p>Trigger node configuration started using event, time, and behavior trigger conditions.</p>`,
+        "template-creation": `<p>Reusable templates generated for recurring journey patterns to reduce future setup effort.</p>`,
+        "action-nodes": `<p>Action node configuration ready for SMS, WhatsApp, IVR, Voicebot, and Dialler with fallback controls.</p>`,
+        "process-node": `<p>Process nodes configured for waits, branching, retries, and escalation governance.</p>`,
+        "end-node": `<p>End nodes mapped for success, timeout, and exception closures with learning hooks.</p>`,
+        "test-journey": `<p>Test pack initialized across happy path, fallback path, and failure path simulations.</p>`,
+        "execution-validation": `<p>Execution checks validated against channel readiness, resource constraints, and policy compliance.</p>`,
+        "genai-defaults": `<p>Estimated default values for Gen AI variables based on historical distributions and confidence limits.</p>`,
+        "approval-plan": `<p>Customer approval package is ready: business objective, journey plan, controls, and rollback guidance.</p>`,
+      };
+      return replies[moduleId] || `<p>${phaseId} / ${moduleId} is ready for updates.</p>`;
+    }
 
-  await new Promise(r => setTimeout(r, 400));
-  addMessage('user', `<p>${agent.userMessage}</p>`, agent);
+    function renderSuggestions(agent) {
+      suggestions.innerHTML = agent.suggestions.map(s => `<button class="suggestion" onclick="quickSend('${escapeHtml(s)}')">${s}</button>`).join("");
+    }
 
-  showTyping(agent);
-  await new Promise(r => setTimeout(r, 1400 + Math.random() * 600));
-  removeTyping();
+    function setPhase(phaseId) {
+      const agent = AGENTS[currentAgentId];
+      if (!agent || agent.lifecycle !== "pre") return;
+      currentPhaseByAgent[agent.id] = phaseId;
+      renderPhases(agent);
+    }
 
-  addMessage('agent', agent.reply(), agent);
-  isAnimating = false;
-}
+    function selectAgent(agentId) {
+      currentAgentId = agentId;
+      const agent = AGENTS[agentId];
+      renderSidebar();
+      setTopPanel(agent);
+      renderPhases(agent);
+      renderSuggestions(agent);
+      thread.innerHTML = "";
 
-function sendSuggestion(el) {
-  if (!currentAgentId || isAnimating) return;
-  userInput.value = el.textContent;
-  sendBtn.disabled = false;
-  sendMessage();
-}
+      if (agent.lifecycle === "pre") {
+        message("user", "You", "US", "#6366f1", `<p>Let's continue building this pre-execution agent. Open any phase tab and module.</p>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><ul><li>Use the 6 tabs on top for phase-level navigation</li><li>Each tab has sub-module agent threads</li><li>You can revise any module before go-live</li></ul>`);
+      } else {
+        message("user", "You", "US", "#6366f1", `<p>Open running workspace for ${agent.name}.</p>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p>Running agent workspace is active.</p><p>We'll do a dedicated redesign for running agents next, as you requested.</p>`);
+      }
+    }
 
-async function sendMessage() {
-  const text = userInput.value.trim();
-  if (!text || !currentAgentId || isAnimating) return;
+    function quickSend(text) {
+      input.value = text;
+      sendBtn.disabled = false;
+      sendMessage();
+    }
 
-  const agent = AGENTS[currentAgentId];
-  userInput.value = '';
-  userInput.style.height = 'auto';
-  sendBtn.disabled = true;
+    function maybePromote(agent, text) {
+      const lower = text.toLowerCase();
+      if (agent.lifecycle !== "pre") return false;
+      if (!(lower.includes("go live") || lower.includes("approve") || lower.includes("launch") || lower.includes("deploy"))) return false;
+      agent.lifecycle = "running";
+      agent.suggestions = ["Show execution snapshot", "Explain optimization decisions", "Show ROI trend"];
+      message("agent", agent.name, agent.initials, agent.color, `<p>Approved. This pre-execution agent is now promoted to <strong>Running Agent</strong> and handed to Central Orchestration & Execution.</p>`);
+      renderSidebar();
+      setTopPanel(agent);
+      renderPhases(agent);
+      renderSuggestions(agent);
+      return true;
+    }
 
-  addMessage('user', `<p>${text}</p>`, agent);
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text || !currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      input.value = "";
+      sendBtn.disabled = true;
+      message("user", "You", "US", "#6366f1", `<p>${escapeHtml(text)}</p>`);
+      if (maybePromote(agent, text)) return;
+      message("agent", agent.name, agent.initials, agent.color, `<p>Understood. I can open any tab/module, regenerate journey components, or run validation before go-live.</p>`);
+    }
 
-  showTyping(agent);
-  await new Promise(r => setTimeout(r, 1000 + Math.random() * 800));
-  removeTyping();
+    input.addEventListener("input", () => {
+      sendBtn.disabled = !input.value.trim();
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+    sendBtn.addEventListener("click", sendMessage);
 
-  const response = findFollowUpResponse(text, agent);
-  addMessage('agent', response, agent);
+    document.getElementById("createBtn").addEventListener("click", () => {
+      const t = PRE_TEMPLATES[Math.floor(Math.random() * PRE_TEMPLATES.length)];
+      const id = `${t.name.toLowerCase().replaceAll(" ", "-")}-${Date.now()}`;
+      AGENTS[id] = {
+        id,
+        name: `${t.name} (Custom)`,
+        initials: t.initials,
+        color: t.color,
+        lifecycle: "pre",
+        objective: t.objective,
+        inputs: "Approved enterprise data systems and tools",
+        guardrails: "Policy, compliance, permissions, budget, and operational boundaries",
+        suggestions: ["Open Planning Phase", "Open Create Business Journey", "Open Go Live tab"],
+      };
+      selectAgent(id);
+    });
 
-  if (agent.lifecycle === 'pre' && isGoLiveIntent(text)) {
-    promoteAgentToRunning(agent);
-    renderAgentList();
-    renderContextBar(agent);
-    renderSuggestions(agent);
-    refreshAgentHeader(agent);
-  }
-}
-
-window.addEventListener('load', () => {
-  renderAgentList();
-  selectAgent('main-collections');
-});
-</script>
+    selectAgent("main-collections");
+  </script>
 </body>
 </html>
