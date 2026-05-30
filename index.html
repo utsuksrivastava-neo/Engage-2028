@@ -311,8 +311,8 @@
     }
 
     .modules {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 8px;
       background: #fff;
       border: 1px solid #d8e3f3;
@@ -320,27 +320,59 @@
       padding: 8px;
     }
 
-    .module-btn {
+    .module-card {
       border: 1px solid #d7e3f3;
       background: #f9fbff;
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 11px;
-      color: #334155;
+      border-radius: 11px;
+      padding: 9px;
       cursor: pointer;
       transition: all .15s;
+      text-align: left;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      min-height: 52px;
     }
 
-    .module-btn:hover {
+    .module-card:hover {
       background: #f3f8ff;
       border-color: #bfd2ea;
     }
 
-    .module-btn.active {
+    .module-card.active {
       background: #ecf3ff;
       border-color: #9eb9e1;
       color: #1e3a8a;
       font-weight: 600;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.14);
+    }
+
+    .module-index {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid #c7d6ea;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #475569;
+      background: #fff;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .module-card.active .module-index {
+      border-color: #1d4ed8;
+      background: #1d4ed8;
+      color: #fff;
+    }
+
+    .module-label {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #334155;
     }
 
     .workspace {
@@ -650,11 +682,13 @@
       ]},
     ];
 
-    const PRE_TEMPLATES = [
-      { name: "Retention Agent", color: "#7c3aed", initials: "RA", objective: "Reduce churn by 20%" },
-      { name: "Lifecycle Engagement Agent", color: "#0ea5e9", initials: "LE", objective: "Improve lifecycle conversion quality" },
-      { name: "Collections Strategy Agent", color: "#059669", initials: "CS", objective: "Improve collections recovery by 18%" },
-    ];
+    const NEW_AGENT_DEFAULTS = {
+      color: "#2563eb",
+      objective: "Define measurable objective for this business function",
+      inputs: "Approved enterprise data systems and tool connectors",
+      guardrails: "Policy, compliance, permissions, budget, and operational boundaries",
+      suggestions: ["Open Planning Phase", "Open Create Business Journey", "Open Go Live tab"],
+    };
 
     let AGENTS = {
       "main-collections": {
@@ -792,8 +826,11 @@
 
       const selected = PHASES.find(p => p.id === activePhase) || PHASES[0];
       const selectedModule = currentModuleByAgent[agent.id];
-      moduleButtons.innerHTML = selected.modules.map(m => `
-        <button class="module-btn ${selectedModule === m.id ? "active" : ""}" onclick="openModule('${selected.id}','${m.id}','${escapeHtml(m.label)}')">${m.label}</button>
+      moduleButtons.innerHTML = selected.modules.map((m, idx) => `
+        <button class="module-card ${selectedModule === m.id ? "active" : ""}" onclick="openModule('${selected.id}','${m.id}','${escapeHtml(m.label)}')">
+          <span class="module-index">${idx + 1}</span>
+          <span class="module-label">${m.label}</span>
+        </button>
       `).join("");
 
       const activeIndex = PHASES.findIndex(p => p.id === activePhase);
@@ -995,20 +1032,38 @@
       }
     });
 
+    function initialsFromName(name) {
+      const parts = name.trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return "BA";
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
+    function stableColorFromName(name) {
+      const palette = ["#2563eb", "#059669", "#7c3aed", "#0ea5e9", "#d97706", "#dc2626", "#0f766e"];
+      let hash = 0;
+      for (let i = 0; i < name.length; i += 1) hash = ((hash << 5) - hash) + name.charCodeAt(i);
+      return palette[Math.abs(hash) % palette.length];
+    }
+
     document.getElementById("createBtn").addEventListener("click", () => {
-      const t = PRE_TEMPLATES[Math.floor(Math.random() * PRE_TEMPLATES.length)];
-      const id = `${t.name.toLowerCase().replaceAll(" ", "-")}-${Date.now()}`;
+      const enteredName = window.prompt("Enter new Business Agent name:");
+      if (!enteredName || !enteredName.trim()) return;
+      const name = enteredName.trim();
+      const id = `${name.toLowerCase().replaceAll(" ", "-")}-${Date.now()}`;
       AGENTS[id] = {
         id,
-        name: `${t.name} (Custom)`,
-        initials: t.initials,
-        color: t.color,
+        name,
+        initials: initialsFromName(name),
+        color: stableColorFromName(name),
         lifecycle: "pre",
-        objective: t.objective,
-        inputs: "Approved enterprise data systems and tools",
-        guardrails: "Policy, compliance, permissions, budget, and operational boundaries",
-        suggestions: ["Open Planning Phase", "Open Create Business Journey", "Open Go Live tab"],
+        objective: NEW_AGENT_DEFAULTS.objective,
+        inputs: NEW_AGENT_DEFAULTS.inputs,
+        guardrails: NEW_AGENT_DEFAULTS.guardrails,
+        suggestions: NEW_AGENT_DEFAULTS.suggestions,
       };
+      currentPhaseByAgent[id] = PHASES[0].id;
+      currentModuleByAgent[id] = null;
       selectAgent(id);
     });
 
