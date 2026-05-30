@@ -186,7 +186,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 0;
     }
 
     .studio-title h1 {
@@ -208,78 +208,121 @@
     .status-chip.pre { color: var(--amber); background: #fff7ed; border-color: #fed7aa; }
     .status-chip.run { color: var(--green); background: #ecfdf5; border-color: #bbf7d0; }
 
-    .brief-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .brief-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: #fff;
-      padding: 10px 11px;
-    }
-
-    .brief-card label {
-      display: block;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .brief-card p {
-      font-size: 12px;
-      color: #334155;
-      line-height: 1.4;
-    }
-
     .phase-strip {
-      padding: 12px 22px 10px;
+      padding: 12px 22px 12px;
       border-bottom: 1px solid var(--border);
       background: #f8fbff;
     }
 
-    .phase-tabs {
+    .progress-wrap {
+      border: 1px solid #d8e3f3;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+
+    .progress-head {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 7px;
+      font-weight: 600;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #e9eef8;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      transition: width .2s ease;
+    }
+
+    .phase-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(180px, 1fr));
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 5px;
+      padding-bottom: 7px;
       margin-bottom: 8px;
     }
 
     .phase-tab {
       border: 1px solid #d7e3f3;
       background: #fff;
-      border-radius: 999px;
-      padding: 7px 12px;
+      border-radius: 12px;
+      padding: 8px 10px;
       font-size: 11px;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
-      white-space: nowrap;
+      min-height: 52px;
+      text-align: left;
       transition: all .15s;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
     }
 
-    .phase-tab:hover { background: #f0f6ff; }
+    .phase-tab-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid #c7d6ea;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+      color: #475569;
+      background: #fff;
+    }
+
+    .phase-tab-label {
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .phase-tab:hover { background: #f0f6ff; border-color: #bfd2ea; }
     .phase-tab.active {
-      background: #0f172a;
+      background: #eef5ff;
+      color: #0f172a;
+      border-color: #93b2df;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.18);
+    }
+
+    .phase-tab.active .phase-tab-num {
+      background: #1d4ed8;
       color: #fff;
-      border-color: #0f172a;
+      border-color: #1d4ed8;
     }
 
     .modules {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      background: #fff;
+      border: 1px solid #d8e3f3;
+      border-radius: 12px;
+      padding: 8px;
     }
 
     .module-btn {
       border: 1px solid #d7e3f3;
-      background: #fff;
+      background: #f9fbff;
       border-radius: 10px;
       padding: 8px 10px;
       font-size: 11px;
@@ -291,6 +334,13 @@
     .module-btn:hover {
       background: #f3f8ff;
       border-color: #bfd2ea;
+    }
+
+    .module-btn.active {
+      background: #ecf3ff;
+      border-color: #9eb9e1;
+      color: #1e3a8a;
+      font-weight: 600;
     }
 
     .workspace {
@@ -440,14 +490,16 @@
         <h1 id="agentTitle">Select an Agent</h1>
         <span class="status-chip" id="agentStatus">Status</span>
       </div>
-      <div class="brief-grid">
-        <div class="brief-card"><label>Objective</label><p id="briefObjective">-</p></div>
-        <div class="brief-card"><label>Approved Inputs</label><p id="briefInputs">-</p></div>
-        <div class="brief-card"><label>Guardrails</label><p id="briefGuardrails">-</p></div>
-      </div>
     </section>
 
     <section class="phase-strip" id="phaseStrip">
+      <div class="progress-wrap">
+        <div class="progress-head">
+          <span id="progressLabel">Pre-Execution Progress</span>
+          <span id="progressText">Phase 1 of 6</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
       <div class="phase-tabs" id="phaseTabs"></div>
       <div class="modules" id="moduleButtons"></div>
     </section>
@@ -552,12 +604,16 @@
 
     let currentAgentId = null;
     let currentPhaseByAgent = {};
+    let currentModuleByAgent = {};
 
     const preList = document.getElementById("preList");
     const runList = document.getElementById("runList");
     const phaseStrip = document.getElementById("phaseStrip");
     const phaseTabs = document.getElementById("phaseTabs");
     const moduleButtons = document.getElementById("moduleButtons");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
     const thread = document.getElementById("thread");
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
@@ -587,9 +643,6 @@
       const status = document.getElementById("agentStatus");
       status.textContent = agent.lifecycle === "pre" ? "Pre-Execution Studio" : "Running Agent Workspace";
       status.className = `status-chip ${agent.lifecycle === "pre" ? "pre" : "run"}`;
-      document.getElementById("briefObjective").textContent = agent.objective;
-      document.getElementById("briefInputs").textContent = agent.inputs;
-      document.getElementById("briefGuardrails").textContent = agent.guardrails;
     }
 
     function renderPhases(agent) {
@@ -601,14 +654,25 @@
       const activePhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
       currentPhaseByAgent[agent.id] = activePhase;
 
-      phaseTabs.innerHTML = PHASES.map(phase => `
-        <button class="phase-tab ${phase.id === activePhase ? "active" : ""}" onclick="setPhase('${phase.id}')">${phase.title}</button>
+      phaseTabs.innerHTML = PHASES.map((phase, idx) => `
+        <button class="phase-tab ${phase.id === activePhase ? "active" : ""}" onclick="setPhase('${phase.id}')">
+          <span class="phase-tab-num">${idx + 1}</span>
+          <span class="phase-tab-label">${phase.title.replace(/^\d+\.\s*/, "")}</span>
+        </button>
       `).join("");
 
       const selected = PHASES.find(p => p.id === activePhase) || PHASES[0];
+      const selectedModule = currentModuleByAgent[agent.id];
       moduleButtons.innerHTML = selected.modules.map(m => `
-        <button class="module-btn" onclick="openModule('${selected.id}','${m.id}','${escapeHtml(m.label)}')">${m.label}</button>
+        <button class="module-btn ${selectedModule === m.id ? "active" : ""}" onclick="openModule('${selected.id}','${m.id}','${escapeHtml(m.label)}')">${m.label}</button>
       `).join("");
+
+      const activeIndex = PHASES.findIndex(p => p.id === activePhase);
+      const safeIndex = activeIndex < 0 ? 0 : activeIndex;
+      const pct = ((safeIndex + 1) / PHASES.length) * 100;
+      progressLabel.textContent = `${agent.name} · Pre-Execution Progress`;
+      progressText.textContent = `Phase ${safeIndex + 1} of ${PHASES.length}`;
+      progressFill.style.width = `${pct}%`;
     }
 
     function escapeHtml(s) {
@@ -631,6 +695,7 @@
     function openModule(phaseId, moduleId, moduleLabel) {
       const agent = AGENTS[currentAgentId];
       currentPhaseByAgent[agent.id] = phaseId;
+      currentModuleByAgent[agent.id] = moduleId;
       renderPhases(agent);
 
       message("user", "You", "US", "#6366f1", `<p>Open module: <strong>${moduleLabel}</strong></p>`);
@@ -667,6 +732,7 @@
       const agent = AGENTS[currentAgentId];
       if (!agent || agent.lifecycle !== "pre") return;
       currentPhaseByAgent[agent.id] = phaseId;
+      currentModuleByAgent[agent.id] = null;
       renderPhases(agent);
     }
 
