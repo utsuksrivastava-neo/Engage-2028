@@ -370,14 +370,15 @@
       color: var(--text-secondary);
     }
 
-    .milestone-threads {
+    .milestone-tabs {
       display: flex;
-      flex-wrap: wrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
       gap: 8px;
       margin-bottom: 8px;
     }
 
-    .milestone-thread {
+    .milestone-tab {
       border: 1px solid #d7e1ef;
       background: #fff;
       border-radius: 999px;
@@ -388,15 +389,40 @@
       transition: all .15s;
     }
 
-    .milestone-thread:hover {
+    .milestone-tab:hover {
       border-color: #b9c9df;
       background: #f2f7ff;
     }
 
-    .milestone-thread.active {
+    .milestone-tab.active {
       background: #111827;
       color: #fff;
       border-color: #111827;
+    }
+
+    .milestone-modules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .module-btn {
+      border: 1px solid #d7e1ef;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 11px;
+      color: #334155;
+      line-height: 1.35;
+      cursor: pointer;
+      transition: all .15s;
+      text-align: left;
+    }
+
+    .module-btn:hover {
+      border-color: #b9c9df;
+      background: #f6f9ff;
     }
 
     .milestone-note {
@@ -1285,16 +1311,61 @@ const templateGrid = document.getElementById('templateGrid');
 
 let currentAgentId = null;
 let isAnimating = false;
-const currentMilestoneByAgent = {};
+const currentTabByAgent = {};
 
-const PRE_EXECUTION_MILESTONES = [
-  { id: 'objective-clarification', title: 'Objective Clarification' },
-  { id: 'phase-1', title: 'Phase 1: Planning Phase' },
-  { id: 'phase-2', title: 'Phase 2: Create Business Journey (without configurations)' },
-  { id: 'phase-3', title: 'Phase 3: Business Journey — Node Configuration Agents' },
-  { id: 'phase-4', title: 'Phase 4: Test Each Flow in Business Journey' },
-  { id: 'phase-5', title: 'Phase 5: Business Journey Execution Checks and Validation' },
-  { id: 'phase-6', title: 'Phase 6: Go Live (Become Running Agent)' },
+const PRE_EXECUTION_TABS = [
+  {
+    id: 'planning-phase',
+    title: '1. Planning Phase Agent(s)',
+    modules: [
+      { id: 'objective-clarification', label: 'Objective Clarification Agent(s)' },
+      { id: 'audience-data-fetch', label: 'Agent(s) to Fetch Audience Data and Variable Values' },
+      { id: 'org-channel-precheck', label: 'Organization Channel Pre-Check Agent(s)' },
+    ],
+  },
+  {
+    id: 'create-journey',
+    title: '2. Create Business Journey (without Configurations) Agent(s)',
+    modules: [
+      { id: 'journey-brief-outcome', label: 'Journey Brief and Outcome Agent' },
+      { id: 'channel-touchpoint-planner', label: 'Channel and Touchpoint Planner Agent(s)' },
+      { id: 'design-business-journey', label: 'Design Business Journey Agent' },
+      { id: 'comm-idea-generator', label: 'User Communication Idea Generator Agent(s) (SMS, WhatsApp, IVR, Voicebot)' },
+    ],
+  },
+  {
+    id: 'node-configuration',
+    title: '3. Business Journey Node Configuration Agents',
+    modules: [
+      { id: 'trigger-node-config', label: 'Trigger Node Configuration Agent(s)' },
+      { id: 'template-creation', label: 'Template Creation Agent(s)' },
+      { id: 'action-nodes-config', label: 'Configure Action Nodes (SMS / WhatsApp / IVR / Voicebot / Dialler) Agent(s)' },
+      { id: 'process-node-config', label: 'Configure Process Node Configuration Agent(s)' },
+      { id: 'end-node-agent', label: 'End Node Agent(s)' },
+    ],
+  },
+  {
+    id: 'test-journey',
+    title: '4. Test Business Journey Agent(s)',
+    modules: [
+      { id: 'test-business-journey', label: 'Test Business Journey Agent(s)' },
+    ],
+  },
+  {
+    id: 'execution-validation',
+    title: '5. Business Journey Execution Checks and Validation Agent(s)',
+    modules: [
+      { id: 'execution-checks-validation', label: 'Business Journey Execution Checks and Validation Agent(s)' },
+      { id: 'estimate-gen-ai-defaults', label: 'Estimate Default Values of Gen AI Variables' },
+    ],
+  },
+  {
+    id: 'go-live',
+    title: '6. Go Live',
+    modules: [
+      { id: 'customer-approval-plan', label: 'Get Customer Approval on Business Journey Execution Plan' },
+    ],
+  },
 ];
 
 function journeyCard(title, steps, meta, status = 'Live') {
@@ -1886,19 +1957,24 @@ function renderSuggestions(agent) {
 
 function renderMilestoneThreads(agent) {
   if (agent.lifecycle !== 'pre') return '';
-  const selected = currentMilestoneByAgent[agent.id] || PRE_EXECUTION_MILESTONES[0].id;
-  const chips = PRE_EXECUTION_MILESTONES.map(m =>
-    `<button class="milestone-thread ${m.id === selected ? 'active' : ''}" data-milestone="${m.id}" onclick="openMilestoneThread('${m.id}')">${m.title}</button>`
+  const selectedTab = currentTabByAgent[agent.id] || PRE_EXECUTION_TABS[0].id;
+  const tabChips = PRE_EXECUTION_TABS.map(tab =>
+    `<button class="milestone-tab ${tab.id === selectedTab ? 'active' : ''}" data-tab="${tab.id}" onclick="openPreExecutionTab('${tab.id}')">${tab.title}</button>`
+  ).join('');
+  const tab = PRE_EXECUTION_TABS.find(t => t.id === selectedTab) || PRE_EXECUTION_TABS[0];
+  const moduleButtons = tab.modules.map(module =>
+    `<button class="module-btn" onclick="openSubmoduleThread('${tab.id}','${module.id}')">${module.label}</button>`
   ).join('');
 
   return `
     <div class="milestone-section">
       <div class="milestone-head">
-        <strong>Pre-Execution Milestones</strong>
-        <span>Open any section/thread and update it anytime before go-live.</span>
+        <strong>Pre-Execution Workspace</strong>
+        <span>6 tabs with agent modules. Open any thread and iterate before go-live.</span>
       </div>
-      <div class="milestone-threads">${chips}</div>
-      <div class="milestone-note">You can move forward, jump backward, and revise any milestone until this agent goes live.</div>
+      <div class="milestone-tabs">${tabChips}</div>
+      <div class="milestone-modules">${moduleButtons}</div>
+      <div class="milestone-note">You can jump across tabs and revise any sub-module until execution approval.</div>
     </div>`;
 }
 
@@ -1917,9 +1993,9 @@ function renderAgentHeader(agent) {
 function syncMilestoneButtons() {
   const agent = AGENTS[currentAgentId];
   if (!agent || agent.lifecycle !== 'pre') return;
-  const selected = currentMilestoneByAgent[agent.id] || PRE_EXECUTION_MILESTONES[0].id;
-  document.querySelectorAll('.milestone-thread').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.milestone === selected);
+  const selectedTab = currentTabByAgent[agent.id] || PRE_EXECUTION_TABS[0].id;
+  document.querySelectorAll('.milestone-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === selectedTab);
   });
 }
 
@@ -2008,6 +2084,22 @@ function getMilestoneReply(agent, milestoneId) {
         { label: 'Constraint', value: 'Budget & compliance', change: 'Hard guardrails active', positive: false },
       ])}
       <p>You can update this thread anytime and I will re-align all downstream phases automatically.</p>`,
+    'audience-data-fetch': `
+      <p><strong>Audience Data & Variable Values</strong> module opened.</p>
+      <ul>
+        <li>Connected data systems validated and permission-scoped</li>
+        <li>Audience slices generated with variable enrichment</li>
+        <li>Missing variables flagged for intelligent defaulting</li>
+      </ul>
+      <p>You can update audience assumptions here anytime before go-live.</p>`,
+    'org-channel-precheck': `
+      <p><strong>Organization Channel Pre-Check</strong> module opened.</p>
+      ${reviewCard('Channel Readiness', [
+        { ok: true, text: 'WhatsApp capacity check', detail: 'Within approved throughput limits' },
+        { ok: true, text: 'SMS vendor fallback route', detail: 'Configured for failover' },
+        { ok: false, text: 'Voicebot concurrency threshold', detail: 'Needs updated cap for peak hours' },
+      ], 88, 'One channel capacity parameter needs adjustment before final sign-off.')}
+      <p>Would you like me to auto-correct voicebot caps now?</p>`,
     'phase-1': `
       <p><strong>Planning Phase</strong> opened. I have prepared a planning blueprint based on enterprise policy and available systems:</p>
       <ul>
@@ -2016,6 +2108,44 @@ function getMilestoneReply(agent, milestoneId) {
         <li>Defined measurement framework for KPI and ROI tracking</li>
       </ul>
       <p>Tell me what to adjust in planning and I will immediately update subsequent phases.</p>`,
+    'journey-brief-outcome': `
+      <p><strong>Journey Brief and Outcome</strong> module opened. I’ve created a measurable journey brief:</p>
+      ${reportCard('Journey Brief Snapshot', [
+        { label: 'Business Outcome', value: 'Recovery Lift', change: 'Target +3.2%', positive: true },
+        { label: 'ROI Goal', value: '1.8x', change: 'Within budget constraints', positive: true },
+        { label: 'Risk Watch', value: 'Channel saturation', change: 'Needs pacing control', positive: false },
+      ])}
+      <p>Update objective framing here and I’ll re-generate downstream logic.</p>`,
+    'channel-touchpoint-planner': `
+      <p><strong>Channel and Touchpoint Planner</strong> module opened.</p>
+      <ul>
+        <li>Primary touchpoint: WhatsApp (high engagement)</li>
+        <li>Secondary touchpoint: SMS fallback for unresponsive users</li>
+        <li>Tertiary touchpoint: voice escalation with time-window controls</li>
+      </ul>
+      <p>I can re-plan touchpoint order by cost, conversion, or customer experience priority.</p>`,
+    'design-business-journey': `
+      <p><strong>Design Business Journey</strong> module opened.</p>
+      ${journeyCard('Designed Business Journey', [
+        { icon: '🧭', label: 'Map Path', state: 'done' },
+        { icon: '🔀', label: 'Branch Logic', state: 'active' },
+        { icon: '📬', label: 'Channel Flow', state: '' },
+        { icon: '✅', label: 'Outcome Gates', state: '' },
+      ], [
+        { label: 'Design Stage', value: 'Journey architecture' },
+        { label: 'Config Stage', value: 'Pending next tab' },
+        { label: 'Status', value: 'In review' },
+      ], 'Designed')}
+      <p>You can tweak branches and outcomes before moving to node configuration.</p>`,
+    'comm-idea-generator': `
+      <p><strong>User Communication Idea Generator</strong> module opened. Generated campaign concepts:</p>
+      <ul>
+        <li>SMS: concise payment urgency copy for low-engagement users</li>
+        <li>WhatsApp: conversational intent-led reminders with CTA</li>
+        <li>IVR: short compliance-safe script for escalations</li>
+        <li>Voicebot: adaptive response tree by payment intent</li>
+      </ul>
+      <p>Ask me to generate sample scripts for any channel.</p>`,
     'phase-2': `
       <p><strong>Create Business Journey (without configurations)</strong> thread opened.</p>
       ${journeyCard('Business Journey Skeleton', [
@@ -2029,6 +2159,35 @@ function getMilestoneReply(agent, milestoneId) {
         { label: 'Status', value: 'Drafted' },
       ], 'Drafted')}
       <p>This is intentionally config-free. We’ll define node-level intelligence in the next phase.</p>`,
+    'trigger-node-config': `
+      <p><strong>Trigger Node Configuration</strong> module opened. Trigger logic can be configured by:</p>
+      <ul>
+        <li>Time-based events</li>
+        <li>Behavior and event signals</li>
+        <li>KPI threshold breaches</li>
+      </ul>
+      <p>Tell me your preferred trigger strategy and I’ll configure the node blueprint.</p>`,
+    'template-creation': `
+      <p><strong>Template Creation</strong> module opened.</p>
+      <p>I can create reusable templates for recurring journey patterns (e.g., reminder-escalate-recovery). This reduces future setup time and maintains policy consistency.</p>`,
+    'action-nodes-config': `
+      <p><strong>Configure Action Nodes</strong> module opened.</p>
+      ${executionCard('Action Node Setup', [
+        { time: 'Configured', desc: 'WhatsApp action node', metric: 'Template + personalization variables linked' },
+        { time: 'Configured', desc: 'SMS fallback action node', metric: 'Delivery retry and suppression rules active' },
+        { time: 'Pending', desc: 'IVR / Voicebot / Dialler', metric: 'Awaiting final compliance constraints' },
+      ])}
+      <p>Action nodes can be tuned per channel by cost, speed, or conversion preference.</p>`,
+    'process-node-config': `
+      <p><strong>Process Node Configuration</strong> module opened.</p>
+      <ul>
+        <li>Wait nodes and branching logic aligned to response behavior</li>
+        <li>Decision nodes connected to Gen AI variables</li>
+        <li>Escalation conditions mapped to policy boundaries</li>
+      </ul>`,
+    'end-node-agent': `
+      <p><strong>End Node Agent</strong> module opened.</p>
+      <p>I’ve configured end states for success, timeout, and escalation outcomes. These feed the Intelligence & Memory layer for adaptation.</p>`,
     'phase-3': `
       <p><strong>Node Configuration Agents</strong> thread opened. I’m ready to configure each node using specialized micro-agents:</p>
       <ul>
@@ -2038,6 +2197,14 @@ function getMilestoneReply(agent, milestoneId) {
         <li>Compliance verification agent</li>
       </ul>
       <p>Say “configure nodes now” and I’ll apply recommendations with explainability for each node.</p>`,
+    'test-business-journey': `
+      <p><strong>Test Business Journey</strong> module opened.</p>
+      ${executionCard('Journey Test Pack', [
+        { time: 'Test 1', desc: 'Happy path test', metric: 'Passed in simulation' },
+        { time: 'Test 2', desc: 'Fallback path test', metric: 'Passed with retry behavior' },
+        { time: 'Test 3', desc: 'Failure path test', metric: '1 warning: edge-case timeout' },
+      ])}
+      <p>You can iterate fixes and rerun tests directly from this module.</p>`,
     'phase-4': `
       <p><strong>Test Each Flow</strong> thread opened. I’ve queued pre-live tests for every journey branch:</p>
       ${executionCard('Flow Test Matrix', [
@@ -2046,6 +2213,22 @@ function getMilestoneReply(agent, milestoneId) {
         { time: 'Queued', desc: 'Failure-path simulation', metric: 'Retry and escalation correctness' },
       ])}
       <p>Any failed test here can be routed back to earlier phases for correction.</p>`,
+    'execution-checks-validation': `
+      <p><strong>Business Journey Execution Checks and Validation</strong> module opened.</p>
+      ${reviewCard('Execution Validation Review', [
+        { ok: true, text: 'Channel governance checks', detail: 'Policy guardrails satisfied' },
+        { ok: true, text: 'Operational capacity checks', detail: 'Resource plan validated' },
+        { ok: false, text: 'Latency tolerance threshold', detail: 'Needs stakeholder acknowledgement' },
+      ], 90, 'Execution readiness is strong. One final tolerance check is pending.')}
+      <p>You can return to any earlier tab for corrections before final approval.</p>`,
+    'estimate-gen-ai-defaults': `
+      <p><strong>Estimate Default Values of Gen AI Variables</strong> module opened.</p>
+      <ul>
+        <li>Default confidence thresholds estimated from historical cohorts</li>
+        <li>Fallback variable values generated for sparse profiles</li>
+        <li>Variance controls applied to protect KPI stability</li>
+      </ul>
+      <p>Ask me to show full variable defaults table if you want a detailed review.</p>`,
     'phase-5': `
       <p><strong>Execution Checks & Validation</strong> thread opened. Pre-go-live validation controls are active:</p>
       ${reviewCard('Go-Live Readiness Review', [
@@ -2054,6 +2237,14 @@ function getMilestoneReply(agent, milestoneId) {
         { ok: false, text: 'Variance tolerance check', detail: 'Need stakeholder confirmation on fallback threshold' },
       ], 89, 'Ready with one outstanding decision. Resolve this and we can proceed to go-live.')}
       <p>You can still revisit any earlier milestone before final sign-off.</p>`,
+    'customer-approval-plan': `
+      <p><strong>Get Customer Approval on Business Journey Execution Plan</strong> module opened.</p>
+      ${executionCard(`${agent.name} — Approval Checklist`, [
+        { time: 'Ready', desc: 'Business objective and KPI package', metric: 'Compiled for approval' },
+        { time: 'Ready', desc: 'Journey design and configuration summary', metric: 'Traceability links included' },
+        { time: 'Ready', desc: 'Execution and rollback plan', metric: 'Operational controls documented' },
+      ])}
+      <p>Once approved, select go-live and this agent transitions to Running.</p>`,
     'phase-6': `
       <p><strong>Go Live</strong> thread opened. This is the final checkpoint before becoming a running agent.</p>
       ${executionCard(`${agent.name} — Go Live Checklist`, [
@@ -2066,22 +2257,31 @@ function getMilestoneReply(agent, milestoneId) {
   return responses[milestoneId] || `<p>This milestone thread is ready for updates.</p>`;
 }
 
-function openMilestoneThread(milestoneId) {
+function openPreExecutionTab(tabId) {
+  if (!currentAgentId || isAnimating) return;
+  const agent = AGENTS[currentAgentId];
+  if (!agent || agent.lifecycle !== 'pre') return;
+  currentTabByAgent[agent.id] = tabId;
+  refreshAgentHeader(agent);
+}
+
+function openSubmoduleThread(tabId, moduleId) {
   if (!currentAgentId || isAnimating) return;
   const agent = AGENTS[currentAgentId];
   if (!agent || agent.lifecycle !== 'pre') return;
 
-  const milestone = PRE_EXECUTION_MILESTONES.find(m => m.id === milestoneId);
-  if (!milestone) return;
+  const tab = PRE_EXECUTION_TABS.find(t => t.id === tabId);
+  if (!tab) return;
+  const module = tab.modules.find(m => m.id === moduleId);
+  if (!module) return;
+  currentTabByAgent[agent.id] = tabId;
+  refreshAgentHeader(agent);
 
-  currentMilestoneByAgent[agent.id] = milestoneId;
-  syncMilestoneButtons();
-
-  addMessage('user', `<p>Open thread: <strong>${milestone.title}</strong>. I want to review and update this milestone.</p>`, agent);
+  addMessage('user', `<p>Open thread: <strong>${module.label}</strong> from <strong>${tab.title}</strong>. I want to review and update this module.</p>`, agent);
   showTyping(agent);
   setTimeout(() => {
     removeTyping();
-    addMessage('agent', getMilestoneReply(agent, milestoneId), agent);
+    addMessage('agent', getMilestoneReply(agent, moduleId), agent);
   }, 850);
 }
 
@@ -2163,8 +2363,8 @@ async function selectAgent(agentId) {
   userInput.disabled = false;
   sendBtn.disabled = true;
 
-  if (agent.lifecycle === 'pre' && !currentMilestoneByAgent[agent.id]) {
-    currentMilestoneByAgent[agent.id] = PRE_EXECUTION_MILESTONES[0].id;
+  if (agent.lifecycle === 'pre' && !currentTabByAgent[agent.id]) {
+    currentTabByAgent[agent.id] = PRE_EXECUTION_TABS[0].id;
   }
 
   chatInner.innerHTML = renderAgentHeader(agent);
