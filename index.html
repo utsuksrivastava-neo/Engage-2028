@@ -377,13 +377,225 @@
 
     .workspace {
       flex: 1;
+      overflow: hidden;
+      padding: 16px 18px 130px;
+    }
+
+    .workspace-layout {
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(460px, 1.05fr) minmax(520px, 1fr);
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .chat-pane {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.88);
       overflow-y: auto;
-      padding: 22px 22px 130px;
+      padding: 16px;
+      min-width: 0;
     }
 
     .thread {
       max-width: 860px;
       margin: 0 auto;
+    }
+
+    .journey-pane {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .journey-head {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fbff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .journey-head h3 {
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #475569;
+    }
+
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+
+    .live-dot::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3b82f6;
+      animation: pulseLive 1.4s infinite;
+    }
+
+    @keyframes pulseLive {
+      0% { opacity: .35; transform: scale(.9); }
+      50% { opacity: 1; transform: scale(1); }
+      100% { opacity: .35; transform: scale(.9); }
+    }
+
+    .journey-canvas {
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(#e8edf7 1px, transparent 1px);
+      background-size: 12px 12px;
+      padding: 16px 10px;
+      overflow: auto;
+    }
+
+    .node-rail {
+      min-width: 760px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .node-link {
+      margin-top: 34px;
+      width: 28px;
+      height: 2px;
+      background: #c8d5ea;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .node-link::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: -3px;
+      border-left: 6px solid #c8d5ea;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+    }
+
+    .node {
+      width: 150px;
+      border: 1px solid #d5e0f1;
+      background: #fff;
+      border-radius: 11px;
+      padding: 8px;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.07);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .node:hover { border-color: #9fb7db; transform: translateY(-1px); }
+    .node.active {
+      border-color: #2563eb;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, .2);
+      background: #f8fbff;
+    }
+
+    .node-type {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .node-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .node-status {
+      font-size: 10px;
+      color: #475569;
+      background: #eef4ff;
+      border-radius: 999px;
+      display: inline-flex;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+
+    .node-status.done { background: #ecfdf5; color: #047857; }
+    .node-status.working { background: #eff6ff; color: #1d4ed8; }
+
+    .config-panel {
+      padding: 12px;
+      overflow-y: auto;
+      min-height: 180px;
+    }
+
+    .config-panel h4 {
+      font-size: 12px;
+      margin-bottom: 10px;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .cfg-field {
+      margin-bottom: 8px;
+    }
+
+    .cfg-field label {
+      display: block;
+      font-size: 10px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 3px;
+      font-weight: 600;
+    }
+
+    .cfg-field div {
+      border: 1px solid #dbe5f4;
+      background: #f8fbff;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 12px;
+      color: #334155;
+      min-height: 30px;
+      line-height: 1.35;
+    }
+
+    .agent-editing {
+      border-top: 1px solid var(--border);
+      padding: 8px 12px;
+      background: #f8fbff;
+      font-size: 11px;
+      color: #1e3a8a;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      font-weight: 600;
+    }
+
+    .agent-editing.show { display: flex; }
+
+    .agent-editing::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3b82f6;
+      animation: pulseLive 1.2s infinite;
     }
 
     .msg {
@@ -628,7 +840,25 @@
     </section>
 
     <section class="workspace" id="workspace">
-      <div class="thread" id="thread"></div>
+      <div class="workspace-layout">
+        <div class="chat-pane" id="chatPane">
+          <div class="thread" id="thread"></div>
+        </div>
+        <aside class="journey-pane">
+          <div class="journey-head">
+            <h3>Business Journey (Live)</h3>
+            <div class="live-dot">Agent updates in real time</div>
+          </div>
+          <div class="journey-canvas">
+            <div class="node-rail" id="nodeRail"></div>
+          </div>
+          <div class="config-panel">
+            <h4>Node Configuration</h4>
+            <div id="configFields"></div>
+          </div>
+          <div class="agent-editing" id="agentEditing">Agent is updating the business journey...</div>
+        </aside>
+      </div>
     </section>
 
     <section class="composer">
@@ -750,6 +980,7 @@
     const progressText = document.getElementById("progressText");
     const progressFill = document.getElementById("progressFill");
     const thread = document.getElementById("thread");
+    const chatPane = document.getElementById("chatPane");
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
@@ -758,10 +989,49 @@
     const fileInput = document.getElementById("fileInput");
     const attachmentTray = document.getElementById("attachmentTray");
     const voiceIndicator = document.getElementById("voiceIndicator");
+    const nodeRail = document.getElementById("nodeRail");
+    const configFields = document.getElementById("configFields");
+    const agentEditing = document.getElementById("agentEditing");
 
     let attachedFiles = [];
     let isRecording = false;
     let recognition = null;
+    let journeyByAgent = {};
+    let selectedNodeByAgent = {};
+
+    const JOURNEY_TEMPLATES = {
+      p1: [
+        { id: "trigger", type: "Trigger", title: "Audience Source Trigger", status: "done", config: { Source: "Audience dataset", Trigger: "API / schedule" } },
+        { id: "objective-node", type: "Process", title: "Objective Clarification", status: "working", config: { KPI: "Business objective mapping", Constraint: "Policy + budget guardrails" } },
+        { id: "data-node", type: "Data", title: "Fetch Audience Variables", status: "pending", config: { Systems: "Approved data sources", Variables: "Customer-level values" } },
+        { id: "channel-node", type: "Validation", title: "Org Channel Pre-Check", status: "pending", config: { Checks: "WhatsApp/SMS/IVR readiness", Output: "Channel eligibility map" } },
+      ],
+      p2: [
+        { id: "trigger", type: "Trigger", title: "Audience Source Trigger", status: "done", config: { Source: "Audience dataset", Trigger: "API / schedule" } },
+        { id: "brief-node", type: "Process", title: "Journey Brief & Outcome", status: "working", config: { Goal: "Define expected business outcome", ROI: "Target range + success criteria" } },
+        { id: "touchpoint-node", type: "Planner", title: "Channel & Touchpoint Planner", status: "pending", config: { Order: "WhatsApp -> SMS -> Voice", Rules: "Frequency + fallback controls" } },
+        { id: "design-node", type: "Design", title: "Design Business Journey", status: "pending", config: { Structure: "Interconnected node flow", Branches: "Response-based branches" } },
+      ],
+      p3: [
+        { id: "trigger-config", type: "Config", title: "Trigger Node Configuration", status: "working", config: { Condition: "Segment and event conditions", Cooldown: "Frequency controls" } },
+        { id: "template-config", type: "Template", title: "Template Creation", status: "pending", config: { Content: "Reusable message templates", Variables: "Dynamic placeholders" } },
+        { id: "action-config", type: "Action", title: "Action Nodes (SMS/WA/IVR)", status: "pending", config: { Channels: "SMS, WhatsApp, IVR, Voicebot", Defaults: "Fallback + retries" } },
+        { id: "process-config", type: "Process", title: "Process Node Configuration", status: "pending", config: { Waits: "Timeout and delay controls", Branching: "Outcome-based process logic" } },
+        { id: "end-config", type: "End", title: "End Node Configuration", status: "pending", config: { End States: "Success, timeout, escalation", Telemetry: "Learning event hooks" } },
+      ],
+      p4: [
+        { id: "test-entry", type: "Test", title: "Journey Test Harness", status: "working", config: { Mode: "Pre-live simulation", Coverage: "Happy, fallback, failure paths" } },
+        { id: "test-result", type: "Validation", title: "Flow-by-Flow Test Results", status: "pending", config: { Pass Rate: "Awaiting execution", Issues: "Auto-captured exceptions" } },
+      ],
+      p5: [
+        { id: "exec-checks", type: "Validation", title: "Execution Checks", status: "working", config: { Capacity: "Channel and infra checks", Compliance: "Policy validation gates" } },
+        { id: "genai-defaults", type: "AI Variables", title: "Gen AI Default Value Estimation", status: "pending", config: { Strategy: "Historical fallback estimates", Controls: "Confidence + variance limits" } },
+      ],
+      p6: [
+        { id: "approval", type: "Approval", title: "Customer Approval Review", status: "working", config: { Package: "Journey execution plan", Controls: "Rollback and governance checklist" } },
+        { id: "go-live", type: "Execution", title: "Go Live Handoff", status: "pending", config: { Destination: "Central Orchestration & Execution Layer", Mode: "Start as running agent" } },
+      ],
+    };
 
     function byLifecycle(type) {
       return Object.values(AGENTS).filter(a => a.lifecycle === type);
@@ -839,6 +1109,8 @@
       progressLabel.textContent = `${agent.name} · Pre-Execution Progress`;
       progressText.textContent = `Phase ${safeIndex + 1} of ${PHASES.length}`;
       progressFill.style.width = `${pct}%`;
+      ensureJourneyForPhase(agent.id, activePhase);
+      renderJourney(agent.id);
     }
 
     function escapeHtml(s) {
@@ -855,7 +1127,84 @@
           <div class="msg-content">${html}</div>
         </div>`;
       thread.appendChild(bubble);
-      document.getElementById("workspace").scrollTop = document.getElementById("workspace").scrollHeight;
+      chatPane.scrollTop = chatPane.scrollHeight;
+    }
+
+    function cloneNodes(nodes) {
+      return nodes.map(node => ({ ...node, config: { ...node.config } }));
+    }
+
+    function ensureJourneyForPhase(agentId, phaseId) {
+      if (!journeyByAgent[agentId]) journeyByAgent[agentId] = {};
+      if (!journeyByAgent[agentId][phaseId]) {
+        journeyByAgent[agentId][phaseId] = cloneNodes(JOURNEY_TEMPLATES[phaseId] || []);
+      }
+      if (!selectedNodeByAgent[agentId]) selectedNodeByAgent[agentId] = {};
+      const selected = selectedNodeByAgent[agentId][phaseId];
+      if (!selected && journeyByAgent[agentId][phaseId][0]) {
+        selectedNodeByAgent[agentId][phaseId] = journeyByAgent[agentId][phaseId][0].id;
+      }
+    }
+
+    function renderJourney(agentId) {
+      const phaseId = currentPhaseByAgent[agentId];
+      const nodes = (journeyByAgent[agentId] && journeyByAgent[agentId][phaseId]) || [];
+      const selectedId = selectedNodeByAgent[agentId] && selectedNodeByAgent[agentId][phaseId];
+
+      nodeRail.innerHTML = nodes.map((node, idx) => `
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div class="node ${selectedId === node.id ? "active" : ""}" onclick="selectNode('${node.id}')">
+            <div class="node-type">${node.type}</div>
+            <div class="node-title">${node.title}</div>
+            <div class="node-status ${node.status === "done" ? "done" : node.status === "working" ? "working" : ""}">
+              ${node.status === "pending" ? "Pending" : node.status === "done" ? "Configured" : "In Progress"}
+            </div>
+          </div>
+          ${idx < nodes.length - 1 ? '<div class="node-link"></div>' : ""}
+        </div>
+      `).join("");
+
+      const selectedNode = nodes.find(n => n.id === selectedId) || nodes[0];
+      renderNodeConfig(selectedNode);
+    }
+
+    function renderNodeConfig(node) {
+      if (!node) {
+        configFields.innerHTML = `<div class="cfg-field"><div>Select a node to view configuration</div></div>`;
+        return;
+      }
+      const fields = Object.entries(node.config).map(([k, v]) => `
+        <div class="cfg-field">
+          <label>${k}</label>
+          <div>${escapeHtml(String(v))}</div>
+        </div>
+      `).join("");
+      configFields.innerHTML = `
+        <div class="cfg-field">
+          <label>Node Name</label>
+          <div>${escapeHtml(node.title)}</div>
+        </div>
+        ${fields}
+      `;
+    }
+
+    function selectNode(nodeId) {
+      if (!currentAgentId) return;
+      const phaseId = currentPhaseByAgent[currentAgentId];
+      if (!selectedNodeByAgent[currentAgentId]) selectedNodeByAgent[currentAgentId] = {};
+      selectedNodeByAgent[currentAgentId][phaseId] = nodeId;
+      renderJourney(currentAgentId);
+    }
+
+    window.selectNode = selectNode;
+
+    function showAgentEditing(text) {
+      agentEditing.textContent = text || "Agent is updating the business journey...";
+      agentEditing.classList.add("show");
+      clearTimeout(showAgentEditing._t);
+      showAgentEditing._t = setTimeout(() => {
+        agentEditing.classList.remove("show");
+      }, 1200);
     }
 
     function openModule(phaseId, moduleId, moduleLabel) {
@@ -863,9 +1212,49 @@
       currentPhaseByAgent[agent.id] = phaseId;
       currentModuleByAgent[agent.id] = moduleId;
       renderPhases(agent);
+      applyModuleEdit(agent.id, phaseId, moduleId);
+      showAgentEditing(`Updating journey for ${moduleLabel}...`);
 
       message("user", "You", "US", "#6366f1", `<p>Open module: <strong>${moduleLabel}</strong></p>`);
       message("agent", agent.name, agent.initials, agent.color, moduleReply(agent, phaseId, moduleId));
+    }
+
+    function applyModuleEdit(agentId, phaseId, moduleId) {
+      ensureJourneyForPhase(agentId, phaseId);
+      const nodes = journeyByAgent[agentId][phaseId];
+      const map = {
+        objective: "objective-node",
+        "audience-data": "data-node",
+        "channel-precheck": "channel-node",
+        "brief-outcome": "brief-node",
+        "touchpoint-planner": "touchpoint-node",
+        "design-journey": "design-node",
+        "idea-generator": "design-node",
+        "trigger-node": "trigger-config",
+        "template-creation": "template-config",
+        "action-nodes": "action-config",
+        "process-node": "process-config",
+        "end-node": "end-config",
+        "test-journey": "test-entry",
+        "execution-validation": "exec-checks",
+        "genai-defaults": "genai-defaults",
+        "approval-plan": "approval",
+      };
+      const targetId = map[moduleId];
+      nodes.forEach(node => {
+        if (node.id === targetId) {
+          node.status = "working";
+          node.config["Last Update"] = "Edited by agent in this session";
+          if (moduleId === "idea-generator") {
+            node.config["Last Update"] = "Communication ideas injected into message templates";
+          }
+        } else if (node.status === "working") {
+          node.status = "done";
+        }
+      });
+      if (!selectedNodeByAgent[agentId]) selectedNodeByAgent[agentId] = {};
+      selectedNodeByAgent[agentId][phaseId] = targetId || nodes[0].id;
+      renderJourney(agentId);
     }
 
     function moduleReply(agent, phaseId, moduleId) {
@@ -913,10 +1302,18 @@
 
       if (agent.lifecycle === "pre") {
         message("user", "You", "US", "#6366f1", `<p>Let's continue building this pre-execution agent. Open any phase tab and module.</p>`);
-        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><ul><li>Use the 6 tabs on top for phase-level navigation</li><li>Each tab has sub-module agent threads</li><li>You can revise any module before go-live</li></ul>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><ul><li>Use the 6 tabs on top for phase-level navigation</li><li>Watch the Business Journey pane update in real time as modules are configured</li><li>Click any node to inspect configuration details</li></ul>`);
       } else {
         message("user", "You", "US", "#6366f1", `<p>Open running workspace for ${agent.name}.</p>`);
         message("agent", agent.name, agent.initials, agent.color, `<p>Running agent workspace is active.</p><p>We'll do a dedicated redesign for running agents next, as you requested.</p>`);
+        nodeRail.innerHTML = `
+          <div class="node active">
+            <div class="node-type">Running</div>
+            <div class="node-title">Execution view coming next</div>
+            <div class="node-status working">In Progress</div>
+          </div>`;
+        configFields.innerHTML = `
+          <div class="cfg-field"><label>Status</label><div>Running-agent redesign pending next iteration.</div></div>`;
       }
     }
 
@@ -937,6 +1334,14 @@
       setTopPanel(agent);
       renderPhases(agent);
       renderSuggestions(agent);
+      nodeRail.innerHTML = `
+        <div class="node active">
+          <div class="node-type">Running</div>
+          <div class="node-title">Live execution journey managed centrally</div>
+          <div class="node-status working">Running</div>
+        </div>`;
+      configFields.innerHTML = `<div class="cfg-field"><label>Execution State</label><div>Journey handed off to Central Orchestration & Execution Layer.</div></div>`;
+      showAgentEditing("Handing off to central orchestration...");
       return true;
     }
 
