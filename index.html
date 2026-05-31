@@ -2028,6 +2028,9 @@
           subLine = "Execution State";
           details = `<div class="run-state ${stateClass}">${stateLabel}</div>`;
         }
+        const lifecyclePill = agent.lifecycle === "pre"
+          ? ""
+          : `<div class="pill run">Running</div>`;
 
         return `
           <div class="agent-row ${agent.id === currentAgentId ? "active" : ""}" onclick="selectAgent('${agent.id}')">
@@ -2036,7 +2039,7 @@
               <div class="agent-name">${agent.name}</div>
               <div class="agent-sub">${subLine}</div>
               ${details}
-              <div class="pill ${agent.lifecycle === "pre" ? "pre" : "run"}">${agent.lifecycle === "pre" ? "Pre-Execution" : "Running"}</div>
+              ${lifecyclePill}
             </div>
           </div>
         `;
