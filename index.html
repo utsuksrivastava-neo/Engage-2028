@@ -2021,12 +2021,8 @@
           subLine = `Step ${safeIndex + 1}/${PHASES.length}`;
           details = "";
         } else {
-          const stateRaw = (agent.runState || "Under Execution").toLowerCase();
-          const isWaiting = stateRaw.includes("wait");
-          const stateClass = isWaiting ? "waiting" : "execution";
-          const stateLabel = isWaiting ? "In Waiting" : "Under Execution";
-          subLine = "Execution State";
-          details = `<div class="run-state ${stateClass}">${stateLabel}</div>`;
+          subLine = "";
+          details = "";
         }
         const lifecyclePill = agent.lifecycle === "pre"
           ? ""
