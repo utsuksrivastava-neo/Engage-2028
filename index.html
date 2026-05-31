@@ -1433,7 +1433,7 @@
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 1.4fr .9fr;
+      grid-template-columns: 1fr;
       gap: 12px;
       min-width: 0;
     }
@@ -1444,10 +1444,6 @@
       border-radius: 14px;
       padding: 12px;
       min-width: 0;
-    }
-
-    .dash-card.full {
-      grid-column: 1 / -1;
     }
 
     .dash-card h3 {
@@ -1600,10 +1596,6 @@
         <h4>Running Agents</h4>
         <div id="runList"></div>
       </div>
-      <div class="group">
-        <h4>Users Management</h4>
-        <button class="sidebar-manage-btn" id="openUsersManagementBtn">Manage Users and Sharing</button>
-      </div>
     </div>
   </aside>
 
@@ -1660,27 +1652,7 @@
           </table>
           <div class="dash-muted">Use Open to jump directly into an agent workspace.</div>
         </div>
-        <div class="dash-card" id="usersCard">
-          <h3>Users and Sharing</h3>
-          <table class="dash-table">
-            <thead>
-              <tr>
-                <th>User Name</th>
-                <th>Email</th>
-              </tr>
-            </thead>
-            <tbody id="dashboardUserRows"></tbody>
-          </table>
-          <div class="dash-form">
-            <div class="dash-inline">
-              <input id="newUserName" type="text" placeholder="New user name" />
-              <input id="newUserEmail" type="email" placeholder="email@company.com" />
-            </div>
-            <button class="dash-btn primary" id="addUserBtn">Add User</button>
-          </div>
-          <div class="dash-muted">Add users here, then share any agent with them from the All Agents table.</div>
-        </div>
-        <div class="dash-card full">
+        <div class="dash-card">
           <h3>Department View</h3>
           <table class="dash-table">
             <thead>
@@ -2045,13 +2017,8 @@
     const runList = document.getElementById("runList");
     const dashboardView = document.getElementById("dashboardView");
     const dashboardAgentRows = document.getElementById("dashboardAgentRows");
-    const dashboardUserRows = document.getElementById("dashboardUserRows");
     const dashboardDepartmentRows = document.getElementById("dashboardDepartmentRows");
     const openDashboardBtn = document.getElementById("openDashboardBtn");
-    const openUsersManagementBtn = document.getElementById("openUsersManagementBtn");
-    const addUserBtn = document.getElementById("addUserBtn");
-    const newUserName = document.getElementById("newUserName");
-    const newUserEmail = document.getElementById("newUserEmail");
     const phaseStrip = document.getElementById("phaseStrip");
     const progressWrap = document.getElementById("progressWrap");
     const phaseTabs = document.getElementById("phaseTabs");
@@ -2503,13 +2470,6 @@
       }).join("");
       dashboardAgentRows.innerHTML = rows || `<tr><td colspan="6">No agents available.</td></tr>`;
 
-      dashboardUserRows.innerHTML = USERS.map(user => `
-        <tr>
-          <td>${escapeHtml(user.name)}</td>
-          <td>${escapeHtml(user.email)}</td>
-        </tr>
-      `).join("");
-
       dashboardDepartmentRows.innerHTML = DEPARTMENTS.map((department) => {
         const agents = Object.values(AGENTS).filter(agent => (agent.department || "Other") === department);
         const preCount = agents.filter(agent => agent.lifecycle === "pre").length;
@@ -2525,7 +2485,7 @@
       }).join("");
     }
 
-    function openDashboardView(section) {
+    function openDashboardView() {
       currentAgentId = null;
       renderSidebar();
       dashboardView.classList.remove("hidden");
@@ -2537,10 +2497,6 @@
       status.textContent = "Portfolio View";
       status.className = "status-chip pre";
       renderDashboard();
-      if (section === "users") {
-        const usersCard = document.getElementById("usersCard");
-        if (usersCard) usersCard.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
     }
 
     function shareAgent(agentId) {
@@ -2555,29 +2511,6 @@
 
     function removeShare(agentId, userId) {
       AGENT_SHARES[agentId] = (AGENT_SHARES[agentId] || []).filter(id => id !== userId);
-      renderDashboard();
-    }
-
-    function addUserFromForm() {
-      const name = (newUserName.value || "").trim();
-      const email = (newUserEmail.value || "").trim();
-      if (!name || !email) {
-        openResourceModal("Users and Sharing", [
-          { name: "Missing details", desc: "Please provide both user name and email to add a new user." },
-        ]);
-        return;
-      }
-      const duplicate = USERS.some(u => u.email.toLowerCase() === email.toLowerCase());
-      if (duplicate) {
-        openResourceModal("Users and Sharing", [
-          { name: "User exists", desc: "A user with this email already exists." },
-        ]);
-        return;
-      }
-      const userId = `user-${Date.now()}`;
-      USERS.push({ id: userId, name, email });
-      newUserName.value = "";
-      newUserEmail.value = "";
       renderDashboard();
     }
 
@@ -3254,7 +3187,6 @@
     });
     sendBtn.addEventListener("click", sendMessage);
     openDashboardBtn.addEventListener("click", openDashboardView);
-    openUsersManagementBtn.addEventListener("click", () => openDashboardView("users"));
     openJourneyEditorBtn.addEventListener("click", () => {
       if (!currentAgentId) return;
       const agent = AGENTS[currentAgentId];
@@ -3280,13 +3212,6 @@
     openDataSourcesBtn.addEventListener("click", () => openResourceModal("Data Sources", DATA_SOURCES));
     openBusinessChannelsBtn.addEventListener("click", () => openResourceModal("Business Channels", BUSINESS_CHANNELS));
     closeResourceModalBtn.addEventListener("click", closeResourceModal);
-    addUserBtn.addEventListener("click", addUserFromForm);
-    newUserName.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") addUserFromForm();
-    });
-    newUserEmail.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") addUserFromForm();
-    });
     loginBtn.addEventListener("click", login);
     loginUsername.addEventListener("keydown", (e) => {
       if (e.key === "Enter") login();
