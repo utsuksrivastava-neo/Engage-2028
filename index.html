@@ -2049,7 +2049,7 @@
           const activePhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
           const phaseIndex = PHASES.findIndex(p => p.id === activePhase);
           const safeIndex = phaseIndex < 0 ? 0 : phaseIndex;
-          subLine = `Step ${safeIndex + 1} of ${PHASES.length} in progress`;
+          subLine = `Step ${safeIndex + 1}/${PHASES.length}`;
           details = `
             <div class="step-matrix">
               ${PHASES.map((_, idx) => {
