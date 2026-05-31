@@ -1405,6 +1405,7 @@
     let currentAgentId = null;
     let currentPhaseByAgent = {};
     let currentModuleByAgent = {};
+    let guidedFlowByAgent = {};
 
     const preList = document.getElementById("preList");
     const runList = document.getElementById("runList");
@@ -1487,6 +1488,73 @@
       p6: [
         { id: "approval", type: "Approval", title: "Customer Approval Review", status: "working", config: { Package: "Journey execution plan", Controls: "Rollback and governance checklist" } },
         { id: "go-live", type: "Execution", title: "Go Live Handoff", status: "pending", config: { Destination: "Central Orchestration & Execution Layer", Mode: "Start as running agent" } },
+      ],
+    };
+
+    const MODULE_PROMPTS = {
+      objective: [
+        "What exact measurable business outcome should I optimize first for this agent?",
+        "What constraints are non-negotiable (budget, compliance, contact caps, approval limits)?",
+      ],
+      "audience-data": [
+        "Which customer segments must be included in the first rollout?",
+        "Which audience variables are mandatory for decisioning in this journey?",
+      ],
+      "channel-precheck": [
+        "Which communication channels are currently approved and available in your organization?",
+        "Any channel restrictions by region, time window, or compliance policy I should enforce?",
+      ],
+      "brief-outcome": [
+        "What target KPI uplift do you want this journey brief to commit to?",
+        "What is the acceptable ROI or payback expectation for this journey?",
+      ],
+      "touchpoint-planner": [
+        "What should be the primary channel order (e.g., WhatsApp -> SMS -> Voice)?",
+        "What escalation window should I use before switching channels?",
+      ],
+      "design-journey": [
+        "Should this journey prioritize faster conversions or lower operational cost?",
+        "Any mandatory branch logic you want in the first design version?",
+      ],
+      "idea-generator": [
+        "What tone should communication use (firm, empathetic, consultative)?",
+        "Do you want separate message variants by customer risk/value segments?",
+      ],
+      "trigger-node": [
+        "What should trigger this journey first: event-based, schedule-based, or both?",
+        "What cooldown period should I enforce before retriggering the same customer?",
+      ],
+      "template-creation": [
+        "Do you want reusable templates by use-case, by channel, or by customer segment?",
+        "Any legal/compliance phrasing that must always be present in templates?",
+      ],
+      "action-nodes": [
+        "Which action nodes should be enabled in version one (SMS, WA, IVR, Voicebot, Dialler)?",
+        "What retry policy should I apply per channel?",
+      ],
+      "process-node": [
+        "What wait durations should I use between major steps?",
+        "When should a process node escalate versus retry?",
+      ],
+      "end-node": [
+        "Which end outcomes should be tracked as business success?",
+        "Do you want unresolved users to loop back into retargeting automatically?",
+      ],
+      "test-journey": [
+        "Which scenarios are highest priority for testing first (happy path, fallback, failure)?",
+        "What failure threshold should block go-live automatically?",
+      ],
+      "execution-validation": [
+        "Which execution checks must be hard blockers before go-live?",
+        "Who signs off final validation in your org?",
+      ],
+      "genai-defaults": [
+        "What confidence threshold should Gen AI defaults meet before use?",
+        "Should we prefer conservative defaults or conversion-maximizing defaults?",
+      ],
+      "approval-plan": [
+        "Who is the final approver for journey execution?",
+        "Do you want one-click go-live after approval, or a final manual confirmation step?",
       ],
     };
 
@@ -1786,6 +1854,33 @@
       }, 1200);
     }
 
+    function isLikelyQuestion(text) {
+      const lower = text.toLowerCase().trim();
+      return lower.endsWith("?") || /^(what|why|how|can|should|which|when|who)\b/.test(lower);
+    }
+
+    function ensureGuidedFlow(agentId, phaseId, moduleId) {
+      if (!guidedFlowByAgent[agentId]) guidedFlowByAgent[agentId] = {};
+      const key = `${phaseId}:${moduleId}`;
+      if (!guidedFlowByAgent[agentId][key]) {
+        guidedFlowByAgent[agentId][key] = {
+          phaseId,
+          moduleId,
+          questionIndex: 0,
+          answers: [],
+        };
+      }
+      return guidedFlowByAgent[agentId][key];
+    }
+
+    function askGuidedQuestion(agent, flow) {
+      const prompts = MODULE_PROMPTS[flow.moduleId] || [];
+      const q = prompts[flow.questionIndex];
+      if (!q) return false;
+      message("agent", agent.name, agent.initials, agent.color, `<p><strong>Next input needed:</strong> ${escapeHtml(q)}</p>`);
+      return true;
+    }
+
     function openModule(phaseId, moduleId, moduleLabel) {
       const agent = AGENTS[currentAgentId];
       currentPhaseByAgent[agent.id] = phaseId;
@@ -1793,9 +1888,9 @@
       renderPhases(agent);
       applyModuleEdit(agent.id, phaseId, moduleId);
       showAgentEditing(`Updating journey for ${moduleLabel}...`);
-
-      message("user", "You", "US", "#6366f1", `<p>Open module: <strong>${moduleLabel}</strong></p>`);
-      message("agent", agent.name, agent.initials, agent.color, `${moduleReply(agent, phaseId, moduleId)}${relevantJourneySnippet(agent.id)}`);
+      const flow = ensureGuidedFlow(agent.id, phaseId, moduleId);
+      message("agent", agent.name, agent.initials, agent.color, `<p>I am now working on <strong>${moduleLabel}</strong>.</p><p>I will ask you a few required inputs before proceeding.</p>${relevantJourneySnippet(agent.id)}`);
+      askGuidedQuestion(agent, flow);
     }
 
     function applyModuleEdit(agentId, phaseId, moduleId) {
@@ -1902,6 +1997,10 @@
       currentPhaseByAgent[agent.id] = phaseId;
       currentModuleByAgent[agent.id] = null;
       renderPhases(agent);
+      const phase = PHASES.find(p => p.id === phaseId);
+      if (phase && phase.modules && phase.modules[0]) {
+        openModule(phaseId, phase.modules[0].id, phase.modules[0].label);
+      }
     }
 
     function selectAgent(agentId) {
@@ -1914,8 +2013,12 @@
       thread.innerHTML = "";
 
       if (agent.lifecycle === "pre") {
-        message("user", "You", "US", "#6366f1", `<p>Let's continue building this pre-execution agent. Open any phase tab and module.</p>`);
-        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><ul><li>Use the 6 tabs on top for phase-level navigation</li><li>Agent updates appear as relevant journey snippets in chat</li><li>Use <strong>Open Business Journey Editor</strong> on top for full manual editing</li></ul>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><p>I will guide this setup step-by-step and proactively ask for required inputs. You can still ask me anything at any time.</p>`);
+        const firstPhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
+        const phase = PHASES.find(p => p.id === firstPhase) || PHASES[0];
+        if (phase && phase.modules && phase.modules[0]) {
+          openModule(phase.id, phase.modules[0].id, phase.modules[0].label);
+        }
       } else {
         message("user", "You", "US", "#6366f1", `<p>Open running workspace for ${agent.name}.</p>`);
         message("agent", agent.name, agent.initials, agent.color, `<p>Running agent workspace is active.</p><p>We'll do a dedicated redesign for running agents next, as you requested.</p>`);
@@ -1971,7 +2074,34 @@
       renderAttachmentTray();
       updateSendState();
       if (maybePromote(agent, text)) return;
-      message("agent", agent.name, agent.initials, agent.color, `<p>Understood. I can open any tab/module, regenerate journey components, or run validation before go-live.</p>`);
+      if (agent.lifecycle === "pre") {
+        const phaseId = currentPhaseByAgent[agent.id];
+        const moduleId = currentModuleByAgent[agent.id];
+        if (phaseId && moduleId) {
+          const flow = ensureGuidedFlow(agent.id, phaseId, moduleId);
+          const prompts = MODULE_PROMPTS[moduleId] || [];
+          if (flow.questionIndex < prompts.length) {
+            if (isLikelyQuestion(text)) {
+              message("agent", agent.name, agent.initials, agent.color, `<p>Great question. I’ll account for that while configuring this module.</p><p><strong>Still needed:</strong> ${escapeHtml(prompts[flow.questionIndex])}</p>`);
+              return;
+            }
+
+            flow.answers.push(text || "[input from file/voice]");
+            flow.questionIndex += 1;
+            if (flow.questionIndex < prompts.length) {
+              message("agent", agent.name, agent.initials, agent.color, `<p>Noted. ${relevantJourneySnippet(agent.id)}</p>`);
+              askGuidedQuestion(agent, flow);
+              return;
+            }
+
+            const summary = flow.answers.map((a, i) => `<li><strong>Input ${i + 1}:</strong> ${escapeHtml(a)}</li>`).join("");
+            message("agent", agent.name, agent.initials, agent.color, `<p>Perfect. I have enough inputs for this module and updated the journey accordingly.</p><ul>${summary}</ul>${relevantJourneySnippet(agent.id)}<p>You can switch modules, or I can continue to the next module automatically.</p>`);
+            return;
+          }
+        }
+      }
+
+      message("agent", agent.name, agent.initials, agent.color, `<p>Understood. I can continue guiding the active module, or you can switch phase/module anytime.</p>`);
     }
 
     input.addEventListener("input", () => {
