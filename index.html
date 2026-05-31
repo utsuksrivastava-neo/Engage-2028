@@ -108,6 +108,24 @@
       margin: 0 6px 8px;
     }
 
+    .sidebar-manage-btn {
+      width: 100%;
+      border: 1px solid #dbe5f4;
+      background: #fff;
+      color: #334155;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 10px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .sidebar-manage-btn:hover {
+      background: #f8fbff;
+      border-color: #cbdaf0;
+    }
+
     .agent-row {
       border: 1px solid transparent;
       border-radius: 12px;
@@ -1386,6 +1404,10 @@
       min-width: 0;
     }
 
+    .dash-card.full {
+      grid-column: 1 / -1;
+    }
+
     .dash-card h3 {
       font-size: 13px;
       margin-bottom: 9px;
@@ -1536,6 +1558,10 @@
         <h4>Running Agents</h4>
         <div id="runList"></div>
       </div>
+      <div class="group">
+        <h4>Users Management</h4>
+        <button class="sidebar-manage-btn" id="openUsersManagementBtn">Manage Users and Sharing</button>
+      </div>
     </div>
   </aside>
 
@@ -1581,6 +1607,7 @@
             <thead>
               <tr>
                 <th>Agent</th>
+                <th>Department</th>
                 <th>Type</th>
                 <th>Current Stage</th>
                 <th>Shared With</th>
@@ -1591,7 +1618,7 @@
           </table>
           <div class="dash-muted">Use Open to jump directly into an agent workspace.</div>
         </div>
-        <div class="dash-card">
+        <div class="dash-card" id="usersCard">
           <h3>Users and Sharing</h3>
           <table class="dash-table">
             <thead>
@@ -1610,6 +1637,20 @@
             <button class="dash-btn primary" id="addUserBtn">Add User</button>
           </div>
           <div class="dash-muted">Add users here, then share any agent with them from the All Agents table.</div>
+        </div>
+        <div class="dash-card full">
+          <h3>Department View</h3>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Total Agents</th>
+                <th>Pre-Execution</th>
+                <th>Running</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardDepartmentRows"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -1780,14 +1821,16 @@
     const DEMO_PASSWORD = "engage2028";
     const AUTH_STORAGE_KEY = "engage2028-demo-user";
     const CURRENT_USER_ID = "user-demo";
+    const DEPARTMENTS = ["Marketing", "Operations", "Sales", "Finance", "Customer Support", "Product", "IT", "HR", "Legal", "Other"];
 
     let AGENTS = {
       "onboarding-assist-pre": {
         id: "onboarding-assist-pre",
-        name: "Onboarding Assist Agent",
+        name: "Onboarding Assist Agent 1",
         initials: "OA",
         color: "#2563eb",
         lifecycle: "pre",
+        department: "Operations",
         objective: "Reduce onboarding drop-offs by proactively assisting high-intent users through personalized nudges and contextual support journeys",
         inputs: "KYC events, app session patterns, drop-off cohorts",
         guardrails: "Approved channel permissions, communication frequency limits",
@@ -1795,10 +1838,11 @@
       },
       "repayment-recovery-pre": {
         id: "repayment-recovery-pre",
-        name: "Repayment Recovery Agent",
+        name: "Repayment Recovery Agent 1",
         initials: "RR",
         color: "#0f766e",
         lifecycle: "pre",
+        department: "Finance",
         objective: "Improve repayment recovery for delinquent customers using optimized outreach timing and channel selection while minimizing operational costs",
         inputs: "Repayment history, delinquency buckets, channel engagement timelines",
         guardrails: "Budget caps, collection compliance policies, customer contact frequency limits",
@@ -1806,10 +1850,11 @@
       },
       "churn-prevention-pre": {
         id: "churn-prevention-pre",
-        name: "Churn Prevention Agent",
+        name: "Churn Prevention Agent 1",
         initials: "CP",
         color: "#7c3aed",
         lifecycle: "pre",
+        department: "Marketing",
         objective: "Reduce customer churn by identifying disengagement signals early and triggering retention interventions with controlled retention spend",
         inputs: "Engagement recency, usage decline patterns, renewal and support history",
         guardrails: "Retention offer budget limits, discount governance, compliance controls",
@@ -1817,10 +1862,11 @@
       },
       "repeat-purchase-pre": {
         id: "repeat-purchase-pre",
-        name: "Repeat Purchase Agent",
+        name: "Repeat Purchase Agent 1",
         initials: "RP",
         color: "#d97706",
         lifecycle: "pre",
+        department: "Sales",
         objective: "Increase repeat purchases by incentivizing high-value customer behaviors through personalized offers and engagement journeys",
         inputs: "Purchase frequency, basket affinity, high-value segment behavior",
         guardrails: "Incentive budget limits, offer frequency cap, margin constraints",
@@ -1828,10 +1874,11 @@
       },
       "proactive-resolution-pre": {
         id: "proactive-resolution-pre",
-        name: "Proactive Resolution Agent",
+        name: "Proactive Resolution Agent 1",
         initials: "PR",
         color: "#0ea5e9",
         lifecycle: "pre",
+        department: "Customer Support",
         objective: "Reduce support escalations by proactively identifying likely customer issues and reaching out with guided resolutions before customers contact support",
         inputs: "Error logs, support intent signals, product usage anomalies",
         guardrails: "Escalation policy, messaging limits, workforce availability controls",
@@ -1839,10 +1886,11 @@
       },
       "onboarding-assist-running": {
         id: "onboarding-assist-running",
-        name: "Onboarding Assist Agent",
+        name: "Onboarding Assist Agent 2",
         initials: "OA",
         color: "#1d4ed8",
         lifecycle: "running",
+        department: "Operations",
         runState: "Under Execution",
         objective: "Reduce onboarding drop-offs by proactively assisting high-intent users through personalized nudges and contextual support journeys",
         inputs: "Live onboarding event stream, KYC stage telemetry, channel response cohorts",
@@ -1851,10 +1899,11 @@
       },
       "repayment-recovery-running": {
         id: "repayment-recovery-running",
-        name: "Repayment Recovery Agent",
+        name: "Repayment Recovery Agent 2",
         initials: "RR",
         color: "#0f766e",
         lifecycle: "running",
+        department: "Finance",
         runState: "Under Execution",
         objective: "Improve repayment recovery for delinquent customers using optimized outreach timing and channel selection while minimizing operational costs",
         inputs: "Delinquency buckets, promise-to-pay conversion telemetry, channel cost trends",
@@ -1863,10 +1912,11 @@
       },
       "churn-prevention-running": {
         id: "churn-prevention-running",
-        name: "Churn Prevention Agent",
+        name: "Churn Prevention Agent 2",
         initials: "CP",
         color: "#6d28d9",
         lifecycle: "running",
+        department: "Marketing",
         runState: "In Waiting",
         objective: "Reduce customer churn by identifying disengagement signals early and triggering retention interventions with controlled retention spend",
         inputs: "Usage decline signals, renewal propensity, retention offer redemption outcomes",
@@ -1875,10 +1925,11 @@
       },
       "repeat-purchase-running": {
         id: "repeat-purchase-running",
-        name: "Repeat Purchase Agent",
+        name: "Repeat Purchase Agent 2",
         initials: "RP",
         color: "#b45309",
         lifecycle: "running",
+        department: "Sales",
         runState: "Under Execution",
         objective: "Increase repeat purchases by incentivizing high-value customer behaviors through personalized offers and engagement journeys",
         inputs: "Order cadence, basket affinity shifts, incentive redemption by segment",
@@ -1887,10 +1938,11 @@
       },
       "proactive-resolution-running": {
         id: "proactive-resolution-running",
-        name: "Proactive Resolution Agent",
+        name: "Proactive Resolution Agent 2",
         initials: "PR",
         color: "#0284c7",
         lifecycle: "running",
+        department: "Customer Support",
         runState: "In Waiting",
         objective: "Reduce support escalations by proactively identifying likely customer issues and reaching out with guided resolutions before customers contact support",
         inputs: "Issue-risk model scores, anomaly alerts, self-serve completion telemetry",
@@ -1907,6 +1959,9 @@
     Object.keys(AGENTS).forEach((agentId) => {
       AGENT_SHARES[agentId] = AGENT_SHARES[agentId] || [];
       if (!AGENTS[agentId].ownerId) AGENTS[agentId].ownerId = CURRENT_USER_ID;
+      if (!AGENTS[agentId].department || !DEPARTMENTS.includes(AGENTS[agentId].department)) {
+        AGENTS[agentId].department = "Other";
+      }
     });
 
     let currentAgentId = null;
@@ -1926,7 +1981,9 @@
     const dashboardView = document.getElementById("dashboardView");
     const dashboardAgentRows = document.getElementById("dashboardAgentRows");
     const dashboardUserRows = document.getElementById("dashboardUserRows");
+    const dashboardDepartmentRows = document.getElementById("dashboardDepartmentRows");
     const openDashboardBtn = document.getElementById("openDashboardBtn");
+    const openUsersManagementBtn = document.getElementById("openUsersManagementBtn");
     const addUserBtn = document.getElementById("addUserBtn");
     const newUserName = document.getElementById("newUserName");
     const newUserEmail = document.getElementById("newUserEmail");
@@ -2278,10 +2335,10 @@
           const activePhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
           const phaseIndex = PHASES.findIndex(p => p.id === activePhase);
           const safeIndex = phaseIndex < 0 ? 0 : phaseIndex;
-          subLine = `Step ${safeIndex + 1}/${PHASES.length}`;
+          subLine = `Step ${safeIndex + 1}/${PHASES.length} · ${agent.department}`;
           details = "";
         } else {
-          subLine = "";
+          subLine = agent.department || "Other";
           details = "";
         }
         const lifecyclePill = agent.lifecycle === "pre"
@@ -2311,6 +2368,13 @@
     function userName(userId) {
       const user = userById(userId);
       return user ? user.name : "Unknown User";
+    }
+
+    function normalizeDepartment(department) {
+      const value = (department || "").trim();
+      if (!value) return "Other";
+      const match = DEPARTMENTS.find(dep => dep.toLowerCase() === value.toLowerCase());
+      return match || "Other";
     }
 
     function agentStageLabel(agent) {
@@ -2350,6 +2414,7 @@
               <strong>${escapeHtml(agent.name)}</strong>
               <div class="dash-muted">Owner: ${escapeHtml(userName(agent.ownerId || CURRENT_USER_ID))}</div>
             </td>
+            <td>${escapeHtml(agent.department || "Other")}</td>
             <td>${agent.lifecycle === "pre" ? "Pre-Execution" : "Running"}</td>
             <td>${agentStageLabel(agent)}</td>
             <td>
@@ -2365,7 +2430,7 @@
           </tr>
         `;
       }).join("");
-      dashboardAgentRows.innerHTML = rows || `<tr><td colspan="5">No agents available.</td></tr>`;
+      dashboardAgentRows.innerHTML = rows || `<tr><td colspan="6">No agents available.</td></tr>`;
 
       dashboardUserRows.innerHTML = USERS.map(user => `
         <tr>
@@ -2373,9 +2438,23 @@
           <td>${escapeHtml(user.email)}</td>
         </tr>
       `).join("");
+
+      dashboardDepartmentRows.innerHTML = DEPARTMENTS.map((department) => {
+        const agents = Object.values(AGENTS).filter(agent => (agent.department || "Other") === department);
+        const preCount = agents.filter(agent => agent.lifecycle === "pre").length;
+        const runCount = agents.filter(agent => agent.lifecycle === "running").length;
+        return `
+          <tr>
+            <td>${escapeHtml(department)}</td>
+            <td>${agents.length}</td>
+            <td>${preCount}</td>
+            <td>${runCount}</td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    function openDashboardView() {
+    function openDashboardView(section) {
       currentAgentId = null;
       renderSidebar();
       dashboardView.classList.remove("hidden");
@@ -2387,6 +2466,10 @@
       status.textContent = "Portfolio View";
       status.className = "status-chip pre";
       renderDashboard();
+      if (section === "users") {
+        const usersCard = document.getElementById("usersCard");
+        if (usersCard) usersCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     function shareAgent(agentId) {
@@ -3051,6 +3134,7 @@
     });
     sendBtn.addEventListener("click", sendMessage);
     openDashboardBtn.addEventListener("click", openDashboardView);
+    openUsersManagementBtn.addEventListener("click", () => openDashboardView("users"));
     openJourneyEditorBtn.addEventListener("click", () => {
       if (!currentAgentId) return;
       const agent = AGENTS[currentAgentId];
@@ -3228,6 +3312,11 @@
       const enteredName = window.prompt("Enter new Business Agent name:");
       if (!enteredName || !enteredName.trim()) return;
       const name = enteredName.trim();
+      const deptInput = window.prompt(
+        `Assign a department (${DEPARTMENTS.join(", ")})`,
+        "Other"
+      );
+      const department = normalizeDepartment(deptInput);
       const id = `${name.toLowerCase().replaceAll(" ", "-")}-${Date.now()}`;
       AGENTS[id] = {
         id,
@@ -3236,6 +3325,7 @@
         color: stableColorFromName(name),
         lifecycle: "pre",
         ownerId: CURRENT_USER_ID,
+        department,
         objective: NEW_AGENT_DEFAULTS.objective,
         inputs: NEW_AGENT_DEFAULTS.inputs,
         guardrails: NEW_AGENT_DEFAULTS.guardrails,
