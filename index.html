@@ -1741,7 +1741,16 @@
           <div class="running-tab-view hidden" id="runningGenAiView">
             <div class="running-section">
               <h4>Gen AI Variables</h4>
-              <div class="exec-list" id="runningGenAiVarList"></div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Variable Name</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="runningGenAiVarRows"></tbody>
+              </table>
             </div>
             <div class="running-section">
               <h4>Variable Guidance</h4>
@@ -2056,7 +2065,7 @@
     const runningHistoryList = document.getElementById("runningHistoryList");
     const runningSessionList = document.getElementById("runningSessionList");
     const runningJourneyUpdateList = document.getElementById("runningJourneyUpdateList");
-    const runningGenAiVarList = document.getElementById("runningGenAiVarList");
+    const runningGenAiVarRows = document.getElementById("runningGenAiVarRows");
     const runningDataLakeRows = document.getElementById("runningDataLakeRows");
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
@@ -2308,9 +2317,9 @@
           { title: "Activate regional language variant", detail: "Enable Hindi + Kannada quick-complete templates for pending users." },
         ],
         genAiVariables: [
-          { title: "onboarding_completion_probability", detail: "0.84 · Confidence: high" },
-          { title: "assist_likelihood_score", detail: "0.63 · Confidence: medium" },
-          { title: "preferred_language_prediction", detail: "Hindi · Confidence: high" },
+          { name: "best_time_to_call", description: "Recommended call window: 6:30 PM to 8:00 PM for assisted completion cohorts." },
+          { name: "whatsapp_reachability", description: "User availability on WhatsApp is high for this segment (delivery and response confidence > 0.78)." },
+          { name: "onboarding_completion_probability", description: "Predicted completion likelihood is 0.84 with current journey path." },
         ],
         datalake: [
           { customer: "CUST-1042", field: "onboarding_intent_score", value: "0.88" },
@@ -2332,9 +2341,9 @@
           { title: "Launch pay-link optimization test", detail: "Test pre-filled repayment links for top delinquency clusters." },
         ],
         genAiVariables: [
-          { title: "repayment_intent_score", detail: "0.81 · Confidence: high" },
-          { title: "promise_to_pay_probability", detail: "0.58 · Confidence: medium" },
-          { title: "escalation_risk_forecast", detail: "High · Confidence: medium" },
+          { name: "best_time_to_call", description: "Recommended repayment outreach window: 11:00 AM to 1:00 PM." },
+          { name: "whatsapp_reachability", description: "WhatsApp-first delivery probability for delinquency cohort is 0.77." },
+          { name: "repayment_intent_score", description: "Repayment intent score is 0.81 for active priority segment." },
         ],
         datalake: [
           { customer: "CUST-1188", field: "repayment_intent_score", value: "0.81" },
@@ -2356,9 +2365,9 @@
           { title: "Reweight disengagement trigger", detail: "Increase app-inactivity weight for users with support tickets in last 14 days." },
         ],
         genAiVariables: [
-          { title: "churn_risk_score", detail: "0.74 · Confidence: high" },
-          { title: "save_offer_affinity", detail: "Medium · Confidence: medium" },
-          { title: "retention_roi_prediction", detail: "+17% · Confidence: medium" },
+          { name: "best_time_to_call", description: "Recommended retention callback slot: 5:00 PM to 7:00 PM." },
+          { name: "whatsapp_reachability", description: "WhatsApp engagement likelihood is medium-high for at-risk users." },
+          { name: "churn_risk_score", description: "Current churn risk for this cohort is 0.74 based on disengagement signals." },
         ],
         datalake: [
           { customer: "CUST-1455", field: "churn_risk_score", value: "0.74" },
@@ -2380,9 +2389,9 @@
           { title: "Optimize reorder reminder window", detail: "Advance reminder by 36h for fast-moving basket segments." },
         ],
         genAiVariables: [
-          { title: "repeat_purchase_propensity", detail: "0.79 · Confidence: high" },
-          { title: "offer_elasticity_index", detail: "0.54 · Confidence: medium" },
-          { title: "next_order_window_prediction", detail: "5 days · Confidence: medium" },
+          { name: "best_time_to_call", description: "Recommended assisted upsell call window: 4:00 PM to 6:00 PM." },
+          { name: "whatsapp_reachability", description: "WhatsApp response probability is high for repeat-purchase segment." },
+          { name: "repeat_purchase_propensity", description: "Predicted repeat purchase propensity is 0.79." },
         ],
         datalake: [
           { customer: "CUST-1322", field: "repeat_purchase_propensity", value: "0.79" },
@@ -2404,9 +2413,9 @@
           { title: "Expand proactive walkthrough coverage", detail: "Add guided flow for payment setup and login reset journeys." },
         ],
         genAiVariables: [
-          { title: "issue_risk_score", detail: "0.78 · Confidence: high" },
-          { title: "self_serve_completion_probability", detail: "0.72 · Confidence: medium" },
-          { title: "escalation_prevention_lift", detail: "+14% · Confidence: medium" },
+          { name: "best_time_to_call", description: "Recommended proactive support call slot: 10:00 AM to 12:00 PM." },
+          { name: "whatsapp_reachability", description: "Users are likely reachable on WhatsApp during issue alert windows." },
+          { name: "issue_risk_score", description: "Issue risk score is 0.78 for the current monitored cohort." },
         ],
         datalake: [
           { customer: "CUST-1661", field: "issue_risk_score", value: "0.78" },
@@ -3166,6 +3175,26 @@
       }
     }
 
+    function renderGenAiVariablesTable(items) {
+      const rows = (items || []).map((item, idx) => {
+        const variableName = item.name || item.title || `variable_${idx + 1}`;
+        const variableDescription = item.description || item.detail || "No description available.";
+        return `
+          <tr>
+            <td><strong>${escapeHtml(variableName)}</strong></td>
+            <td>${escapeHtml(variableDescription)}</td>
+            <td>
+              <div class="dash-inline">
+                <input id="genAiUsageInput-${idx}" type="text" placeholder="How do you want to use it in the business journey?" />
+                <button class="running-action-btn" onclick="useGenAiVariableInJourney(${idx})">Use this variable in business journey</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+      runningGenAiVarRows.innerHTML = rows || `<tr><td colspan="3">No variables available.</td></tr>`;
+    }
+
     function setRunningTab(tabId) {
       const agent = AGENTS[currentAgentId];
       if (!agent || agent.lifecycle !== "running") return;
@@ -3190,7 +3219,7 @@
       renderExecList(runningCurrentList, data.current);
       renderExecList(runningHistoryList, data.history);
       renderExecList(runningSessionList, data.sessions);
-      renderExecList(runningGenAiVarList, data.genAiVariables);
+      renderGenAiVariablesTable(data.genAiVariables);
       const updates = (data.journeyUpdates && data.journeyUpdates.length)
         ? data.journeyUpdates
         : (data.sessions || []).map(item => ({
@@ -3210,6 +3239,40 @@
     function currentRunningData() {
       return RUNNING_DATA[currentAgentId] || { current: [], history: [], sessions: [], journeyUpdates: [], genAiVariables: [], datalake: [] };
     }
+
+    function useGenAiVariableInJourney(index) {
+      if (!currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      if (!agent || agent.lifecycle !== "running") return;
+      const runData = currentRunningData();
+      const variable = (runData.genAiVariables || [])[index];
+      if (!variable) return;
+      const input = document.getElementById(`genAiUsageInput-${index}`);
+      const usageNote = (input && input.value ? input.value : "").trim();
+      if (!usageNote) {
+        openResourceModal("Gen AI Variables", [
+          { name: "Usage instruction required", desc: "Please describe how you want to use this variable in the business journey before applying it." },
+        ]);
+        return;
+      }
+
+      const variableName = variable.name || variable.title || "selected_variable";
+      if (!runData.journeyUpdates) runData.journeyUpdates = [];
+      runData.journeyUpdates.unshift({
+        title: `Use variable: ${variableName}`,
+        detail: usageNote,
+      });
+      setRunningTab("update-journey");
+      message(
+        "agent",
+        agent.name,
+        agent.initials,
+        agent.color,
+        `<p>Added <strong>${escapeHtml(variableName)}</strong> to journey update instructions.</p><p>Requested usage: ${escapeHtml(usageNote)}</p><p>I moved you to <strong>Update Business Journey</strong> so you can apply/edit this in the journey flow.</p>`
+      );
+    }
+
+    window.useGenAiVariableInJourney = useGenAiVariableInJourney;
 
     function downloadCurrentDataLake() {
       const data = currentRunningData().datalake || [];
