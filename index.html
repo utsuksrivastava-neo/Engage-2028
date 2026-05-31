@@ -1442,7 +1442,7 @@
     </section>
 
     <section class="phase-strip" id="phaseStrip">
-      <div class="progress-wrap">
+      <div class="progress-wrap" id="progressWrap">
         <div class="progress-head">
           <span id="progressLabel">Pre-Execution Progress</span>
           <span id="progressText">Phase 1 of 6</span>
@@ -1459,8 +1459,6 @@
           <div class="thread" id="thread"></div>
         </div>
         <aside class="running-pane hidden" id="runningPane">
-          <div class="running-tabs" id="runningTabs"></div>
-
           <div class="running-tab-view" id="runningAnalyticsView">
             <div class="running-section">
               <h4>Current Execution</h4>
@@ -1742,6 +1740,7 @@
     const preList = document.getElementById("preList");
     const runList = document.getElementById("runList");
     const phaseStrip = document.getElementById("phaseStrip");
+    const progressWrap = document.getElementById("progressWrap");
     const phaseTabs = document.getElementById("phaseTabs");
     const moduleButtons = document.getElementById("moduleButtons");
     const progressLabel = document.getElementById("progressLabel");
@@ -1750,7 +1749,6 @@
     const thread = document.getElementById("thread");
     const chatPane = document.getElementById("chatPane");
     const runningPane = document.getElementById("runningPane");
-    const runningTabs = document.getElementById("runningTabs");
     const runningAnalyticsView = document.getElementById("runningAnalyticsView");
     const runningJourneyView = document.getElementById("runningJourneyView");
     const runningCurrentList = document.getElementById("runningCurrentList");
@@ -2142,10 +2140,21 @@
 
     function renderPhases(agent) {
       if (agent.lifecycle !== "pre") {
-        phaseStrip.classList.add("hidden");
+        phaseStrip.classList.remove("hidden");
+        progressWrap.classList.add("hidden");
+        moduleButtons.classList.add("hidden");
+        const activeTab = currentRunningTabByAgent[agent.id] || RUNNING_TABS[0].id;
+        phaseTabs.innerHTML = RUNNING_TABS.map((tab, idx) => `
+          <button class="phase-tab ${tab.id === activeTab ? "active" : ""}" onclick="setRunningTab('${tab.id}')">
+            <span class="phase-tab-num">${idx + 1}</span>
+            <span class="phase-tab-label">${tab.label}</span>
+          </button>
+        `).join("");
         return;
       }
       phaseStrip.classList.remove("hidden");
+      progressWrap.classList.remove("hidden");
+      moduleButtons.classList.remove("hidden");
       const activePhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
       currentPhaseByAgent[agent.id] = activePhase;
 
@@ -2517,6 +2526,7 @@
       const agent = AGENTS[currentAgentId];
       if (!agent || agent.lifecycle !== "running") return;
       currentRunningTabByAgent[agent.id] = tabId;
+      renderPhases(agent);
       renderRunningWorkspace(agent);
     }
 
@@ -2529,10 +2539,6 @@
       const data = RUNNING_DATA[agent.id] || { current: [], history: [], sessions: [], journeyUpdates: [], datalake: [] };
       const activeTab = currentRunningTabByAgent[agent.id] || RUNNING_TABS[0].id;
       currentRunningTabByAgent[agent.id] = activeTab;
-
-      runningTabs.innerHTML = RUNNING_TABS.map(tab => `
-        <button class="running-tab ${tab.id === activeTab ? "active" : ""}" onclick="setRunningTab('${tab.id}')">${tab.label}</button>
-      `).join("");
       runningAnalyticsView.classList.toggle("hidden", activeTab !== "current-analytics");
       runningJourneyView.classList.toggle("hidden", activeTab !== "update-journey");
 
