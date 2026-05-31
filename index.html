@@ -509,7 +509,8 @@
     .workspace-layout {
       height: 100%;
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(460px, 1fr) minmax(420px, 0.9fr);
+      gap: 12px;
       min-width: 0;
     }
 
@@ -521,6 +522,93 @@
       padding: 16px;
       min-width: 0;
       height: 100%;
+    }
+
+    .running-pane {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      overflow-y: auto;
+      padding: 12px;
+      min-width: 0;
+      height: 100%;
+    }
+
+    .running-section {
+      border: 1px solid #dbe5f4;
+      border-radius: 11px;
+      padding: 10px;
+      background: #f9fbff;
+      margin-bottom: 10px;
+    }
+
+    .running-section h4 {
+      font-size: 12px;
+      color: #334155;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .exec-list { display: grid; gap: 7px; }
+    .exec-item {
+      border: 1px solid #dbe5f4;
+      background: #fff;
+      border-radius: 9px;
+      padding: 8px;
+    }
+    .exec-item strong {
+      font-size: 12px;
+      display: block;
+      margin-bottom: 3px;
+      color: #1f2937;
+    }
+    .exec-item span {
+      font-size: 11px;
+      color: #475569;
+      line-height: 1.35;
+      display: block;
+    }
+
+    .running-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .running-action-btn {
+      border: 1px solid #cddcf2;
+      background: #fff;
+      border-radius: 9px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #1e3a8a;
+      padding: 6px 9px;
+      cursor: pointer;
+    }
+
+    .running-action-btn:hover { background: #eff6ff; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .data-table th,
+    .data-table td {
+      border: 1px solid #dbe5f4;
+      padding: 6px 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .data-table th {
+      background: #eef5ff;
+      color: #334155;
+      font-weight: 600;
     }
 
     .thread {
@@ -745,7 +833,7 @@
       box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25);
       overflow: hidden;
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto 1fr auto auto;
     }
 
     .journey-modal-top {
@@ -775,6 +863,26 @@
       cursor: pointer;
       font-size: 15px;
       line-height: 1;
+    }
+
+    .journey-modal-foot {
+      border-top: 1px solid var(--border);
+      padding: 8px 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #fff;
+    }
+
+    .apply-journey-btn {
+      border: 1px solid #1d4ed8;
+      background: #1d4ed8;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 10px;
+      cursor: pointer;
     }
 
     .resource-modal {
@@ -1229,6 +1337,37 @@
         <div class="chat-pane" id="chatPane">
           <div class="thread" id="thread"></div>
         </div>
+        <aside class="running-pane hidden" id="runningPane">
+          <div class="running-section">
+            <h4>Current Execution</h4>
+            <div class="exec-list" id="runningCurrentList"></div>
+          </div>
+          <div class="running-section">
+            <h4>Historical Execution</h4>
+            <div class="exec-list" id="runningHistoryList"></div>
+          </div>
+          <div class="running-section">
+            <h4>Recommended Next Sessions</h4>
+            <div class="exec-list" id="runningSessionList"></div>
+            <div class="running-actions">
+              <button class="running-action-btn" id="startSessionBtn">Start New Optimization Session</button>
+              <button class="running-action-btn" id="askWhatNextBtn">Ask Agent: What should I do next?</button>
+            </div>
+          </div>
+          <div class="running-section">
+            <h4>Customer Data Lake</h4>
+            <table class="data-table">
+              <thead>
+                <tr><th>Customer</th><th>Custom Fields</th><th>Latest Value</th></tr>
+              </thead>
+              <tbody id="runningDataLakeRows"></tbody>
+            </table>
+            <div class="running-actions">
+              <button class="running-action-btn" id="viewDataLakeBtn">View Full Data Lake</button>
+              <button class="running-action-btn" id="downloadDataLakeBtn">Download Data Lake (CSV)</button>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 
@@ -1263,6 +1402,9 @@
       <div class="config-panel">
         <h4>Node Configuration</h4>
         <div id="configFields"></div>
+      </div>
+      <div class="journey-modal-foot">
+        <button class="apply-journey-btn" id="applyJourneyBtn">Apply Journey Changes</button>
       </div>
       <div class="agent-editing" id="agentEditing">Agent is updating the business journey...</div>
     </div>
@@ -1417,6 +1559,11 @@
     const progressFill = document.getElementById("progressFill");
     const thread = document.getElementById("thread");
     const chatPane = document.getElementById("chatPane");
+    const runningPane = document.getElementById("runningPane");
+    const runningCurrentList = document.getElementById("runningCurrentList");
+    const runningHistoryList = document.getElementById("runningHistoryList");
+    const runningSessionList = document.getElementById("runningSessionList");
+    const runningDataLakeRows = document.getElementById("runningDataLakeRows");
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
@@ -1438,10 +1585,15 @@
     const openJourneyEditorBtn = document.getElementById("openJourneyEditorBtn");
     const closeJourneyEditorBtn = document.getElementById("closeJourneyEditorBtn");
     const journeyModal = document.getElementById("journeyModal");
+    const applyJourneyBtn = document.getElementById("applyJourneyBtn");
     const resourceModal = document.getElementById("resourceModal");
     const resourceModalTitle = document.getElementById("resourceModalTitle");
     const resourceList = document.getElementById("resourceList");
     const closeResourceModalBtn = document.getElementById("closeResourceModalBtn");
+    const startSessionBtn = document.getElementById("startSessionBtn");
+    const askWhatNextBtn = document.getElementById("askWhatNextBtn");
+    const viewDataLakeBtn = document.getElementById("viewDataLakeBtn");
+    const downloadDataLakeBtn = document.getElementById("downloadDataLakeBtn");
     const attachBtn = document.getElementById("attachBtn");
     const micBtn = document.getElementById("micBtn");
     const fileInput = document.getElementById("fileInput");
@@ -1572,6 +1724,47 @@
       { name: "Voicebot", desc: "AI voice interactions for assisted collections and support flows." },
       { name: "Dialler", desc: "Agent-assisted outbound calling integrated with queue and workforce controls." },
     ];
+
+    const RUNNING_DATA = {
+      "collections-running": {
+        current: [
+          { title: "Recovery Outreach - Wave 3", detail: "14,280 customers in-flight · WhatsApp-first cadence" },
+          { title: "Escalation Queue", detail: "1,124 high-risk accounts moving to voice channel today" },
+        ],
+        history: [
+          { title: "May 24 - May 30", detail: "Recovery +3.1% · Cost per recovery -14%" },
+          { title: "May 17 - May 23", detail: "Recovery +2.4% · Escalation workload -9%" },
+        ],
+        sessions: [
+          { title: "Retune voice escalation threshold", detail: "Agent suggests reducing escalation trigger by 8% for high-response cohorts." },
+          { title: "Launch low-cost reminder experiment", detail: "Test two-message WhatsApp variant for mid-risk segment." },
+        ],
+        datalake: [
+          { customer: "CUST-1084", field: "repayment_intent_score", value: "0.82" },
+          { customer: "CUST-2041", field: "preferred_channel_confidence", value: "WhatsApp(0.74)" },
+          { customer: "CUST-3120", field: "escalation_propensity", value: "high" },
+        ],
+      },
+      "support-running": {
+        current: [
+          { title: "Proactive Resolution Run", detail: "6,420 customers in proactive monitoring loop" },
+          { title: "Issue Prevention Campaign", detail: "API timeout cluster outreach launched this morning" },
+        ],
+        history: [
+          { title: "May 24 - May 30", detail: "Escalations -18% · First contact resolution +11%" },
+          { title: "May 17 - May 23", detail: "Escalations -10% · Support backlog -7%" },
+        ],
+        sessions: [
+          { title: "Add pre-emptive outage guidance", detail: "Auto-trigger support guidance when service anomaly score > 0.7." },
+          { title: "Refine early-warning model", detail: "Include failed payment + login retry sequence as new signals." },
+        ],
+        datalake: [
+          { customer: "CUST-5122", field: "issue_risk_score", value: "0.76" },
+          { customer: "CUST-8291", field: "self_serve_likelihood", value: "medium" },
+          { customer: "CUST-9150", field: "proactive_resolution_status", value: "sent" },
+        ],
+      },
+    };
 
     function byLifecycle(type) {
       return Object.values(AGENTS).filter(a => a.lifecycle === type);
@@ -1991,6 +2184,55 @@
       suggestions.innerHTML = agent.suggestions.map(s => `<button class="suggestion" onclick="quickSend('${escapeHtml(s)}')">${s}</button>`).join("");
     }
 
+    function renderExecList(target, items) {
+      target.innerHTML = (items || []).map(item => `
+        <div class="exec-item">
+          <strong>${escapeHtml(item.title)}</strong>
+          <span>${escapeHtml(item.detail)}</span>
+        </div>
+      `).join("");
+      if (!target.innerHTML) {
+        target.innerHTML = `<div class="exec-item"><span>No records yet.</span></div>`;
+      }
+    }
+
+    function renderRunningWorkspace(agent) {
+      if (agent.lifecycle !== "running") {
+        runningPane.classList.add("hidden");
+        return;
+      }
+      runningPane.classList.remove("hidden");
+      const data = RUNNING_DATA[agent.id] || { current: [], history: [], sessions: [], datalake: [] };
+      renderExecList(runningCurrentList, data.current);
+      renderExecList(runningHistoryList, data.history);
+      renderExecList(runningSessionList, data.sessions);
+      runningDataLakeRows.innerHTML = data.datalake.map(row => `
+        <tr>
+          <td>${escapeHtml(row.customer)}</td>
+          <td>${escapeHtml(row.field)}</td>
+          <td>${escapeHtml(row.value)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function currentRunningData() {
+      return RUNNING_DATA[currentAgentId] || { current: [], history: [], sessions: [], datalake: [] };
+    }
+
+    function downloadCurrentDataLake() {
+      const data = currentRunningData().datalake || [];
+      const rows = [["customer_id", "custom_field", "value"], ...data.map(r => [r.customer, r.field, r.value])];
+      const csv = rows.map(cols => cols.map(v => `"${String(v).replaceAll('"', '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${currentAgentId || "running-agent"}-datalake.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    }
+
     function setPhase(phaseId) {
       const agent = AGENTS[currentAgentId];
       if (!agent || agent.lifecycle !== "pre") return;
@@ -2009,6 +2251,7 @@
       renderSidebar();
       setTopPanel(agent);
       renderPhases(agent);
+      renderRunningWorkspace(agent);
       renderSuggestions(agent);
       thread.innerHTML = "";
 
@@ -2020,16 +2263,8 @@
           openModule(phase.id, phase.modules[0].id, phase.modules[0].label);
         }
       } else {
-        message("user", "You", "US", "#6366f1", `<p>Open running workspace for ${agent.name}.</p>`);
-        message("agent", agent.name, agent.initials, agent.color, `<p>Running agent workspace is active.</p><p>We'll do a dedicated redesign for running agents next, as you requested.</p>`);
-        nodeRail.innerHTML = `
-          <div class="node active">
-            <div class="node-type">Running</div>
-            <div class="node-title">Execution view coming next</div>
-            <div class="node-status working">In Progress</div>
-          </div>`;
-        configFields.innerHTML = `
-          <div class="cfg-field"><label>Status</label><div>Running-agent redesign pending next iteration.</div></div>`;
+        message("agent", agent.name, agent.initials, agent.color, `<p>Running workspace loaded.</p><ul><li>Review current and historical execution on the right</li><li>Check recommended new sessions and launch updates</li><li>View/export customer data lake anytime</li><li>Edit journey manually via <strong>Open Business Journey Editor</strong></li></ul>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p><strong>Proactive prompt:</strong> I found 2 new optimization sessions you can run now. Want me to start with the highest-impact one?</p>`);
       }
     }
 
@@ -2049,15 +2284,10 @@
       renderSidebar();
       setTopPanel(agent);
       renderPhases(agent);
+      renderRunningWorkspace(agent);
       renderSuggestions(agent);
-      nodeRail.innerHTML = `
-        <div class="node active">
-          <div class="node-type">Running</div>
-          <div class="node-title">Live execution journey managed centrally</div>
-          <div class="node-status working">Running</div>
-        </div>`;
-      configFields.innerHTML = `<div class="cfg-field"><label>Execution State</label><div>Journey handed off to Central Orchestration & Execution Layer.</div></div>`;
       showAgentEditing("Handing off to central orchestration...");
+      message("agent", agent.name, agent.initials, agent.color, `<p>This new journey version will start executing from <strong>${new Date(Date.now() + 86400000).toLocaleDateString()}</strong>.</p>`);
       return true;
     }
 
@@ -2101,6 +2331,27 @@
         }
       }
 
+      if (agent.lifecycle === "running") {
+        const lower = (text || "").toLowerCase();
+        const runData = currentRunningData();
+        if (lower.includes("history") || lower.includes("past")) {
+          const hist = (runData.history || []).map(h => `<li><strong>${escapeHtml(h.title)}:</strong> ${escapeHtml(h.detail)}</li>`).join("");
+          message("agent", agent.name, agent.initials, agent.color, `<p>Here is recent historical execution performance:</p><ul>${hist}</ul>`);
+          return;
+        }
+        if (lower.includes("current") || lower.includes("live")) {
+          const cur = (runData.current || []).map(h => `<li><strong>${escapeHtml(h.title)}:</strong> ${escapeHtml(h.detail)}</li>`).join("");
+          message("agent", agent.name, agent.initials, agent.color, `<p>Current execution snapshot:</p><ul>${cur}</ul>`);
+          return;
+        }
+        if (lower.includes("data lake") || lower.includes("export") || lower.includes("download")) {
+          message("agent", agent.name, agent.initials, agent.color, `<p>You can use <strong>View Full Data Lake</strong> or <strong>Download Data Lake (CSV)</strong> from the Running Agent panel on the right.</p>`);
+          return;
+        }
+        message("agent", agent.name, agent.initials, agent.color, `<p>I can help with this running agent now.</p><p>Ask for current execution, historical execution, next sessions, or data lake export.</p>`);
+        return;
+      }
+
       message("agent", agent.name, agent.initials, agent.color, `<p>Understood. I can continue guiding the active module, or you can switch phase/module anytime.</p>`);
     }
 
@@ -2118,6 +2369,13 @@
     sendBtn.addEventListener("click", sendMessage);
     openJourneyEditorBtn.addEventListener("click", openJourneyEditor);
     closeJourneyEditorBtn.addEventListener("click", closeJourneyEditor);
+    applyJourneyBtn.addEventListener("click", () => {
+      if (!currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      const effectiveDate = new Date(Date.now() + 86400000).toLocaleDateString();
+      closeJourneyEditor();
+      message("agent", agent.name, agent.initials, agent.color, `<p>Journey edits saved.</p><p>The updated business journey will start from <strong>${effectiveDate}</strong>.</p>`);
+    });
     openDataSourcesBtn.addEventListener("click", () => openResourceModal("Data Sources", DATA_SOURCES));
     openBusinessChannelsBtn.addEventListener("click", () => openResourceModal("Business Channels", BUSINESS_CHANNELS));
     closeResourceModalBtn.addEventListener("click", closeResourceModal);
@@ -2146,6 +2404,31 @@
       updateSendState();
       fileInput.value = "";
     });
+
+    startSessionBtn.addEventListener("click", () => {
+      if (!currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      if (agent.lifecycle !== "running") return;
+      message("agent", agent.name, agent.initials, agent.color, `<p>Started a new optimization session.</p><p>I am preparing an experiment plan and projected impact update for this running journey.</p>`);
+    });
+
+    askWhatNextBtn.addEventListener("click", () => {
+      if (!currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      if (agent.lifecycle !== "running") return;
+      message("agent", agent.name, agent.initials, agent.color, `<p><strong>Recommended next actions:</strong></p><ul><li>Run touchpoint timing retune for high-value segment</li><li>Launch low-cost reminder variant experiment</li><li>Review escalation threshold drift in last 48 hours</li></ul>`);
+    });
+
+    viewDataLakeBtn.addEventListener("click", () => {
+      const data = currentRunningData().datalake || [];
+      const items = data.map(row => ({
+        name: `${row.customer} · ${row.field}`,
+        desc: `Latest value: ${row.value}`,
+      }));
+      openResourceModal("Running Agent Data Lake", items);
+    });
+
+    downloadDataLakeBtn.addEventListener("click", downloadCurrentDataLake);
 
     function setupSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
