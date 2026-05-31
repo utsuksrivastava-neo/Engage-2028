@@ -1081,6 +1081,48 @@
       line-height: 1.4;
     }
 
+    .create-agent-form {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .create-agent-form label {
+      display: block;
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .create-agent-form input,
+    .create-agent-form select {
+      width: 100%;
+      border: 1px solid #d7e3f3;
+      border-radius: 10px;
+      background: #fff;
+      padding: 9px 10px;
+      font-size: 13px;
+      color: #0f172a;
+      outline: none;
+    }
+
+    .create-agent-form input:focus,
+    .create-agent-form select:focus {
+      border-color: #93b2df;
+      box-shadow: 0 0 0 3px #e8f0ff;
+    }
+
+    .create-agent-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+    }
+
     .msg {
       display: flex;
       gap: 12px;
@@ -1776,6 +1818,29 @@
       <div class="resource-list" id="resourceList"></div>
     </div>
   </div>
+
+  <div class="resource-modal" id="createAgentModal" onclick="closeCreateAgentModalOnBackdrop(event)">
+    <div class="resource-card" style="width:min(520px,95vw);">
+      <div class="resource-head">
+        <h3>Create New Business Agent</h3>
+        <button class="close-modal" id="closeCreateAgentModalBtn">×</button>
+      </div>
+      <div class="create-agent-form">
+        <div>
+          <label>Agent Name</label>
+          <input id="newAgentNameInput" type="text" placeholder="Enter agent name" />
+        </div>
+        <div>
+          <label>Department</label>
+          <select id="newAgentDepartmentSelect"></select>
+        </div>
+        <div class="create-agent-actions">
+          <button class="meta-link-btn" id="cancelCreateAgentBtn">Cancel</button>
+          <button class="dash-btn primary" id="confirmCreateAgentBtn">Create Agent</button>
+        </div>
+      </div>
+    </div>
+  </div>
   </div>
 
   <script>
@@ -2032,6 +2097,12 @@
     const resourceModalTitle = document.getElementById("resourceModalTitle");
     const resourceList = document.getElementById("resourceList");
     const closeResourceModalBtn = document.getElementById("closeResourceModalBtn");
+    const createAgentModal = document.getElementById("createAgentModal");
+    const closeCreateAgentModalBtn = document.getElementById("closeCreateAgentModalBtn");
+    const cancelCreateAgentBtn = document.getElementById("cancelCreateAgentBtn");
+    const confirmCreateAgentBtn = document.getElementById("confirmCreateAgentBtn");
+    const newAgentNameInput = document.getElementById("newAgentNameInput");
+    const newAgentDepartmentSelect = document.getElementById("newAgentDepartmentSelect");
     const startSessionBtn = document.getElementById("startSessionBtn");
     const askWhatNextBtn = document.getElementById("askWhatNextBtn");
     const applyJourneyUpdateBtn = document.getElementById("applyJourneyUpdateBtn");
@@ -2697,6 +2768,55 @@
 
     window.closeResourceModalOnBackdrop = closeResourceModalOnBackdrop;
 
+    function openCreateAgentModal() {
+      newAgentDepartmentSelect.innerHTML = DEPARTMENTS.map(dep =>
+        `<option value="${escapeHtml(dep)}"${dep === "Other" ? " selected" : ""}>${escapeHtml(dep)}</option>`
+      ).join("");
+      newAgentNameInput.value = "";
+      createAgentModal.classList.add("open");
+      setTimeout(() => newAgentNameInput.focus(), 0);
+    }
+
+    function closeCreateAgentModal() {
+      createAgentModal.classList.remove("open");
+    }
+
+    function closeCreateAgentModalOnBackdrop(event) {
+      if (event.target === createAgentModal) closeCreateAgentModal();
+    }
+
+    function createAgentFromModal() {
+      const name = (newAgentNameInput.value || "").trim();
+      if (!name) {
+        openResourceModal("Create Agent", [
+          { name: "Missing agent name", desc: "Please provide an agent name before creating the agent." },
+        ]);
+        return;
+      }
+      const department = normalizeDepartment(newAgentDepartmentSelect.value || "Other");
+      const id = `${name.toLowerCase().replaceAll(" ", "-")}-${Date.now()}`;
+      AGENTS[id] = {
+        id,
+        name,
+        initials: initialsFromName(name),
+        color: stableColorFromName(name),
+        lifecycle: "pre",
+        ownerId: CURRENT_USER_ID,
+        department,
+        objective: NEW_AGENT_DEFAULTS.objective,
+        inputs: NEW_AGENT_DEFAULTS.inputs,
+        guardrails: NEW_AGENT_DEFAULTS.guardrails,
+        suggestions: NEW_AGENT_DEFAULTS.suggestions,
+      };
+      AGENT_SHARES[id] = [];
+      currentPhaseByAgent[id] = PHASES[0].id;
+      currentModuleByAgent[id] = null;
+      closeCreateAgentModal();
+      selectAgent(id);
+    }
+
+    window.closeCreateAgentModalOnBackdrop = closeCreateAgentModalOnBackdrop;
+
     function relevantJourneySnippet(agentId) {
       const phaseId = currentPhaseByAgent[agentId];
       const nodes = (journeyByAgent[agentId] && journeyByAgent[agentId][phaseId]) || [];
@@ -3308,33 +3428,15 @@
       return palette[Math.abs(hash) % palette.length];
     }
 
-    document.getElementById("createBtn").addEventListener("click", () => {
-      const enteredName = window.prompt("Enter new Business Agent name:");
-      if (!enteredName || !enteredName.trim()) return;
-      const name = enteredName.trim();
-      const deptInput = window.prompt(
-        `Assign a department (${DEPARTMENTS.join(", ")})`,
-        "Other"
-      );
-      const department = normalizeDepartment(deptInput);
-      const id = `${name.toLowerCase().replaceAll(" ", "-")}-${Date.now()}`;
-      AGENTS[id] = {
-        id,
-        name,
-        initials: initialsFromName(name),
-        color: stableColorFromName(name),
-        lifecycle: "pre",
-        ownerId: CURRENT_USER_ID,
-        department,
-        objective: NEW_AGENT_DEFAULTS.objective,
-        inputs: NEW_AGENT_DEFAULTS.inputs,
-        guardrails: NEW_AGENT_DEFAULTS.guardrails,
-        suggestions: NEW_AGENT_DEFAULTS.suggestions,
-      };
-      AGENT_SHARES[id] = [];
-      currentPhaseByAgent[id] = PHASES[0].id;
-      currentModuleByAgent[id] = null;
-      selectAgent(id);
+    document.getElementById("createBtn").addEventListener("click", openCreateAgentModal);
+    closeCreateAgentModalBtn.addEventListener("click", closeCreateAgentModal);
+    cancelCreateAgentBtn.addEventListener("click", closeCreateAgentModal);
+    confirmCreateAgentBtn.addEventListener("click", createAgentFromModal);
+    newAgentNameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") createAgentFromModal();
+    });
+    newAgentDepartmentSelect.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") createAgentFromModal();
     });
 
     renderAttachmentTray();
