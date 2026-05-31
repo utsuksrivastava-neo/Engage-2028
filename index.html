@@ -189,6 +189,25 @@
       margin-bottom: 0;
     }
 
+    .studio-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .journey-editor-btn {
+      border: 1px solid #cfe0f8;
+      background: #eff6ff;
+      color: #1e3a8a;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .journey-editor-btn:hover { background: #e3f0ff; }
+
     .studio-title h1 {
       font-size: 20px;
       font-weight: 700;
@@ -384,8 +403,7 @@
     .workspace-layout {
       height: 100%;
       display: grid;
-      grid-template-columns: minmax(460px, 1.05fr) minmax(520px, 1fr);
-      gap: 12px;
+      grid-template-columns: 1fr;
       min-width: 0;
     }
 
@@ -396,6 +414,7 @@
       overflow-y: auto;
       padding: 16px;
       min-width: 0;
+      height: 100%;
     }
 
     .thread {
@@ -596,6 +615,60 @@
       border-radius: 50%;
       background: #3b82f6;
       animation: pulseLive 1.2s infinite;
+    }
+
+    .journey-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.42);
+      z-index: 40;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .journey-modal.open { display: flex; }
+
+    .journey-modal-card {
+      width: min(1120px, 96vw);
+      height: min(86vh, 860px);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .journey-modal-top {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fbff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .journey-modal-top h3 {
+      font-size: 13px;
+      color: #334155;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .close-modal {
+      border: 1px solid #d9e4f4;
+      background: #fff;
+      color: #475569;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
     }
 
     .msg {
@@ -823,7 +896,10 @@
     <section class="studio-top">
       <div class="studio-title">
         <h1 id="agentTitle">Select an Agent</h1>
-        <span class="status-chip" id="agentStatus">Status</span>
+        <div class="studio-actions">
+          <button class="journey-editor-btn" id="openJourneyEditorBtn">Open Business Journey Editor</button>
+          <span class="status-chip" id="agentStatus">Status</span>
+        </div>
       </div>
     </section>
 
@@ -844,20 +920,6 @@
         <div class="chat-pane" id="chatPane">
           <div class="thread" id="thread"></div>
         </div>
-        <aside class="journey-pane">
-          <div class="journey-head">
-            <h3>Business Journey (Live)</h3>
-            <div class="live-dot">Agent updates in real time</div>
-          </div>
-          <div class="journey-canvas">
-            <div class="node-rail" id="nodeRail"></div>
-          </div>
-          <div class="config-panel">
-            <h4>Node Configuration</h4>
-            <div id="configFields"></div>
-          </div>
-          <div class="agent-editing" id="agentEditing">Agent is updating the business journey...</div>
-        </aside>
       </div>
     </section>
 
@@ -879,6 +941,23 @@
       <input type="file" id="fileInput" multiple class="hidden" />
     </section>
   </main>
+
+  <div class="journey-modal" id="journeyModal" onclick="closeJourneyEditorOnBackdrop(event)">
+    <div class="journey-modal-card">
+      <div class="journey-modal-top">
+        <h3>Business Journey Manual Editor</h3>
+        <button class="close-modal" id="closeJourneyEditorBtn">×</button>
+      </div>
+      <div class="journey-canvas">
+        <div class="node-rail" id="nodeRail"></div>
+      </div>
+      <div class="config-panel">
+        <h4>Node Configuration</h4>
+        <div id="configFields"></div>
+      </div>
+      <div class="agent-editing" id="agentEditing">Agent is updating the business journey...</div>
+    </div>
+  </div>
 
   <script>
     const PHASES = [
@@ -984,6 +1063,9 @@
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
+    const openJourneyEditorBtn = document.getElementById("openJourneyEditorBtn");
+    const closeJourneyEditorBtn = document.getElementById("closeJourneyEditorBtn");
+    const journeyModal = document.getElementById("journeyModal");
     const attachBtn = document.getElementById("attachBtn");
     const micBtn = document.getElementById("micBtn");
     const fileInput = document.getElementById("fileInput");
@@ -1188,6 +1270,36 @@
       `;
     }
 
+    function openJourneyEditor() {
+      journeyModal.classList.add("open");
+    }
+
+    function closeJourneyEditor() {
+      journeyModal.classList.remove("open");
+    }
+
+    function closeJourneyEditorOnBackdrop(event) {
+      if (event.target === journeyModal) closeJourneyEditor();
+    }
+
+    window.closeJourneyEditorOnBackdrop = closeJourneyEditorOnBackdrop;
+
+    function relevantJourneySnippet(agentId) {
+      const phaseId = currentPhaseByAgent[agentId];
+      const nodes = (journeyByAgent[agentId] && journeyByAgent[agentId][phaseId]) || [];
+      const selectedId = selectedNodeByAgent[agentId] && selectedNodeByAgent[agentId][phaseId];
+      const node = nodes.find(n => n.id === selectedId) || nodes[0];
+      if (!node) return "";
+      return `
+        <div style="margin-top:8px;border:1px solid #dbe6f5;background:#f8fbff;border-radius:10px;padding:9px 10px;">
+          <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;font-weight:600;">Relevant Journey Update</div>
+          <div style="font-size:12px;font-weight:600;color:#1f2937;margin-top:4px;">${escapeHtml(node.title)}</div>
+          <div style="font-size:11px;color:#475569;margin-top:4px;">Status: ${node.status === "pending" ? "Pending" : node.status === "done" ? "Configured" : "In Progress"}</div>
+          <div style="font-size:11px;color:#334155;margin-top:4px;">Use <strong>Open Business Journey Editor</strong> on top for full manual edits.</div>
+        </div>
+      `;
+    }
+
     function selectNode(nodeId) {
       if (!currentAgentId) return;
       const phaseId = currentPhaseByAgent[currentAgentId];
@@ -1216,7 +1328,7 @@
       showAgentEditing(`Updating journey for ${moduleLabel}...`);
 
       message("user", "You", "US", "#6366f1", `<p>Open module: <strong>${moduleLabel}</strong></p>`);
-      message("agent", agent.name, agent.initials, agent.color, moduleReply(agent, phaseId, moduleId));
+      message("agent", agent.name, agent.initials, agent.color, `${moduleReply(agent, phaseId, moduleId)}${relevantJourneySnippet(agent.id)}`);
     }
 
     function applyModuleEdit(agentId, phaseId, moduleId) {
@@ -1373,6 +1485,8 @@
       }
     });
     sendBtn.addEventListener("click", sendMessage);
+    openJourneyEditorBtn.addEventListener("click", openJourneyEditor);
+    closeJourneyEditorBtn.addEventListener("click", closeJourneyEditor);
 
     attachBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", (e) => {
