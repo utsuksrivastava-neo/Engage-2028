@@ -163,6 +163,12 @@
       text-overflow: ellipsis;
     }
 
+    /* Safety: hide deprecated sidebar step chips in any stale DOM. */
+    .step-matrix,
+    .step-chip {
+      display: none !important;
+    }
+
     .run-state {
       margin-top: 5px;
       display: inline-flex;
