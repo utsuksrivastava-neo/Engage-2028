@@ -61,6 +61,7 @@ open index.html
 - `docs/PROJECT_DOCUMENTATION.md` - full implementation documentation (architecture + behavior)
 - `docs/UI_UX_SOLUTION_DESIGN.md` - UI/UX solution design and interaction rationale
 - `docs/CONCEPTS_AND_GLOSSARY.md` - concept definitions for new contributors/stakeholders
+- `docs/DESIGN_BRIEF.md` - project design brief (problem, goals, scope, users, success criteria)
 
 ## Recommended Read Order for New Contributors
 
