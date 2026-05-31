@@ -195,6 +195,79 @@
       gap: 8px;
     }
 
+    .profile-wrap {
+      position: relative;
+    }
+
+    .profile-btn {
+      border: 1px solid #d7e3f3;
+      background: #fff;
+      border-radius: 999px;
+      padding: 4px 8px 4px 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 11px;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .profile-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .profile-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      min-width: 180px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+      padding: 7px;
+      display: none;
+      z-index: 30;
+    }
+
+    .profile-menu.open { display: block; }
+
+    .profile-menu-head {
+      font-size: 11px;
+      color: #475569;
+      padding: 6px 7px;
+      border-bottom: 1px solid #edf2f8;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .profile-menu button {
+      width: 100%;
+      text-align: left;
+      border: 1px solid transparent;
+      background: #fff;
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 12px;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .profile-menu button:hover {
+      background: #f8fbff;
+      border-color: #dbe6f5;
+    }
+
     .journey-editor-btn {
       border: 1px solid #cfe0f8;
       background: #eff6ff;
@@ -872,9 +945,131 @@
 
     .send:disabled { opacity: .35; cursor: default; }
     .hidden { display: none; }
+
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: linear-gradient(145deg, #eef4ff 0%, #f8fbff 45%, #ffffff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      width: min(450px, 94vw);
+      border: 1px solid #dbe6f5;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 20px 52px rgba(15, 23, 42, 0.2);
+      padding: 18px;
+    }
+
+    .auth-card h2 {
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      margin-bottom: 5px;
+    }
+
+    .auth-card p {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
+    .demo-credentials {
+      border: 1px dashed #bfdbfe;
+      background: #eff6ff;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      color: #1e3a8a;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
+    .auth-field { margin-bottom: 8px; }
+    .auth-field label {
+      display: block;
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .auth-field input {
+      width: 100%;
+      border: 1px solid #d7e3f3;
+      background: #fff;
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 14px;
+      color: #0f172a;
+      outline: none;
+    }
+
+    .auth-field input:focus {
+      border-color: #93b2df;
+      box-shadow: 0 0 0 3px #e8f0ff;
+    }
+
+    .auth-actions {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+    }
+
+    .auth-login-btn {
+      border: 0;
+      background: #1d4ed8;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    .auth-error {
+      font-size: 12px;
+      color: #b91c1c;
+      display: none;
+    }
+
+    .auth-error.show { display: block; }
   </style>
 </head>
 <body>
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+      <h2>Sign in to Engage 2028 Demo</h2>
+      <p>Use the demo credentials below to access the full pre-execution agent experience.</p>
+      <div class="demo-credentials">
+        <div><strong>Username:</strong> demo</div>
+        <div><strong>Password:</strong> engage2028</div>
+      </div>
+      <div class="auth-field">
+        <label>Username</label>
+        <input type="text" id="loginUsername" value="demo" />
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="loginPassword" value="engage2028" />
+      </div>
+      <div class="auth-actions">
+        <button class="auth-login-btn" id="loginBtn">Sign In</button>
+        <div class="auth-error" id="authError">Invalid credentials. Use demo / engage2028.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="appShell" class="hidden">
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo"><div class="logo-mark">E</div>Engage AI Studio</div>
@@ -899,6 +1094,16 @@
         <div class="studio-actions">
           <button class="journey-editor-btn" id="openJourneyEditorBtn">Open Business Journey Editor</button>
           <span class="status-chip" id="agentStatus">Status</span>
+          <div class="profile-wrap">
+            <button class="profile-btn" id="profileBtn">
+              <span class="profile-avatar" id="profileAvatar">DU</span>
+              <span id="profileName">Demo User</span>
+            </button>
+            <div class="profile-menu" id="profileMenu">
+              <div class="profile-menu-head" id="profileMenuHead">Signed in as demo</div>
+              <button id="logoutBtn">Log out</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -958,6 +1163,7 @@
       <div class="agent-editing" id="agentEditing">Agent is updating the business journey...</div>
     </div>
   </div>
+  </div>
 
   <script>
     const PHASES = [
@@ -998,6 +1204,9 @@
       guardrails: "Policy, compliance, permissions, budget, and operational boundaries",
       suggestions: ["Open Planning Phase", "Open Create Business Journey", "Open Go Live tab"],
     };
+    const DEMO_USERNAME = "demo";
+    const DEMO_PASSWORD = "engage2028";
+    const AUTH_STORAGE_KEY = "engage2028-demo-user";
 
     let AGENTS = {
       "main-collections": {
@@ -1063,6 +1272,18 @@
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const loginUsername = document.getElementById("loginUsername");
+    const loginPassword = document.getElementById("loginPassword");
+    const loginBtn = document.getElementById("loginBtn");
+    const authError = document.getElementById("authError");
+    const profileBtn = document.getElementById("profileBtn");
+    const profileMenu = document.getElementById("profileMenu");
+    const profileName = document.getElementById("profileName");
+    const profileAvatar = document.getElementById("profileAvatar");
+    const profileMenuHead = document.getElementById("profileMenuHead");
+    const logoutBtn = document.getElementById("logoutBtn");
     const openJourneyEditorBtn = document.getElementById("openJourneyEditorBtn");
     const closeJourneyEditorBtn = document.getElementById("closeJourneyEditorBtn");
     const journeyModal = document.getElementById("journeyModal");
@@ -1117,6 +1338,62 @@
 
     function byLifecycle(type) {
       return Object.values(AGENTS).filter(a => a.lifecycle === type);
+    }
+
+    function initialsForUser(name) {
+      const parts = (name || "").trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return "DU";
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
+    function setProfile(userName) {
+      const safeName = userName || "Demo User";
+      profileName.textContent = safeName;
+      profileAvatar.textContent = initialsForUser(safeName);
+      profileMenuHead.textContent = `Signed in as ${safeName}`;
+    }
+
+    function getSessionUser() {
+      return localStorage.getItem(AUTH_STORAGE_KEY);
+    }
+
+    function setSessionUser(user) {
+      localStorage.setItem(AUTH_STORAGE_KEY, user);
+    }
+
+    function clearSessionUser() {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+
+    function applyAuthState(user) {
+      const isAuthed = Boolean(user);
+      authScreen.classList.toggle("hidden", isAuthed);
+      appShell.classList.toggle("hidden", !isAuthed);
+      if (isAuthed) {
+        setProfile(user);
+        if (!currentAgentId) selectAgent("main-collections");
+      } else {
+        profileMenu.classList.remove("open");
+        currentAgentId = null;
+      }
+    }
+
+    function login() {
+      const username = (loginUsername.value || "").trim();
+      const password = (loginPassword.value || "").trim();
+      if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
+        authError.classList.remove("show");
+        setSessionUser("Demo User");
+        applyAuthState("Demo User");
+        return;
+      }
+      authError.classList.add("show");
+    }
+
+    function logout() {
+      clearSessionUser();
+      applyAuthState(null);
     }
 
     function renderSidebar() {
@@ -1414,7 +1691,7 @@
 
       if (agent.lifecycle === "pre") {
         message("user", "You", "US", "#6366f1", `<p>Let's continue building this pre-execution agent. Open any phase tab and module.</p>`);
-        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><ul><li>Use the 6 tabs on top for phase-level navigation</li><li>Watch the Business Journey pane update in real time as modules are configured</li><li>Click any node to inspect configuration details</li></ul>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><ul><li>Use the 6 tabs on top for phase-level navigation</li><li>Agent updates appear as relevant journey snippets in chat</li><li>Use <strong>Open Business Journey Editor</strong> on top for full manual editing</li></ul>`);
       } else {
         message("user", "You", "US", "#6366f1", `<p>Open running workspace for ${agent.name}.</p>`);
         message("agent", agent.name, agent.initials, agent.color, `<p>Running agent workspace is active.</p><p>We'll do a dedicated redesign for running agents next, as you requested.</p>`);
@@ -1487,6 +1764,16 @@
     sendBtn.addEventListener("click", sendMessage);
     openJourneyEditorBtn.addEventListener("click", openJourneyEditor);
     closeJourneyEditorBtn.addEventListener("click", closeJourneyEditor);
+    loginBtn.addEventListener("click", login);
+    loginPassword.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
+    profileBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      profileMenu.classList.toggle("open");
+    });
+    logoutBtn.addEventListener("click", logout);
+    document.addEventListener("click", () => profileMenu.classList.remove("open"));
 
     attachBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", (e) => {
@@ -1586,9 +1873,9 @@
       selectAgent(id);
     });
 
-    selectAgent("main-collections");
     renderAttachmentTray();
     updateSendState();
+    applyAuthState(getSessionUser());
   </script>
 </body>
 </html>
