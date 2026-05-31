@@ -1737,6 +1737,24 @@
               </div>
             </div>
           </div>
+
+          <div class="running-tab-view hidden" id="runningGenAiView">
+            <div class="running-section">
+              <h4>Gen AI Variables</h4>
+              <div class="exec-list" id="runningGenAiVarList"></div>
+            </div>
+            <div class="running-section">
+              <h4>Variable Guidance</h4>
+              <div class="exec-item">
+                <strong>How these are used</strong>
+                <span>These variables support personalization, prioritization, and escalation decisions in running journeys.</span>
+              </div>
+              <div class="exec-item">
+                <strong>Confidence policy</strong>
+                <span>Variables with low confidence should use safe defaults until enough behavioral evidence is available.</span>
+              </div>
+            </div>
+          </div>
         </aside>
       </div>
     </section>
@@ -2010,6 +2028,7 @@
     const RUNNING_TABS = [
       { id: "current-analytics", label: "Current Analytics" },
       { id: "update-journey", label: "Update Business Journey" },
+      { id: "gen-ai-variables", label: "Gen AI Variables" },
     ];
 
     const preList = document.getElementById("preList");
@@ -2032,10 +2051,12 @@
     const runningPane = document.getElementById("runningPane");
     const runningAnalyticsView = document.getElementById("runningAnalyticsView");
     const runningJourneyView = document.getElementById("runningJourneyView");
+    const runningGenAiView = document.getElementById("runningGenAiView");
     const runningCurrentList = document.getElementById("runningCurrentList");
     const runningHistoryList = document.getElementById("runningHistoryList");
     const runningSessionList = document.getElementById("runningSessionList");
     const runningJourneyUpdateList = document.getElementById("runningJourneyUpdateList");
+    const runningGenAiVarList = document.getElementById("runningGenAiVarList");
     const runningDataLakeRows = document.getElementById("runningDataLakeRows");
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
@@ -2286,6 +2307,11 @@
           { title: "Retune nudge timing after document upload", detail: "Shift second reminder from 8h to 3h for high-intent cohorts." },
           { title: "Activate regional language variant", detail: "Enable Hindi + Kannada quick-complete templates for pending users." },
         ],
+        genAiVariables: [
+          { title: "onboarding_completion_probability", detail: "0.84 · Confidence: high" },
+          { title: "assist_likelihood_score", detail: "0.63 · Confidence: medium" },
+          { title: "preferred_language_prediction", detail: "Hindi · Confidence: high" },
+        ],
         datalake: [
           { customer: "CUST-1042", field: "onboarding_intent_score", value: "0.88" },
           { customer: "CUST-2290", field: "kyc_step_dropoff_point", value: "address_verification" },
@@ -2304,6 +2330,11 @@
         sessions: [
           { title: "Retune collection reminder sequence", detail: "Reduce first 24h pressure for medium-risk cohort to improve conversion quality." },
           { title: "Launch pay-link optimization test", detail: "Test pre-filled repayment links for top delinquency clusters." },
+        ],
+        genAiVariables: [
+          { title: "repayment_intent_score", detail: "0.81 · Confidence: high" },
+          { title: "promise_to_pay_probability", detail: "0.58 · Confidence: medium" },
+          { title: "escalation_risk_forecast", detail: "High · Confidence: medium" },
         ],
         datalake: [
           { customer: "CUST-1188", field: "repayment_intent_score", value: "0.81" },
@@ -2324,6 +2355,11 @@
           { title: "Add low-cost save path", detail: "Route medium-risk users to non-discount interventions before offers." },
           { title: "Reweight disengagement trigger", detail: "Increase app-inactivity weight for users with support tickets in last 14 days." },
         ],
+        genAiVariables: [
+          { title: "churn_risk_score", detail: "0.74 · Confidence: high" },
+          { title: "save_offer_affinity", detail: "Medium · Confidence: medium" },
+          { title: "retention_roi_prediction", detail: "+17% · Confidence: medium" },
+        ],
         datalake: [
           { customer: "CUST-1455", field: "churn_risk_score", value: "0.74" },
           { customer: "CUST-2754", field: "retention_offer_sensitivity", value: "medium" },
@@ -2343,6 +2379,11 @@
           { title: "Test behavior-triggered bundles", detail: "Launch bundle recommendations for customers with 2+ category affinity." },
           { title: "Optimize reorder reminder window", detail: "Advance reminder by 36h for fast-moving basket segments." },
         ],
+        genAiVariables: [
+          { title: "repeat_purchase_propensity", detail: "0.79 · Confidence: high" },
+          { title: "offer_elasticity_index", detail: "0.54 · Confidence: medium" },
+          { title: "next_order_window_prediction", detail: "5 days · Confidence: medium" },
+        ],
         datalake: [
           { customer: "CUST-1322", field: "repeat_purchase_propensity", value: "0.79" },
           { customer: "CUST-2881", field: "offer_affinity_vector", value: "electronics:0.68, accessories:0.57" },
@@ -2361,6 +2402,11 @@
         sessions: [
           { title: "Tune anomaly threshold by segment", detail: "Lower trigger for premium users to prevent high-value escalations." },
           { title: "Expand proactive walkthrough coverage", detail: "Add guided flow for payment setup and login reset journeys." },
+        ],
+        genAiVariables: [
+          { title: "issue_risk_score", detail: "0.78 · Confidence: high" },
+          { title: "self_serve_completion_probability", detail: "0.72 · Confidence: medium" },
+          { title: "escalation_prevention_lift", detail: "+14% · Confidence: medium" },
         ],
         datalake: [
           { customer: "CUST-1661", field: "issue_risk_score", value: "0.78" },
@@ -3134,15 +3180,17 @@
         return;
       }
       runningPane.classList.remove("hidden");
-      const data = RUNNING_DATA[agent.id] || { current: [], history: [], sessions: [], journeyUpdates: [], datalake: [] };
+      const data = RUNNING_DATA[agent.id] || { current: [], history: [], sessions: [], journeyUpdates: [], genAiVariables: [], datalake: [] };
       const activeTab = currentRunningTabByAgent[agent.id] || RUNNING_TABS[0].id;
       currentRunningTabByAgent[agent.id] = activeTab;
       runningAnalyticsView.classList.toggle("hidden", activeTab !== "current-analytics");
       runningJourneyView.classList.toggle("hidden", activeTab !== "update-journey");
+      runningGenAiView.classList.toggle("hidden", activeTab !== "gen-ai-variables");
 
       renderExecList(runningCurrentList, data.current);
       renderExecList(runningHistoryList, data.history);
       renderExecList(runningSessionList, data.sessions);
+      renderExecList(runningGenAiVarList, data.genAiVariables);
       const updates = (data.journeyUpdates && data.journeyUpdates.length)
         ? data.journeyUpdates
         : (data.sessions || []).map(item => ({
@@ -3160,7 +3208,7 @@
     }
 
     function currentRunningData() {
-      return RUNNING_DATA[currentAgentId] || { current: [], history: [], sessions: [], journeyUpdates: [], datalake: [] };
+      return RUNNING_DATA[currentAgentId] || { current: [], history: [], sessions: [], journeyUpdates: [], genAiVariables: [], datalake: [] };
     }
 
     function downloadCurrentDataLake() {
@@ -3306,6 +3354,11 @@
         if ((lower.includes("update") && lower.includes("journey")) || lower.includes("journey tab")) {
           setRunningTab("update-journey");
           message("agent", agent.name, agent.initials, agent.color, `<p>Switched to <strong>Update Business Journey</strong>.</p><p>I’ve listed the highest-impact updates and can apply one with effective date controls.</p>`);
+          return;
+        }
+        if (lower.includes("gen ai") || lower.includes("ai variable") || lower.includes("variables")) {
+          setRunningTab("gen-ai-variables");
+          message("agent", agent.name, agent.initials, agent.color, `<p>Switched to <strong>Gen AI Variables</strong>.</p><p>You can review current predictive and intelligence variables here.</p>`);
           return;
         }
         if (lower.includes("analytics") || lower.includes("current analytics")) {
