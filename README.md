@@ -20,3 +20,8 @@ open index.html
 ```
 
 Click any agent on the left to see a sample conversation with embedded journey cards and agent responses.
+
+## Documentation
+
+- `docs/PROJECT_DOCUMENTATION.md` - full project and implementation documentation
+- `docs/UI_UX_SOLUTION_DESIGN.md` - UI/UX solution design document
