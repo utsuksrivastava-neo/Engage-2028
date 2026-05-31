@@ -163,43 +163,6 @@
       text-overflow: ellipsis;
     }
 
-    .step-matrix {
-      margin-top: 6px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 5px;
-    }
-
-    .step-chip {
-      border: 1px solid #dbe4f3;
-      background: #fff;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 700;
-      color: #64748b;
-      text-align: center;
-      padding: 3px 0;
-      line-height: 1.1;
-    }
-
-    .step-chip.done {
-      border-color: #86efac;
-      background: #f0fdf4;
-      color: #166534;
-    }
-
-    .step-chip.current {
-      border-color: #93b2df;
-      background: #eef5ff;
-      color: #1e3a8a;
-    }
-
-    .step-chip.pending {
-      border-color: #dbe4f3;
-      background: #fff;
-      color: #64748b;
-    }
-
     .run-state {
       margin-top: 5px;
       display: inline-flex;
@@ -2050,14 +2013,7 @@
           const phaseIndex = PHASES.findIndex(p => p.id === activePhase);
           const safeIndex = phaseIndex < 0 ? 0 : phaseIndex;
           subLine = `Step ${safeIndex + 1}/${PHASES.length}`;
-          details = `
-            <div class="step-matrix">
-              ${PHASES.map((_, idx) => {
-                const state = idx < safeIndex ? "done" : idx === safeIndex ? "current" : "pending";
-                return `<span class="step-chip ${state}">${idx + 1}</span>`;
-              }).join("")}
-            </div>
-          `;
+          details = "";
         } else {
           const stateRaw = (agent.runState || "Under Execution").toLowerCase();
           const isWaiting = stateRaw.includes("wait");
