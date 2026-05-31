@@ -288,6 +288,19 @@
 
     .journey-editor-btn:hover { background: #e3f0ff; }
 
+    .meta-link-btn {
+      border: 1px solid #dbe5f4;
+      background: #fff;
+      color: #334155;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .meta-link-btn:hover { background: #f8fbff; border-color: #cbdaf0; }
+
     .signout-btn {
       border: 1px solid #f2caca;
       background: #fff7f7;
@@ -764,6 +777,72 @@
       line-height: 1;
     }
 
+    .resource-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      z-index: 45;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .resource-modal.open { display: flex; }
+
+    .resource-card {
+      width: min(760px, 95vw);
+      max-height: 80vh;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.22);
+    }
+
+    .resource-head {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: #f8fbff;
+    }
+
+    .resource-head h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: #334155;
+    }
+
+    .resource-list {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .resource-item {
+      border: 1px solid #dbe5f4;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .resource-item strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 3px;
+      color: #1f2937;
+    }
+
+    .resource-item span {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.4;
+    }
+
     .msg {
       display: flex;
       gap: 12px;
@@ -1115,6 +1194,8 @@
         <h1 id="agentTitle">Select an Agent</h1>
         <div class="studio-actions">
           <button class="journey-editor-btn" id="openJourneyEditorBtn">Open Business Journey Editor</button>
+          <button class="meta-link-btn" id="openDataSourcesBtn">Data Sources</button>
+          <button class="meta-link-btn" id="openBusinessChannelsBtn">Business Channels</button>
           <span class="status-chip" id="agentStatus">Status</span>
           <button class="signout-btn" id="headerLogoutBtn">Sign out</button>
           <div class="profile-wrap">
@@ -1184,6 +1265,16 @@
         <div id="configFields"></div>
       </div>
       <div class="agent-editing" id="agentEditing">Agent is updating the business journey...</div>
+    </div>
+  </div>
+
+  <div class="resource-modal" id="resourceModal" onclick="closeResourceModalOnBackdrop(event)">
+    <div class="resource-card">
+      <div class="resource-head">
+        <h3 id="resourceModalTitle">Resources</h3>
+        <button class="close-modal" id="closeResourceModalBtn">×</button>
+      </div>
+      <div class="resource-list" id="resourceList"></div>
     </div>
   </div>
   </div>
@@ -1295,6 +1386,8 @@
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
+    const openDataSourcesBtn = document.getElementById("openDataSourcesBtn");
+    const openBusinessChannelsBtn = document.getElementById("openBusinessChannelsBtn");
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
     const loginUsername = document.getElementById("loginUsername");
@@ -1311,6 +1404,10 @@
     const openJourneyEditorBtn = document.getElementById("openJourneyEditorBtn");
     const closeJourneyEditorBtn = document.getElementById("closeJourneyEditorBtn");
     const journeyModal = document.getElementById("journeyModal");
+    const resourceModal = document.getElementById("resourceModal");
+    const resourceModalTitle = document.getElementById("resourceModalTitle");
+    const resourceList = document.getElementById("resourceList");
+    const closeResourceModalBtn = document.getElementById("closeResourceModalBtn");
     const attachBtn = document.getElementById("attachBtn");
     const micBtn = document.getElementById("micBtn");
     const fileInput = document.getElementById("fileInput");
@@ -1359,6 +1456,21 @@
         { id: "go-live", type: "Execution", title: "Go Live Handoff", status: "pending", config: { Destination: "Central Orchestration & Execution Layer", Mode: "Start as running agent" } },
       ],
     };
+
+    const DATA_SOURCES = [
+      { name: "Customer Data Lake", desc: "Unified customer profile, segmentation attributes, and lifecycle events." },
+      { name: "Collections Ledger", desc: "Outstanding dues, payment history, and account-level recovery states." },
+      { name: "KYC Event Stream", desc: "Onboarding step progress, completion status, and drop-off metadata." },
+      { name: "Engagement Telemetry", desc: "Channel-level delivery/read/click/response signals for optimization loops." },
+    ];
+
+    const BUSINESS_CHANNELS = [
+      { name: "WhatsApp", desc: "Primary conversational outreach with rich-template support." },
+      { name: "SMS", desc: "Fallback and high-reach low-latency communication channel." },
+      { name: "IVR", desc: "Automated voice interaction with DTMF and intent routing." },
+      { name: "Voicebot", desc: "AI voice interactions for assisted collections and support flows." },
+      { name: "Dialler", desc: "Agent-assisted outbound calling integrated with queue and workforce controls." },
+    ];
 
     function byLifecycle(type) {
       return Object.values(AGENTS).filter(a => a.lifecycle === type);
@@ -1585,6 +1697,27 @@
 
     window.closeJourneyEditorOnBackdrop = closeJourneyEditorOnBackdrop;
 
+    function openResourceModal(title, items) {
+      resourceModalTitle.textContent = title;
+      resourceList.innerHTML = items.map(item => `
+        <div class="resource-item">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span>${escapeHtml(item.desc)}</span>
+        </div>
+      `).join("");
+      resourceModal.classList.add("open");
+    }
+
+    function closeResourceModal() {
+      resourceModal.classList.remove("open");
+    }
+
+    function closeResourceModalOnBackdrop(event) {
+      if (event.target === resourceModal) closeResourceModal();
+    }
+
+    window.closeResourceModalOnBackdrop = closeResourceModalOnBackdrop;
+
     function relevantJourneySnippet(agentId) {
       const phaseId = currentPhaseByAgent[agentId];
       const nodes = (journeyByAgent[agentId] && journeyByAgent[agentId][phaseId]) || [];
@@ -1788,6 +1921,9 @@
     sendBtn.addEventListener("click", sendMessage);
     openJourneyEditorBtn.addEventListener("click", openJourneyEditor);
     closeJourneyEditorBtn.addEventListener("click", closeJourneyEditor);
+    openDataSourcesBtn.addEventListener("click", () => openResourceModal("Data Sources", DATA_SOURCES));
+    openBusinessChannelsBtn.addEventListener("click", () => openResourceModal("Business Channels", BUSINESS_CHANNELS));
+    closeResourceModalBtn.addEventListener("click", closeResourceModal);
     loginBtn.addEventListener("click", login);
     loginUsername.addEventListener("keydown", (e) => {
       if (e.key === "Enter") login();
@@ -1801,7 +1937,9 @@
     });
     headerLogoutBtn.addEventListener("click", logout);
     logoutBtn.addEventListener("click", logout);
-    document.addEventListener("click", () => profileMenu.classList.remove("open"));
+    document.addEventListener("click", () => {
+      profileMenu.classList.remove("open");
+    });
 
     attachBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", (e) => {
