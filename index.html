@@ -957,6 +957,8 @@
       padding: 20px;
     }
 
+    .auth-screen.hidden { display: none !important; }
+
     .auth-card {
       width: min(450px, 94vw);
       border: 1px solid #dbe6f5;
@@ -1765,6 +1767,9 @@
     openJourneyEditorBtn.addEventListener("click", openJourneyEditor);
     closeJourneyEditorBtn.addEventListener("click", closeJourneyEditor);
     loginBtn.addEventListener("click", login);
+    loginUsername.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
     loginPassword.addEventListener("keydown", (e) => {
       if (e.key === "Enter") login();
     });
