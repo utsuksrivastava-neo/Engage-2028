@@ -1618,7 +1618,6 @@
           <button class="meta-link-btn" id="openDataSourcesBtn">Data Sources</button>
           <button class="meta-link-btn" id="openBusinessChannelsBtn">Business Channels</button>
           <span class="status-chip" id="agentStatus">Status</span>
-          <button class="signout-btn" id="headerLogoutBtn">Sign out</button>
           <div class="profile-wrap">
             <button class="profile-btn" id="profileBtn">
               <span class="profile-avatar" id="profileAvatar">DU</span>
@@ -2049,7 +2048,6 @@
     const loginPassword = document.getElementById("loginPassword");
     const loginBtn = document.getElementById("loginBtn");
     const authError = document.getElementById("authError");
-    const headerLogoutBtn = document.getElementById("headerLogoutBtn");
     const profileBtn = document.getElementById("profileBtn");
     const profileMenu = document.getElementById("profileMenu");
     const profileName = document.getElementById("profileName");
@@ -3223,7 +3221,6 @@
       e.stopPropagation();
       profileMenu.classList.toggle("open");
     });
-    headerLogoutBtn.addEventListener("click", logout);
     logoutBtn.addEventListener("click", logout);
     document.addEventListener("click", () => {
       profileMenu.classList.remove("open");
