@@ -1364,6 +1364,137 @@
     }
 
     .auth-error.show { display: block; }
+
+    .dashboard {
+      flex: 1;
+      overflow: auto;
+      padding: 16px 18px 20px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.4fr .9fr;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .dash-card {
+      border: 1px solid #dbe5f4;
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .dash-card h3 {
+      font-size: 13px;
+      margin-bottom: 9px;
+      color: #1f2937;
+    }
+
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .dash-table th,
+    .dash-table td {
+      border: 1px solid #dbe5f4;
+      padding: 7px 8px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .dash-table th {
+      background: #eef5ff;
+      color: #334155;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      font-size: 10px;
+    }
+
+    .dash-share-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .dash-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid #dbe5f4;
+      background: #f8fbff;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 10px;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .dash-chip button {
+      border: 0;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      padding: 0;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .dash-inline {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dash-inline select,
+    .dash-inline input {
+      border: 1px solid #d7e3f3;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 11px;
+      padding: 5px 7px;
+      color: #1f2937;
+      min-width: 0;
+    }
+
+    .dash-btn {
+      border: 1px solid #cddcf2;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1e3a8a;
+      padding: 5px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .dash-btn:hover { background: #eff6ff; }
+
+    .dash-btn.primary {
+      background: #1d4ed8;
+      color: #fff;
+      border-color: #1d4ed8;
+    }
+
+    .dash-btn.primary:hover { filter: brightness(1.05); }
+
+    .dash-form {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .dash-muted {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
@@ -1413,6 +1544,7 @@
       <div class="studio-title">
         <h1 id="agentTitle">Select an Agent</h1>
         <div class="studio-actions">
+          <button class="meta-link-btn" id="openDashboardBtn">Agents Dashboard</button>
           <button class="journey-editor-btn with-icon" id="openJourneyEditorBtn">
             <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <rect x="1.5" y="2" width="13" height="12" rx="2" stroke="currentColor" stroke-width="1.2"></rect>
@@ -1437,6 +1569,47 @@
               <button id="logoutBtn">Log out</button>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard hidden" id="dashboardView">
+      <div class="dashboard-grid">
+        <div class="dash-card">
+          <h3>All Agents</h3>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Type</th>
+                <th>Current Stage</th>
+                <th>Shared With</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardAgentRows"></tbody>
+          </table>
+          <div class="dash-muted">Use Open to jump directly into an agent workspace.</div>
+        </div>
+        <div class="dash-card">
+          <h3>Users and Sharing</h3>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>User Name</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardUserRows"></tbody>
+          </table>
+          <div class="dash-form">
+            <div class="dash-inline">
+              <input id="newUserName" type="text" placeholder="New user name" />
+              <input id="newUserEmail" type="email" placeholder="email@company.com" />
+            </div>
+            <button class="dash-btn primary" id="addUserBtn">Add User</button>
+          </div>
+          <div class="dash-muted">Add users here, then share any agent with them from the All Agents table.</div>
         </div>
       </div>
     </section>
@@ -1606,6 +1779,7 @@
     const DEMO_USERNAME = "demo";
     const DEMO_PASSWORD = "engage2028";
     const AUTH_STORAGE_KEY = "engage2028-demo-user";
+    const CURRENT_USER_ID = "user-demo";
 
     let AGENTS = {
       "onboarding-assist-pre": {
@@ -1725,6 +1899,16 @@
       },
     };
 
+    let USERS = [
+      { id: CURRENT_USER_ID, name: "Demo User", email: "demo@engage.local" },
+    ];
+    let AGENT_SHARES = {};
+
+    Object.keys(AGENTS).forEach((agentId) => {
+      AGENT_SHARES[agentId] = AGENT_SHARES[agentId] || [];
+      if (!AGENTS[agentId].ownerId) AGENTS[agentId].ownerId = CURRENT_USER_ID;
+    });
+
     let currentAgentId = null;
     let currentPhaseByAgent = {};
     let currentModuleByAgent = {};
@@ -1739,6 +1923,13 @@
 
     const preList = document.getElementById("preList");
     const runList = document.getElementById("runList");
+    const dashboardView = document.getElementById("dashboardView");
+    const dashboardAgentRows = document.getElementById("dashboardAgentRows");
+    const dashboardUserRows = document.getElementById("dashboardUserRows");
+    const openDashboardBtn = document.getElementById("openDashboardBtn");
+    const addUserBtn = document.getElementById("addUserBtn");
+    const newUserName = document.getElementById("newUserName");
+    const newUserEmail = document.getElementById("newUserEmail");
     const phaseStrip = document.getElementById("phaseStrip");
     const progressWrap = document.getElementById("progressWrap");
     const phaseTabs = document.getElementById("phaseTabs");
@@ -1746,6 +1937,8 @@
     const progressLabel = document.getElementById("progressLabel");
     const progressText = document.getElementById("progressText");
     const progressFill = document.getElementById("progressFill");
+    const workspace = document.getElementById("workspace");
+    const composer = document.querySelector(".composer");
     const thread = document.getElementById("thread");
     const chatPane = document.getElementById("chatPane");
     const runningPane = document.getElementById("runningPane");
@@ -2053,7 +2246,7 @@
       appShell.classList.toggle("hidden", !isAuthed);
       if (isAuthed) {
         setProfile(user);
-        if (!currentAgentId) selectAgent("onboarding-assist-pre");
+        openDashboardView();
       } else {
         profileMenu.classList.remove("open");
         currentAgentId = null;
@@ -2110,6 +2303,132 @@
       preList.innerHTML = renderRows(byLifecycle("pre"));
       runList.innerHTML = renderRows(byLifecycle("running"));
     }
+
+    function userById(userId) {
+      return USERS.find(u => u.id === userId) || null;
+    }
+
+    function userName(userId) {
+      const user = userById(userId);
+      return user ? user.name : "Unknown User";
+    }
+
+    function agentStageLabel(agent) {
+      if (agent.lifecycle === "pre") {
+        const activePhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
+        const phaseIndex = PHASES.findIndex(p => p.id === activePhase);
+        const safeIndex = phaseIndex < 0 ? 0 : phaseIndex;
+        return `Step ${safeIndex + 1}/${PHASES.length}`;
+      }
+      return "Running";
+    }
+
+    function shareableUsersOptions(agentId) {
+      const shared = AGENT_SHARES[agentId] || [];
+      return USERS.filter(user => user.id !== AGENTS[agentId].ownerId && !shared.includes(user.id));
+    }
+
+    function renderDashboard() {
+      const rows = Object.values(AGENTS).map((agent) => {
+        const shared = AGENT_SHARES[agent.id] || [];
+        const sharedHtml = shared.length
+          ? `<div class="dash-share-wrap">${shared.map((userId) => `
+              <span class="dash-chip">${escapeHtml(userName(userId))}
+                <button onclick="removeShare('${agent.id}','${userId}')" title="Remove user">×</button>
+              </span>
+            `).join("")}</div>`
+          : `<div class="dash-muted">No shared users</div>`;
+
+        const options = shareableUsersOptions(agent.id);
+        const optionHtml = options.length
+          ? options.map(user => `<option value="${user.id}">${escapeHtml(user.name)}</option>`).join("")
+          : `<option value="">No users available</option>`;
+
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(agent.name)}</strong>
+              <div class="dash-muted">Owner: ${escapeHtml(userName(agent.ownerId || CURRENT_USER_ID))}</div>
+            </td>
+            <td>${agent.lifecycle === "pre" ? "Pre-Execution" : "Running"}</td>
+            <td>${agentStageLabel(agent)}</td>
+            <td>
+              ${sharedHtml}
+              <div class="dash-inline">
+                <select id="shareSelect-${agent.id.replaceAll("'", "")}">
+                  ${optionHtml}
+                </select>
+                <button class="dash-btn" onclick="shareAgent('${agent.id}')">Share</button>
+              </div>
+            </td>
+            <td><button class="dash-btn primary" onclick="selectAgent('${agent.id}')">Open</button></td>
+          </tr>
+        `;
+      }).join("");
+      dashboardAgentRows.innerHTML = rows || `<tr><td colspan="5">No agents available.</td></tr>`;
+
+      dashboardUserRows.innerHTML = USERS.map(user => `
+        <tr>
+          <td>${escapeHtml(user.name)}</td>
+          <td>${escapeHtml(user.email)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function openDashboardView() {
+      currentAgentId = null;
+      renderSidebar();
+      dashboardView.classList.remove("hidden");
+      phaseStrip.classList.add("hidden");
+      workspace.classList.add("hidden");
+      composer.classList.add("hidden");
+      document.getElementById("agentTitle").textContent = "Agents Dashboard";
+      const status = document.getElementById("agentStatus");
+      status.textContent = "Portfolio View";
+      status.className = "status-chip pre";
+      renderDashboard();
+    }
+
+    function shareAgent(agentId) {
+      const select = document.getElementById(`shareSelect-${agentId.replaceAll("'", "")}`);
+      if (!select || !select.value) return;
+      if (!AGENT_SHARES[agentId]) AGENT_SHARES[agentId] = [];
+      if (!AGENT_SHARES[agentId].includes(select.value)) {
+        AGENT_SHARES[agentId].push(select.value);
+      }
+      renderDashboard();
+    }
+
+    function removeShare(agentId, userId) {
+      AGENT_SHARES[agentId] = (AGENT_SHARES[agentId] || []).filter(id => id !== userId);
+      renderDashboard();
+    }
+
+    function addUserFromForm() {
+      const name = (newUserName.value || "").trim();
+      const email = (newUserEmail.value || "").trim();
+      if (!name || !email) {
+        openResourceModal("Users and Sharing", [
+          { name: "Missing details", desc: "Please provide both user name and email to add a new user." },
+        ]);
+        return;
+      }
+      const duplicate = USERS.some(u => u.email.toLowerCase() === email.toLowerCase());
+      if (duplicate) {
+        openResourceModal("Users and Sharing", [
+          { name: "User exists", desc: "A user with this email already exists." },
+        ]);
+        return;
+      }
+      const userId = `user-${Date.now()}`;
+      USERS.push({ id: userId, name, email });
+      newUserName.value = "";
+      newUserEmail.value = "";
+      renderDashboard();
+    }
+
+    window.shareAgent = shareAgent;
+    window.removeShare = removeShare;
 
     function setTopPanel(agent) {
       document.getElementById("agentTitle").textContent = agent.name;
@@ -2594,6 +2913,9 @@
     function selectAgent(agentId) {
       currentAgentId = agentId;
       const agent = AGENTS[agentId];
+      dashboardView.classList.add("hidden");
+      workspace.classList.remove("hidden");
+      composer.classList.remove("hidden");
       renderSidebar();
       setTopPanel(agent);
       renderPhases(agent);
@@ -2728,6 +3050,7 @@
       }
     });
     sendBtn.addEventListener("click", sendMessage);
+    openDashboardBtn.addEventListener("click", openDashboardView);
     openJourneyEditorBtn.addEventListener("click", () => {
       if (!currentAgentId) return;
       const agent = AGENTS[currentAgentId];
@@ -2753,6 +3076,13 @@
     openDataSourcesBtn.addEventListener("click", () => openResourceModal("Data Sources", DATA_SOURCES));
     openBusinessChannelsBtn.addEventListener("click", () => openResourceModal("Business Channels", BUSINESS_CHANNELS));
     closeResourceModalBtn.addEventListener("click", closeResourceModal);
+    addUserBtn.addEventListener("click", addUserFromForm);
+    newUserName.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addUserFromForm();
+    });
+    newUserEmail.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addUserFromForm();
+    });
     loginBtn.addEventListener("click", login);
     loginUsername.addEventListener("keydown", (e) => {
       if (e.key === "Enter") login();
@@ -2905,11 +3235,13 @@
         initials: initialsFromName(name),
         color: stableColorFromName(name),
         lifecycle: "pre",
+        ownerId: CURRENT_USER_ID,
         objective: NEW_AGENT_DEFAULTS.objective,
         inputs: NEW_AGENT_DEFAULTS.inputs,
         guardrails: NEW_AGENT_DEFAULTS.guardrails,
         suggestions: NEW_AGENT_DEFAULTS.suggestions,
       };
+      AGENT_SHARES[id] = [];
       currentPhaseByAgent[id] = PHASES[0].id;
       currentModuleByAgent[id] = null;
       selectAgent(id);
