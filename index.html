@@ -1323,27 +1323,60 @@
     const AUTH_STORAGE_KEY = "engage2028-demo-user";
 
     let AGENTS = {
-      "main-collections": {
-        id: "main-collections",
-        name: "Main Collections Agent",
-        initials: "MC",
-        color: "#0f766e",
-        lifecycle: "pre",
-        objective: "Improve collections recovery by 18%",
-        inputs: "Audience lake, payment behavior, historical outreach logs",
-        guardrails: "Budget caps, channel policy, compliance constraints",
-        suggestions: ["Open Planning Phase", "Open Node Configuration", "Go live now"],
-      },
-      "main-onboarding": {
-        id: "main-onboarding",
-        name: "Main Onboarding Agent",
-        initials: "MO",
+      "onboarding-assist-pre": {
+        id: "onboarding-assist-pre",
+        name: "Onboarding Assist Agent",
+        initials: "OA",
         color: "#2563eb",
         lifecycle: "pre",
-        objective: "Raise onboarding activation to 72%",
+        objective: "Reduce onboarding drop-offs by proactively assisting high-intent users through personalized nudges and contextual support journeys",
         inputs: "KYC events, app session patterns, drop-off cohorts",
         guardrails: "Approved channel permissions, communication frequency limits",
         suggestions: ["Open Objective Clarification", "Open Test Journey", "Review go-live checklist"],
+      },
+      "repayment-recovery-pre": {
+        id: "repayment-recovery-pre",
+        name: "Repayment Recovery Agent",
+        initials: "RR",
+        color: "#0f766e",
+        lifecycle: "pre",
+        objective: "Improve repayment recovery for delinquent customers using optimized outreach timing and channel selection while minimizing operational costs",
+        inputs: "Repayment history, delinquency buckets, channel engagement timelines",
+        guardrails: "Budget caps, collection compliance policies, customer contact frequency limits",
+        suggestions: ["Open Planning Phase", "Open Node Configuration", "Open Go Live tab"],
+      },
+      "churn-prevention-pre": {
+        id: "churn-prevention-pre",
+        name: "Churn Prevention Agent",
+        initials: "CP",
+        color: "#7c3aed",
+        lifecycle: "pre",
+        objective: "Reduce customer churn by identifying disengagement signals early and triggering retention interventions with controlled retention spend",
+        inputs: "Engagement recency, usage decline patterns, renewal and support history",
+        guardrails: "Retention offer budget limits, discount governance, compliance controls",
+        suggestions: ["Open Planning Phase", "Open Create Business Journey", "Open Execution Validation"],
+      },
+      "repeat-purchase-pre": {
+        id: "repeat-purchase-pre",
+        name: "Repeat Purchase Agent",
+        initials: "RP",
+        color: "#d97706",
+        lifecycle: "pre",
+        objective: "Increase repeat purchases by incentivizing high-value customer behaviors through personalized offers and engagement journeys",
+        inputs: "Purchase frequency, basket affinity, high-value segment behavior",
+        guardrails: "Incentive budget limits, offer frequency cap, margin constraints",
+        suggestions: ["Open Channel Planner", "Open Template Creation", "Open Go Live tab"],
+      },
+      "proactive-resolution-pre": {
+        id: "proactive-resolution-pre",
+        name: "Proactive Resolution Agent",
+        initials: "PR",
+        color: "#0ea5e9",
+        lifecycle: "pre",
+        objective: "Reduce support escalations by proactively identifying likely customer issues and reaching out with guided resolutions before customers contact support",
+        inputs: "Error logs, support intent signals, product usage anomalies",
+        guardrails: "Escalation policy, messaging limits, workforce availability controls",
+        suggestions: ["Open Data Fetch Module", "Open Test Journey", "Open Approval Plan"],
       },
       "collections-running": {
         id: "collections-running",
@@ -1508,7 +1541,7 @@
       appShell.classList.toggle("hidden", !isAuthed);
       if (isAuthed) {
         setProfile(user);
-        if (!currentAgentId) selectAgent("main-collections");
+        if (!currentAgentId) selectAgent("onboarding-assist-pre");
       } else {
         profileMenu.classList.remove("open");
         currentAgentId = null;
@@ -1805,22 +1838,56 @@
 
     function moduleReply(agent, phaseId, moduleId) {
       const replies = {
-        "objective": `<p>Objective clarification is now active. I mapped your business goal to measurable KPIs, cost constraints, and review cadence.</p>`,
-        "audience-data": `<p>Audience data fetch module is active.</p><ul><li>Connected approved data systems</li><li>Resolved customer variable coverage</li><li>Flagged missing values for default estimation in Phase 5</li></ul>`,
-        "channel-precheck": `<p>Organization channel pre-check complete. WhatsApp and SMS are ready; IVR needs peak-hour throughput confirmation.</p>`,
-        "brief-outcome": `<p>Journey brief drafted with target outcome, ROI goal, and business success criteria.</p>`,
-        "touchpoint-planner": `<p>Touchpoint plan prepared: WhatsApp-first, SMS fallback, voice escalation under policy thresholds.</p>`,
-        "design-journey": `<p>Business journey design drafted with branch logic and measurable outcomes. Ready for node-level configuration.</p>`,
-        "idea-generator": `<p>Communication ideas generated for SMS, WhatsApp, IVR, and Voicebot with policy-safe variants.</p>`,
-        "trigger-node": `<p>Trigger node configuration started using event, time, and behavior trigger conditions.</p>`,
-        "template-creation": `<p>Reusable templates generated for recurring journey patterns to reduce future setup effort.</p>`,
-        "action-nodes": `<p>Action node configuration ready for SMS, WhatsApp, IVR, Voicebot, and Dialler with fallback controls.</p>`,
-        "process-node": `<p>Process nodes configured for waits, branching, retries, and escalation governance.</p>`,
-        "end-node": `<p>End nodes mapped for success, timeout, and exception closures with learning hooks.</p>`,
-        "test-journey": `<p>Test pack initialized across happy path, fallback path, and failure path simulations.</p>`,
-        "execution-validation": `<p>Execution checks validated against channel readiness, resource constraints, and policy compliance.</p>`,
-        "genai-defaults": `<p>Estimated default values for Gen AI variables based on historical distributions and confidence limits.</p>`,
-        "approval-plan": `<p>Customer approval package is ready: business objective, journey plan, controls, and rollback guidance.</p>`,
+        "objective": `<p><strong>User question:</strong> “What exactly are we optimizing, and what are the hard constraints?”</p>
+          <p><strong>Agent answer:</strong> We will optimize for this objective: <em>${escapeHtml(agent.objective)}</em></p>
+          <ul><li>Primary KPI: business outcome uplift (12-week target)</li><li>Secondary KPI: cost-to-outcome efficiency</li><li>Guardrails: policy compliance, contact cap, budget controls</li></ul>
+          <p><strong>User question:</strong> “How will we review success?”</p>
+          <p><strong>Agent answer:</strong> Weekly KPI review, daily anomaly alerts, and phase-gate sign-off before go-live.</p>`,
+        "audience-data": `<p><strong>User question:</strong> “Which audience and variables are missing?”</p>
+          <p><strong>Agent answer:</strong> I fetched cohorts and found three variable gaps: preferred channel confidence, recent intent score, and escalation propensity.</p>
+          <ul><li>Coverage complete: customer profile, transaction history, engagement recency</li><li>Partial: channel preference confidence for 14% users</li><li>Action: fallback defaults moved to Phase 5 Gen AI variable estimation</li></ul>`,
+        "channel-precheck": `<p><strong>User question:</strong> “Can we execute this safely on all channels?”</p>
+          <p><strong>Agent answer:</strong> WhatsApp and SMS are production-ready. IVR is constrained in peak windows. Voicebot capacity is acceptable with throttling.</p>
+          <ul><li>WhatsApp: healthy throughput, approved templates</li><li>SMS: fallback route active</li><li>IVR: requires 15% pacing cap in 6-9 PM slot</li></ul>`,
+        "brief-outcome": `<p><strong>User question:</strong> “Summarize the journey brief in one view.”</p>
+          <p><strong>Agent answer:</strong> Journey brief drafted with outcome hypothesis, expected uplift, control cohorts, and ROI checkpoint cadence.</p>
+          <ul><li>Expected uplift range: +2.4% to +4.1%</li><li>Control vs treatment set defined</li><li>Stop-loss condition configured for overspend risk</li></ul>`,
+        "touchpoint-planner": `<p><strong>User question:</strong> “What touchpoint sequence gives best ROI?”</p>
+          <p><strong>Agent answer:</strong> Planned sequence: WhatsApp first, SMS fallback, Voice/IVR escalation only for non-responders with high value-at-risk.</p>
+          <ul><li>Primary touchpoint window: 10 AM - 1 PM</li><li>Fallback delay: +6 hours</li><li>Escalation trigger: no engagement + high propensity score</li></ul>`,
+        "design-journey": `<p><strong>User question:</strong> “Show me the journey logic before configuration.”</p>
+          <p><strong>Agent answer:</strong> Drafted a branch-based journey: segment -> touchpoint -> wait -> decision -> escalate/end. Configs remain intentionally abstract at this phase.</p>
+          <ul><li>Branching by response state</li><li>Outcome gates for KPI and cost control</li><li>Clear rollback branch included</li></ul>`,
+        "idea-generator": `<p><strong>User question:</strong> “Give communication ideas per channel.”</p>
+          <p><strong>Agent answer:</strong> Generated variants for SMS, WhatsApp, IVR, and Voicebot aligned to intent and urgency bands.</p>
+          <ul><li>WhatsApp: contextual nudges with action CTA</li><li>SMS: concise urgency + fallback option</li><li>IVR/Voicebot: guided next-step resolution scripts</li></ul>`,
+        "trigger-node": `<p><strong>User question:</strong> “Which trigger strategy is safest?”</p>
+          <p><strong>Agent answer:</strong> Hybrid trigger configured: event-driven for urgency segments + scheduled sweep for low-engagement users.</p>
+          <ul><li>Event trigger: delinquency / drop-off / churn signal events</li><li>Time trigger: controlled periodic pass</li><li>Safety: trigger cooldown and duplicate suppression</li></ul>`,
+        "template-creation": `<p><strong>User question:</strong> “Can we reuse this across teams?”</p>
+          <p><strong>Agent answer:</strong> Yes. Created reusable templates for action, wait, decision, and escalation nodes with policy-safe defaults.</p>
+          <ul><li>Template families: onboarding, recovery, retention</li><li>Versioning enabled</li><li>Localization and channel variants included</li></ul>`,
+        "action-nodes": `<p><strong>User question:</strong> “How are action nodes configured by channel?”</p>
+          <p><strong>Agent answer:</strong> Configured SMS/WhatsApp/IVR/Voicebot/Dialler actions with routing priority, retries, and suppression controls.</p>
+          <ul><li>Retry policy by channel latency profile</li><li>Suppression list and compliance checks active</li><li>Fallback hierarchy pre-validated</li></ul>`,
+        "process-node": `<p><strong>User question:</strong> “What process controls are applied?”</p>
+          <p><strong>Agent answer:</strong> Wait nodes, decision nodes, and escalation paths are configured with deterministic transitions and exception handling.</p>
+          <ul><li>Timeout + re-entry controls</li><li>Decision edges based on response variables</li><li>Escalation branch tied to business risk level</li></ul>`,
+        "end-node": `<p><strong>User question:</strong> “How do journeys terminate cleanly?”</p>
+          <p><strong>Agent answer:</strong> End states now cover success, unresolved, and assisted-handoff outcomes with telemetry events for learning loops.</p>
+          <ul><li>Success end: KPI contribution logged</li><li>Unresolved end: re-targetable segment flag</li><li>Assisted end: handoff metadata captured</li></ul>`,
+        "test-journey": `<p><strong>User question:</strong> “What did simulation tests show?”</p>
+          <p><strong>Agent answer:</strong> Happy path and fallback path passed. One edge-case timeout warning detected in escalation branch.</p>
+          <ul><li>Happy path: pass</li><li>Fallback path: pass</li><li>Failure path: 1 warning, fix suggested in process node</li></ul>`,
+        "execution-validation": `<p><strong>User question:</strong> “Are we go-live ready from execution checks?”</p>
+          <p><strong>Agent answer:</strong> Validation is mostly green: policy checks passed, capacity checks passed, one tolerance threshold needs stakeholder confirmation.</p>
+          <ul><li>Compliance: pass</li><li>Operational capacity: pass</li><li>Risk tolerance: pending approval</li></ul>`,
+        "genai-defaults": `<p><strong>User question:</strong> “How are Gen AI default variable values set?”</p>
+          <p><strong>Agent answer:</strong> Defaults estimated from historical distributions with confidence-aware bounds and variance caps.</p>
+          <ul><li>Confidence thresholding applied</li><li>Outlier clipping enabled</li><li>Fallback audit trail attached for review</li></ul>`,
+        "approval-plan": `<p><strong>User question:</strong> “What will I approve before go-live?”</p>
+          <p><strong>Agent answer:</strong> Approval package includes objective mapping, journey blueprint, channel configs, test evidence, and rollback plan.</p>
+          <ul><li>Business outcome + KPI target</li><li>Execution controls and budget guardrails</li><li>Rollback and exception governance</li></ul>`,
       };
       return replies[moduleId] || `<p>${phaseId} / ${moduleId} is ready for updates.</p>`;
     }
