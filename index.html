@@ -3192,6 +3192,15 @@
     function selectAgent(agentId) {
       currentAgentId = agentId;
       const agent = AGENTS[agentId];
+      if (agent.id === "onboarding-assist-pre") {
+        // Always start onboarding demo from a clean Step 1 state.
+        currentPhaseByAgent[agent.id] = "p1";
+        currentModuleByAgent[agent.id] = null;
+        guidedFlowByAgent[agent.id] = {};
+        planningTransitionDoneByAgent[agent.id] = false;
+        journeyByAgent[agent.id] = {};
+        selectedNodeByAgent[agent.id] = {};
+      }
       dashboardView.classList.add("hidden");
       workspace.classList.remove("hidden");
       composer.classList.remove("hidden");
@@ -3203,7 +3212,11 @@
       thread.innerHTML = "";
 
       if (agent.lifecycle === "pre") {
-        message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><p>I will guide this setup step-by-step and proactively ask for required inputs. You can still ask me anything at any time.</p>`);
+        if (agent.id === "onboarding-assist-pre") {
+          message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><p>This demo is reset to <strong>Step 1</strong>. Click the <strong>Recommended Input</strong> chip above the textbox each time to move through the full journey till Step 6.</p>`);
+        } else {
+          message("agent", agent.name, agent.initials, agent.color, `<p>Pre-Execution Studio ready.</p><p>I will guide this setup step-by-step and proactively ask for required inputs. You can still ask me anything at any time.</p>`);
+        }
         const firstPhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
         const phase = PHASES.find(p => p.id === firstPhase) || PHASES[0];
         if (phase && phase.modules && phase.modules[0]) {
