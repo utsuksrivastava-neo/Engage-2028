@@ -2190,6 +2190,73 @@
       ],
     };
 
+    const ONBOARDING_DEMO_RESPONSES = {
+      objective: [
+        "Primary objective: increase onboarding completion by reducing KYC drop-offs for high-intent registrations.",
+        "Constraints: keep messaging under 3 nudges per user and stay within approved compliance templates.",
+      ],
+      "audience-data": [
+        "Fetch from registration web form events at https://app.exotelengage.demo/registration and onboarding event stream.",
+        "Required fields: registration_id, user_phone, kyc_stage, doc_upload_status, intent_score, city, preferred_language.",
+      ],
+      "channel-precheck": [
+        "Approved channels: WhatsApp, SMS, and assisted outbound dialler for escalation.",
+        "Apply quiet hours and region-level policy controls; IVR only for fallback cohorts.",
+      ],
+      "brief-outcome": [
+        "Target KPI: +12% onboarding completion uplift in first 30 days.",
+        "ROI condition: cost per completed onboarding should not increase beyond 8%.",
+      ],
+      "touchpoint-planner": [
+        "Use WhatsApp first, then SMS fallback after 6 hours, then assisted call for high-intent non-responders.",
+        "Escalate to dialler if no engagement after 2 nudges and intent score stays above 0.7.",
+      ],
+      "design-journey": [
+        "Design branch logic by KYC stage: registration complete, doc pending, verification pending, and assisted handoff.",
+        "Add conversion-safe fallback for low-intent users with one lightweight reminder only.",
+      ],
+      "idea-generator": [
+        "Message tone should be reassuring and action-oriented with one clear CTA per step.",
+        "Generate language variants for English, Hindi, and Kannada with stage-specific prompts.",
+      ],
+      "trigger-node": [
+        "Trigger on registration completion + KYC inactivity for 45 minutes.",
+        "Set retrigger cooldown to 24 hours per user to avoid over-contact.",
+      ],
+      "template-creation": [
+        "Create reusable templates by KYC stage with variable placeholders.",
+        "Mandatory compliance line: consent, privacy note, and support fallback.",
+      ],
+      "action-nodes": [
+        "Enable WhatsApp and SMS nodes in v1; dialler escalation only for high-intent users.",
+        "Retry policy: WhatsApp x2, SMS x1, then escalate based on intent and value.",
+      ],
+      "process-node": [
+        "Wait 6 hours between first and second touchpoint; 18 hours before escalation decision.",
+        "Escalate if no click/no response and intent score remains high.",
+      ],
+      "end-node": [
+        "Track end states: KYC completed, pending-doc follow-up, and assisted handoff complete.",
+        "Unresolved users should move to retargeting pool after 48 hours.",
+      ],
+      "test-journey": [
+        "Run happy path, missing-document path, and fallback escalation path.",
+        "Block release if conversion variance is below baseline by more than 3%.",
+      ],
+      "execution-validation": [
+        "Validate channel quotas, template approval IDs, and escalation routing readiness.",
+        "Final sign-off by Onboarding Ops lead and Compliance reviewer.",
+      ],
+      "genai-defaults": [
+        "Use conservative defaults for missing intent score values under low-confidence scenarios.",
+        "Apply confidence threshold at 0.75 before auto-filling any Gen AI variable.",
+      ],
+      "approval-plan": [
+        "Route approval to Onboarding Head with rollout plan and rollback criteria.",
+        "Go-live after approval with controlled 10% rollout in first execution window.",
+      ],
+    };
+
     const DATA_SOURCES = [
       { name: "Customer Data Lake", desc: "Unified customer profile, segmentation attributes, and lifecycle events." },
       { name: "Collections Ledger", desc: "Outstanding dues, payment history, and account-level recovery states." },
@@ -2802,6 +2869,20 @@
       return guidedFlowByAgent[agentId][key];
     }
 
+    function isOnboardingGuided(agent) {
+      return Boolean(agent && agent.id === "onboarding-assist-pre" && agent.lifecycle === "pre");
+    }
+
+    function recommendedOnboardingInput(flow) {
+      if (!flow) return null;
+      const options = ONBOARDING_DEMO_RESPONSES[flow.moduleId] || [];
+      return options[flow.questionIndex] || null;
+    }
+
+    function phaseLoaderHtml(text) {
+      return `<div class="phase-loader"><span class="phase-loader-spinner"></span>${escapeHtml(text)}</div>`;
+    }
+
     function isPlanningPhaseComplete(agentId) {
       const planningPhase = PHASES.find(p => p.id === "p1");
       if (!planningPhase) return false;
@@ -2845,6 +2926,59 @@
       }, 1300);
     }
 
+    function advanceOnboardingFlow(agent, phaseId, moduleId) {
+      if (!isOnboardingGuided(agent)) return false;
+      const phaseIndex = PHASES.findIndex(p => p.id === phaseId);
+      if (phaseIndex < 0) return false;
+      const phase = PHASES[phaseIndex];
+      const moduleIndex = phase.modules.findIndex(m => m.id === moduleId);
+      if (moduleIndex < 0) return false;
+
+      const nextModule = phase.modules[moduleIndex + 1];
+      if (nextModule) {
+        message(
+          "agent",
+          agent.name,
+          agent.initials,
+          agent.color,
+          `<p>Great. Moving to the next setup block in this phase.</p>${phaseLoaderHtml("Loading next step...")}`
+        );
+        setTimeout(() => {
+          if (currentAgentId !== agent.id) return;
+          openModule(phaseId, nextModule.id, nextModule.label);
+        }, 1000);
+        return true;
+      }
+
+      const nextPhase = PHASES[phaseIndex + 1];
+      if (nextPhase) {
+        const transitionLine = phaseId === "p1"
+          ? "Planning Phase complete. I am now taking you to Step 2: Create Business Journey."
+          : `Phase ${phaseIndex + 1} complete. Moving to ${nextPhase.title.replace(/^\d+\.\s*/, "")}.`;
+        message(
+          "agent",
+          agent.name,
+          agent.initials,
+          agent.color,
+          `<p>${transitionLine}</p>${phaseLoaderHtml("Preparing next phase...")}`
+        );
+        setTimeout(() => {
+          if (currentAgentId !== agent.id) return;
+          setPhase(nextPhase.id);
+        }, 1200);
+        return true;
+      }
+
+      message(
+        "agent",
+        agent.name,
+        agent.initials,
+        agent.color,
+        `<p>All onboarding pre-execution phases are now complete.</p><p>You can review, approve, and move to controlled go-live.</p>`
+      );
+      return true;
+    }
+
     function askGuidedQuestion(agent, flow) {
       const prompts = MODULE_PROMPTS[flow.moduleId] || [];
       const q = prompts[flow.questionIndex];
@@ -2863,6 +2997,7 @@
       const flow = ensureGuidedFlow(agent.id, phaseId, moduleId);
       message("agent", agent.name, agent.initials, agent.color, `<p>I am now working on <strong>${moduleLabel}</strong>.</p><p>I will ask you a few required inputs before proceeding.</p>${relevantJourneySnippet(agent.id)}`);
       askGuidedQuestion(agent, flow);
+      renderSuggestions(agent);
     }
 
     function applyModuleEdit(agentId, phaseId, moduleId) {
@@ -2960,6 +3095,16 @@
     }
 
     function renderSuggestions(agent) {
+      if (isOnboardingGuided(agent)) {
+        const phaseId = currentPhaseByAgent[agent.id];
+        const moduleId = currentModuleByAgent[agent.id];
+        const flow = phaseId && moduleId ? ensureGuidedFlow(agent.id, phaseId, moduleId) : null;
+        const recommendation = recommendedOnboardingInput(flow);
+        if (recommendation) {
+          suggestions.innerHTML = `<button class="suggestion" onclick="quickSend('${escapeHtml(recommendation)}')">Recommended Input: ${escapeHtml(recommendation)}</button>`;
+          return;
+        }
+      }
       suggestions.innerHTML = agent.suggestions.map(s => `<button class="suggestion" onclick="quickSend('${escapeHtml(s)}')">${s}</button>`).join("");
     }
 
@@ -3124,15 +3269,19 @@
             if (flow.questionIndex < prompts.length) {
               message("agent", agent.name, agent.initials, agent.color, `<p>Noted. ${relevantJourneySnippet(agent.id)}</p>`);
               askGuidedQuestion(agent, flow);
+              renderSuggestions(agent);
               return;
             }
 
             const summary = flow.answers.map((a, i) => `<li><strong>Input ${i + 1}:</strong> ${escapeHtml(a)}</li>`).join("");
             message("agent", agent.name, agent.initials, agent.color, `<p>Perfect. I have enough inputs for this module and updated the journey accordingly.</p><ul>${summary}</ul>${relevantJourneySnippet(agent.id)}<p>You can switch modules, or I can continue to the next module automatically.</p>`);
             updateBusinessJourneyButtonState(agent);
-            if (phaseId === "p1" && isPlanningPhaseComplete(agent.id)) {
+            if (isOnboardingGuided(agent)) {
+              advanceOnboardingFlow(agent, phaseId, moduleId);
+            } else if (phaseId === "p1" && isPlanningPhaseComplete(agent.id)) {
               moveToCreateBusinessJourney(agent);
             }
+            renderSuggestions(agent);
             return;
           }
         }
