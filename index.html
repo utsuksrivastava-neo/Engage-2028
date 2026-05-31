@@ -1363,7 +1363,7 @@
       <div class="studio-title">
         <h1 id="agentTitle">Select an Agent</h1>
         <div class="studio-actions">
-          <button class="journey-editor-btn" id="openJourneyEditorBtn">Open Business Journey Editor</button>
+          <button class="journey-editor-btn" id="openJourneyEditorBtn">Business Journey</button>
           <button class="meta-link-btn" id="openDataSourcesBtn">Data Sources</button>
           <button class="meta-link-btn" id="openBusinessChannelsBtn">Business Channels</button>
           <span class="status-chip" id="agentStatus">Status</span>
@@ -1440,7 +1440,7 @@
               <div class="exec-list" id="runningJourneyUpdateList"></div>
               <div class="running-actions">
                 <button class="running-action-btn" id="applyJourneyUpdateBtn">Apply Highest-Impact Update</button>
-                <button class="running-action-btn" id="openJourneyEditorFromRunningBtn">Open Business Journey Editor</button>
+                <button class="running-action-btn" id="openJourneyEditorFromRunningBtn">Business Journey</button>
               </div>
             </div>
           </div>
@@ -2226,7 +2226,7 @@
           <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.04em;font-weight:600;">Relevant Journey Update</div>
           <div style="font-size:12px;font-weight:600;color:#1f2937;margin-top:4px;">${escapeHtml(node.title)}</div>
           <div style="font-size:11px;color:#475569;margin-top:4px;">Status: ${node.status === "pending" ? "Pending" : node.status === "done" ? "Configured" : "In Progress"}</div>
-          <div style="font-size:11px;color:#334155;margin-top:4px;">Use <strong>Open Business Journey Editor</strong> on top for full manual edits.</div>
+          <div style="font-size:11px;color:#334155;margin-top:4px;">Use <strong>Business Journey</strong> on top for full manual edits.</div>
         </div>
       `;
     }
@@ -2489,7 +2489,7 @@
           openModule(phase.id, phase.modules[0].id, phase.modules[0].label);
         }
       } else {
-        message("agent", agent.name, agent.initials, agent.color, `<p>Running workspace loaded.</p><ul><li>Use <strong>Current Analytics</strong> for live and historical performance</li><li>Use <strong>Update Business Journey</strong> to apply optimization updates</li><li>View/export customer data lake from analytics tab</li><li>Edit journey manually via <strong>Open Business Journey Editor</strong></li></ul>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p>Running workspace loaded.</p><ul><li>Use <strong>Current Analytics</strong> for live and historical performance</li><li>Use <strong>Update Business Journey</strong> to apply optimization updates</li><li>View/export customer data lake from analytics tab</li><li>Edit journey manually via <strong>Business Journey</strong></li></ul>`);
         message("agent", agent.name, agent.initials, agent.color, `<p><strong>Proactive prompt:</strong> I found 2 new optimization sessions you can run now. Want me to start with the highest-impact one?</p>`);
       }
     }
