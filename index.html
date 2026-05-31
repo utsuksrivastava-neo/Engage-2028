@@ -316,6 +316,16 @@
 
     .journey-editor-btn:hover { background: #e3f0ff; }
 
+    .journey-editor-btn.locked svg {
+      display: none;
+    }
+
+    .journey-editor-btn.locked {
+      border-color: #dbe5f4;
+      background: #f8fafc;
+      color: #475569;
+    }
+
     .with-icon {
       display: inline-flex;
       align-items: center;
@@ -326,6 +336,34 @@
       width: 12px;
       height: 12px;
       flex-shrink: 0;
+    }
+
+    .phase-loader {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 9px;
+      border: 1px solid #dbe6f5;
+      border-radius: 9px;
+      background: #f8fbff;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .phase-loader-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid #c9dcfb;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: phaseSpin 0.8s linear infinite;
+    }
+
+    @keyframes phaseSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .meta-link-btn {
@@ -1694,6 +1732,7 @@
     let currentModuleByAgent = {};
     let guidedFlowByAgent = {};
     let currentRunningTabByAgent = {};
+    let planningTransitionDoneByAgent = {};
 
     const RUNNING_TABS = [
       { id: "current-analytics", label: "Current Analytics" },
@@ -2079,6 +2118,7 @@
       const status = document.getElementById("agentStatus");
       status.textContent = agent.lifecycle === "pre" ? "Pre-Execution Studio" : "Running Agent Workspace";
       status.className = `status-chip ${agent.lifecycle === "pre" ? "pre" : "run"}`;
+      updateBusinessJourneyButtonState(agent);
     }
 
     function renderAttachmentTray() {
@@ -2133,6 +2173,7 @@
       progressFill.style.width = `${pct}%`;
       ensureJourneyForPhase(agent.id, activePhase);
       renderJourney(agent.id);
+      updateBusinessJourneyButtonState(agent);
     }
 
     function escapeHtml(s) {
@@ -2297,6 +2338,49 @@
         };
       }
       return guidedFlowByAgent[agentId][key];
+    }
+
+    function isPlanningPhaseComplete(agentId) {
+      const planningPhase = PHASES.find(p => p.id === "p1");
+      if (!planningPhase) return false;
+      return planningPhase.modules.every((module) => {
+        const prompts = MODULE_PROMPTS[module.id] || [];
+        if (!prompts.length) return false;
+        const flow = guidedFlowByAgent[agentId] && guidedFlowByAgent[agentId][`p1:${module.id}`];
+        return Boolean(flow && flow.questionIndex >= prompts.length);
+      });
+    }
+
+    function updateBusinessJourneyButtonState(agent) {
+      if (!agent) return;
+      const unlocked = agent.lifecycle !== "pre" || isPlanningPhaseComplete(agent.id);
+      openJourneyEditorBtn.classList.toggle("locked", !unlocked);
+      openJourneyEditorBtn.title = unlocked
+        ? "Open Business Journey"
+        : "Complete Planning Phase to unlock Business Journey";
+    }
+
+    function moveToCreateBusinessJourney(agent) {
+      if (planningTransitionDoneByAgent[agent.id]) return;
+      planningTransitionDoneByAgent[agent.id] = true;
+      message(
+        "agent",
+        agent.name,
+        agent.initials,
+        agent.color,
+        `<p>Planning Phase complete. I’m now taking you to <strong>Step 2: Create Business Journey</strong>.</p><div class="phase-loader"><span class="phase-loader-spinner"></span>Preparing next phase...</div>`
+      );
+      setTimeout(() => {
+        if (currentAgentId !== agent.id) return;
+        currentPhaseByAgent[agent.id] = "p2";
+        currentModuleByAgent[agent.id] = null;
+        renderSidebar();
+        renderPhases(agent);
+        const phaseTwo = PHASES.find(p => p.id === "p2");
+        if (phaseTwo && phaseTwo.modules && phaseTwo.modules[0]) {
+          openModule(phaseTwo.id, phaseTwo.modules[0].id, phaseTwo.modules[0].label);
+        }
+      }, 1300);
     }
 
     function askGuidedQuestion(agent, flow) {
@@ -2583,6 +2667,10 @@
 
             const summary = flow.answers.map((a, i) => `<li><strong>Input ${i + 1}:</strong> ${escapeHtml(a)}</li>`).join("");
             message("agent", agent.name, agent.initials, agent.color, `<p>Perfect. I have enough inputs for this module and updated the journey accordingly.</p><ul>${summary}</ul>${relevantJourneySnippet(agent.id)}<p>You can switch modules, or I can continue to the next module automatically.</p>`);
+            updateBusinessJourneyButtonState(agent);
+            if (phaseId === "p1" && isPlanningPhaseComplete(agent.id)) {
+              moveToCreateBusinessJourney(agent);
+            }
             return;
           }
         }
@@ -2634,7 +2722,20 @@
       }
     });
     sendBtn.addEventListener("click", sendMessage);
-    openJourneyEditorBtn.addEventListener("click", openJourneyEditor);
+    openJourneyEditorBtn.addEventListener("click", () => {
+      if (!currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      if (agent.lifecycle === "pre" && !isPlanningPhaseComplete(agent.id)) {
+        openResourceModal("Business Journey", [
+          {
+            name: "Planning Phase Required",
+            desc: "Business Journey will be available once Step 1 (Planning Phase) is complete. Please finish all planning inputs first.",
+          },
+        ]);
+        return;
+      }
+      openJourneyEditor();
+    });
     closeJourneyEditorBtn.addEventListener("click", closeJourneyEditor);
     applyJourneyBtn.addEventListener("click", () => {
       if (!currentAgentId) return;
