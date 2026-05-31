@@ -316,6 +316,18 @@
 
     .journey-editor-btn:hover { background: #e3f0ff; }
 
+    .with-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .with-icon svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
     .meta-link-btn {
       border: 1px solid #dbe5f4;
       background: #fff;
@@ -1363,7 +1375,16 @@
       <div class="studio-title">
         <h1 id="agentTitle">Select an Agent</h1>
         <div class="studio-actions">
-          <button class="journey-editor-btn" id="openJourneyEditorBtn">Business Journey</button>
+          <button class="journey-editor-btn with-icon" id="openJourneyEditorBtn">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="1.5" y="2" width="13" height="12" rx="2" stroke="currentColor" stroke-width="1.2"></rect>
+              <circle cx="4.5" cy="5.5" r="1" fill="currentColor"></circle>
+              <circle cx="8" cy="8" r="1" fill="currentColor"></circle>
+              <circle cx="11.5" cy="10.5" r="1" fill="currentColor"></circle>
+              <path d="M5.3 6.1L7.2 7.4L10.2 9.7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"></path>
+            </svg>
+            <span>Business Journey</span>
+          </button>
           <button class="meta-link-btn" id="openDataSourcesBtn">Data Sources</button>
           <button class="meta-link-btn" id="openBusinessChannelsBtn">Business Channels</button>
           <span class="status-chip" id="agentStatus">Status</span>
@@ -1440,7 +1461,16 @@
               <div class="exec-list" id="runningJourneyUpdateList"></div>
               <div class="running-actions">
                 <button class="running-action-btn" id="applyJourneyUpdateBtn">Apply Highest-Impact Update</button>
-                <button class="running-action-btn" id="openJourneyEditorFromRunningBtn">Business Journey</button>
+                <button class="running-action-btn with-icon" id="openJourneyEditorFromRunningBtn">
+                  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <rect x="1.5" y="2" width="13" height="12" rx="2" stroke="currentColor" stroke-width="1.2"></rect>
+                    <circle cx="4.5" cy="5.5" r="1" fill="currentColor"></circle>
+                    <circle cx="8" cy="8" r="1" fill="currentColor"></circle>
+                    <circle cx="11.5" cy="10.5" r="1" fill="currentColor"></circle>
+                    <path d="M5.3 6.1L7.2 7.4L10.2 9.7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"></path>
+                  </svg>
+                  <span>Business Journey</span>
+                </button>
               </div>
             </div>
           </div>
