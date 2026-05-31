@@ -1,5 +1,9 @@
 # Engage 2028 - UI/UX Solution Design Document
 
+## Scope Disclaimer
+
+This document describes the UX solution for a **mockup/prototype**, not a final production system.
+
 ## 1) Design Objective
 
 Design a conversational enterprise engagement product that feels like an AI operating partner, not a heavy enterprise control center.

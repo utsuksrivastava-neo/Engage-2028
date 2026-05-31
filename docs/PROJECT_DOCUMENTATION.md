@@ -1,5 +1,13 @@
 # Engage 2028 - Project Documentation
 
+## 0) Read This First
+
+This repository is a **UI/UX prototype and concept mockup**.
+
+- It is designed to communicate flows, states, and interaction patterns.
+- It is not a production architecture baseline.
+- It intentionally uses simulated/in-memory data for rapid iteration.
+
 ## 1) Project Overview
 
 Engage 2028 is a single-page, white-theme, conversational UI demo for AI-powered enterprise engagement operations.
@@ -40,8 +48,18 @@ The demo models two lifecycle states:
 
 - `index.html` - full application
 - `README.md` - short project intro
+- `docs/CONCEPTS_AND_GLOSSARY.md` - concept definitions for new contributors
 - `docs/PROJECT_DOCUMENTATION.md` - this document
 - `docs/UI_UX_SOLUTION_DESIGN.md` - UI/UX solution design document
+
+## 4.1 New Contributor Onboarding
+
+Recommended reading order for anyone new to this repo:
+
+1. `README.md`
+2. `docs/CONCEPTS_AND_GLOSSARY.md`
+3. `docs/UI_UX_SOLUTION_DESIGN.md`
+4. `docs/PROJECT_DOCUMENTATION.md`
 
 ## 5) Core Functional Areas
 
@@ -189,6 +207,18 @@ Live URL:
 - No backend persistence (reload resets in-memory entities except auth localStorage).
 - No server-side access control or real multi-user concurrency.
 - Analytics and execution telemetry are simulated.
+- Sharing and departments are UX-level prototype behavior, not enterprise IAM.
+
+## 12.1 Sanity Checklist for Any New Change
+
+Before considering a change complete:
+
+- Confirm copy still frames this as a mockup/prototype.
+- Confirm lifecycle terminology is consistent (Pre-Execution / Running).
+- Confirm new agents map to a department (or `Other`).
+- Confirm dashboard tables remain coherent (agents/users/departments).
+- Confirm locked/gated flows still provide explanatory feedback.
+- Confirm docs reflect meaningful UX/flow changes.
 
 ## 13) Suggested Next Improvements
 
