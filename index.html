@@ -163,6 +163,65 @@
       text-overflow: ellipsis;
     }
 
+    .step-matrix {
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .step-chip {
+      border: 1px solid #dbe4f3;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-align: center;
+      padding: 3px 0;
+      line-height: 1.1;
+    }
+
+    .step-chip.done {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .step-chip.current {
+      border-color: #93b2df;
+      background: #eef5ff;
+      color: #1e3a8a;
+    }
+
+    .step-chip.pending {
+      border-color: #dbe4f3;
+      background: #fff;
+      color: #64748b;
+    }
+
+    .run-state {
+      margin-top: 5px;
+      display: inline-flex;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+
+    .run-state.execution {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+
+    .run-state.waiting {
+      background: #fff7ed;
+      color: #b45309;
+      border-color: #fed7aa;
+    }
+
     .pill {
       margin-top: 4px;
       display: inline-flex;
@@ -533,6 +592,40 @@
       min-width: 0;
       height: 100%;
     }
+
+    .running-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .running-tab {
+      border: 1px solid #d7e3f3;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      text-align: left;
+      transition: all .15s;
+    }
+
+    .running-tab:hover {
+      background: #f0f6ff;
+      border-color: #bfd2ea;
+    }
+
+    .running-tab.active {
+      background: #eef5ff;
+      color: #1e3a8a;
+      border-color: #93b2df;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.14);
+    }
+
+    .running-tab-view.hidden { display: none; }
 
     .running-section {
       border: 1px solid #dbe5f4;
@@ -1338,33 +1431,48 @@
           <div class="thread" id="thread"></div>
         </div>
         <aside class="running-pane hidden" id="runningPane">
-          <div class="running-section">
-            <h4>Current Execution</h4>
-            <div class="exec-list" id="runningCurrentList"></div>
-          </div>
-          <div class="running-section">
-            <h4>Historical Execution</h4>
-            <div class="exec-list" id="runningHistoryList"></div>
-          </div>
-          <div class="running-section">
-            <h4>Recommended Next Sessions</h4>
-            <div class="exec-list" id="runningSessionList"></div>
-            <div class="running-actions">
-              <button class="running-action-btn" id="startSessionBtn">Start New Optimization Session</button>
-              <button class="running-action-btn" id="askWhatNextBtn">Ask Agent: What should I do next?</button>
+          <div class="running-tabs" id="runningTabs"></div>
+
+          <div class="running-tab-view" id="runningAnalyticsView">
+            <div class="running-section">
+              <h4>Current Execution</h4>
+              <div class="exec-list" id="runningCurrentList"></div>
+            </div>
+            <div class="running-section">
+              <h4>Historical Execution</h4>
+              <div class="exec-list" id="runningHistoryList"></div>
+            </div>
+            <div class="running-section">
+              <h4>Customer Data Lake</h4>
+              <table class="data-table">
+                <thead>
+                  <tr><th>Customer</th><th>Custom Fields</th><th>Latest Value</th></tr>
+                </thead>
+                <tbody id="runningDataLakeRows"></tbody>
+              </table>
+              <div class="running-actions">
+                <button class="running-action-btn" id="viewDataLakeBtn">View Full Data Lake</button>
+                <button class="running-action-btn" id="downloadDataLakeBtn">Download Data Lake (CSV)</button>
+              </div>
             </div>
           </div>
-          <div class="running-section">
-            <h4>Customer Data Lake</h4>
-            <table class="data-table">
-              <thead>
-                <tr><th>Customer</th><th>Custom Fields</th><th>Latest Value</th></tr>
-              </thead>
-              <tbody id="runningDataLakeRows"></tbody>
-            </table>
-            <div class="running-actions">
-              <button class="running-action-btn" id="viewDataLakeBtn">View Full Data Lake</button>
-              <button class="running-action-btn" id="downloadDataLakeBtn">Download Data Lake (CSV)</button>
+
+          <div class="running-tab-view hidden" id="runningJourneyView">
+            <div class="running-section">
+              <h4>Recommended Next Sessions</h4>
+              <div class="exec-list" id="runningSessionList"></div>
+              <div class="running-actions">
+                <button class="running-action-btn" id="startSessionBtn">Start New Optimization Session</button>
+                <button class="running-action-btn" id="askWhatNextBtn">Ask Agent: What should I do next?</button>
+              </div>
+            </div>
+            <div class="running-section">
+              <h4>Update Business Journey</h4>
+              <div class="exec-list" id="runningJourneyUpdateList"></div>
+              <div class="running-actions">
+                <button class="running-action-btn" id="applyJourneyUpdateBtn">Apply Highest-Impact Update</button>
+                <button class="running-action-btn" id="openJourneyEditorFromRunningBtn">Open Business Journey Editor</button>
+              </div>
             </div>
           </div>
         </aside>
@@ -1520,27 +1628,65 @@
         guardrails: "Escalation policy, messaging limits, workforce availability controls",
         suggestions: ["Open Data Fetch Module", "Open Test Journey", "Open Approval Plan"],
       },
-      "collections-running": {
-        id: "collections-running",
-        name: "Collections Agent",
-        initials: "CA",
-        color: "#059669",
+      "onboarding-assist-running": {
+        id: "onboarding-assist-running",
+        name: "Onboarding Assist Agent",
+        initials: "OA",
+        color: "#1d4ed8",
         lifecycle: "running",
-        objective: "Drive day-to-day collection outcomes",
-        inputs: "Live orchestration telemetry",
-        guardrails: "Running budget policy",
-        suggestions: ["Show execution updates", "Why did performance change?", "Show ROI trend"],
+        runState: "Under Execution",
+        objective: "Reduce onboarding drop-offs by proactively assisting high-intent users through personalized nudges and contextual support journeys",
+        inputs: "Live onboarding event stream, KYC stage telemetry, channel response cohorts",
+        guardrails: "Consent policy, communication frequency caps, assisted support SLA",
+        suggestions: ["Show onboarding funnel recovery", "Why did KYC completion dip?", "Start rescue micro-journey"],
       },
-      "support-running": {
-        id: "support-running",
-        name: "Proactive Support Agent",
-        initials: "PS",
-        color: "#d97706",
+      "repayment-recovery-running": {
+        id: "repayment-recovery-running",
+        name: "Repayment Recovery Agent",
+        initials: "RR",
+        color: "#0f766e",
         lifecycle: "running",
-        objective: "Prevent avoidable support escalations",
-        inputs: "Intent signals and support telemetry",
-        guardrails: "Escalation policy and workforce constraints",
-        suggestions: ["Show at-risk users", "Optimize channel mix", "Explain latest actions"],
+        runState: "Under Execution",
+        objective: "Improve repayment recovery for delinquent customers using optimized outreach timing and channel selection while minimizing operational costs",
+        inputs: "Delinquency buckets, promise-to-pay conversion telemetry, channel cost trends",
+        guardrails: "Daily outreach budget, compliance windows, escalation policy",
+        suggestions: ["Show recovery by risk band", "Optimize channel mix", "Explain cost-per-recovery shift"],
+      },
+      "churn-prevention-running": {
+        id: "churn-prevention-running",
+        name: "Churn Prevention Agent",
+        initials: "CP",
+        color: "#6d28d9",
+        lifecycle: "running",
+        runState: "In Waiting",
+        objective: "Reduce customer churn by identifying disengagement signals early and triggering retention interventions with controlled retention spend",
+        inputs: "Usage decline signals, renewal propensity, retention offer redemption outcomes",
+        guardrails: "Retention spend ceilings, offer eligibility policy, fairness controls",
+        suggestions: ["Show churn-risk trend", "Review retention ROI", "Trigger save-playbook test"],
+      },
+      "repeat-purchase-running": {
+        id: "repeat-purchase-running",
+        name: "Repeat Purchase Agent",
+        initials: "RP",
+        color: "#b45309",
+        lifecycle: "running",
+        runState: "Under Execution",
+        objective: "Increase repeat purchases by incentivizing high-value customer behaviors through personalized offers and engagement journeys",
+        inputs: "Order cadence, basket affinity shifts, incentive redemption by segment",
+        guardrails: "Incentive spend limits, margin thresholds, frequency controls",
+        suggestions: ["Show repeat-rate lift", "Compare offer cohorts", "Launch high-value cohort sprint"],
+      },
+      "proactive-resolution-running": {
+        id: "proactive-resolution-running",
+        name: "Proactive Resolution Agent",
+        initials: "PR",
+        color: "#0284c7",
+        lifecycle: "running",
+        runState: "In Waiting",
+        objective: "Reduce support escalations by proactively identifying likely customer issues and reaching out with guided resolutions before customers contact support",
+        inputs: "Issue-risk model scores, anomaly alerts, self-serve completion telemetry",
+        guardrails: "Escalation routing policy, support workforce capacity, channel constraints",
+        suggestions: ["Show prevented escalations", "What changed this week?", "Adjust proactive trigger threshold"],
       },
     };
 
@@ -1548,6 +1694,12 @@
     let currentPhaseByAgent = {};
     let currentModuleByAgent = {};
     let guidedFlowByAgent = {};
+    let currentRunningTabByAgent = {};
+
+    const RUNNING_TABS = [
+      { id: "current-analytics", label: "Current Analytics" },
+      { id: "update-journey", label: "Update Business Journey" },
+    ];
 
     const preList = document.getElementById("preList");
     const runList = document.getElementById("runList");
@@ -1560,9 +1712,13 @@
     const thread = document.getElementById("thread");
     const chatPane = document.getElementById("chatPane");
     const runningPane = document.getElementById("runningPane");
+    const runningTabs = document.getElementById("runningTabs");
+    const runningAnalyticsView = document.getElementById("runningAnalyticsView");
+    const runningJourneyView = document.getElementById("runningJourneyView");
     const runningCurrentList = document.getElementById("runningCurrentList");
     const runningHistoryList = document.getElementById("runningHistoryList");
     const runningSessionList = document.getElementById("runningSessionList");
+    const runningJourneyUpdateList = document.getElementById("runningJourneyUpdateList");
     const runningDataLakeRows = document.getElementById("runningDataLakeRows");
     const suggestions = document.getElementById("suggestions");
     const input = document.getElementById("input");
@@ -1592,6 +1748,8 @@
     const closeResourceModalBtn = document.getElementById("closeResourceModalBtn");
     const startSessionBtn = document.getElementById("startSessionBtn");
     const askWhatNextBtn = document.getElementById("askWhatNextBtn");
+    const applyJourneyUpdateBtn = document.getElementById("applyJourneyUpdateBtn");
+    const openJourneyEditorFromRunningBtn = document.getElementById("openJourneyEditorFromRunningBtn");
     const viewDataLakeBtn = document.getElementById("viewDataLakeBtn");
     const downloadDataLakeBtn = document.getElementById("downloadDataLakeBtn");
     const attachBtn = document.getElementById("attachBtn");
@@ -1726,42 +1884,99 @@
     ];
 
     const RUNNING_DATA = {
-      "collections-running": {
+      "onboarding-assist-running": {
         current: [
-          { title: "Recovery Outreach - Wave 3", detail: "14,280 customers in-flight · WhatsApp-first cadence" },
-          { title: "Escalation Queue", detail: "1,124 high-risk accounts moving to voice channel today" },
+          { title: "KYC Rescue Journey - Batch 12", detail: "9,840 users in-flight · nudges split across WhatsApp + in-app cards" },
+          { title: "High-Intent Callback Queue", detail: "612 users routed for assisted completion in next 2 hours" },
         ],
         history: [
-          { title: "May 24 - May 30", detail: "Recovery +3.1% · Cost per recovery -14%" },
-          { title: "May 17 - May 23", detail: "Recovery +2.4% · Escalation workload -9%" },
+          { title: "May 24 - May 30", detail: "Drop-off -16% · KYC completion +8.4%" },
+          { title: "May 17 - May 23", detail: "Drop-off -10% · Assisted completion SLA met at 96%" },
         ],
         sessions: [
-          { title: "Retune voice escalation threshold", detail: "Agent suggests reducing escalation trigger by 8% for high-response cohorts." },
-          { title: "Launch low-cost reminder experiment", detail: "Test two-message WhatsApp variant for mid-risk segment." },
+          { title: "Retune nudge timing after document upload", detail: "Shift second reminder from 8h to 3h for high-intent cohorts." },
+          { title: "Activate regional language variant", detail: "Enable Hindi + Kannada quick-complete templates for pending users." },
         ],
         datalake: [
-          { customer: "CUST-1084", field: "repayment_intent_score", value: "0.82" },
-          { customer: "CUST-2041", field: "preferred_channel_confidence", value: "WhatsApp(0.74)" },
-          { customer: "CUST-3120", field: "escalation_propensity", value: "high" },
+          { customer: "CUST-1042", field: "onboarding_intent_score", value: "0.88" },
+          { customer: "CUST-2290", field: "kyc_step_dropoff_point", value: "address_verification" },
+          { customer: "CUST-3375", field: "assist_required_probability", value: "0.63" },
         ],
       },
-      "support-running": {
+      "repayment-recovery-running": {
         current: [
-          { title: "Proactive Resolution Run", detail: "6,420 customers in proactive monitoring loop" },
-          { title: "Issue Prevention Campaign", detail: "API timeout cluster outreach launched this morning" },
+          { title: "Delinquency Outreach - DPD 3-15", detail: "13,420 accounts active · channel mix optimized every 30 minutes" },
+          { title: "Escalation to Voice", detail: "1,006 accounts scheduled for workforce-assisted calls today" },
         ],
         history: [
-          { title: "May 24 - May 30", detail: "Escalations -18% · First contact resolution +11%" },
-          { title: "May 17 - May 23", detail: "Escalations -10% · Support backlog -7%" },
+          { title: "May 24 - May 30", detail: "Recovery +3.6% · Cost per recovery -12%" },
+          { title: "May 17 - May 23", detail: "Promise-to-pay conversions +2.1% · voice load -9%" },
         ],
         sessions: [
-          { title: "Add pre-emptive outage guidance", detail: "Auto-trigger support guidance when service anomaly score > 0.7." },
-          { title: "Refine early-warning model", detail: "Include failed payment + login retry sequence as new signals." },
+          { title: "Retune collection reminder sequence", detail: "Reduce first 24h pressure for medium-risk cohort to improve conversion quality." },
+          { title: "Launch pay-link optimization test", detail: "Test pre-filled repayment links for top delinquency clusters." },
         ],
         datalake: [
-          { customer: "CUST-5122", field: "issue_risk_score", value: "0.76" },
-          { customer: "CUST-8291", field: "self_serve_likelihood", value: "medium" },
-          { customer: "CUST-9150", field: "proactive_resolution_status", value: "sent" },
+          { customer: "CUST-1188", field: "repayment_intent_score", value: "0.81" },
+          { customer: "CUST-2471", field: "preferred_channel_confidence", value: "WhatsApp(0.77)" },
+          { customer: "CUST-3640", field: "escalation_propensity", value: "high" },
+        ],
+      },
+      "churn-prevention-running": {
+        current: [
+          { title: "At-Risk Save Flow", detail: "7,260 customers in active retention interventions" },
+          { title: "Renewal Reminder Sprint", detail: "3,140 near-expiry users receiving guided renewal paths" },
+        ],
+        history: [
+          { title: "May 24 - May 30", detail: "Churn -2.8% · Retention ROI +19%" },
+          { title: "May 17 - May 23", detail: "Save-rate +3.1% · offer overrun prevented in 98% cohorts" },
+        ],
+        sessions: [
+          { title: "Add low-cost save path", detail: "Route medium-risk users to non-discount interventions before offers." },
+          { title: "Reweight disengagement trigger", detail: "Increase app-inactivity weight for users with support tickets in last 14 days." },
+        ],
+        datalake: [
+          { customer: "CUST-1455", field: "churn_risk_score", value: "0.74" },
+          { customer: "CUST-2754", field: "retention_offer_sensitivity", value: "medium" },
+          { customer: "CUST-3902", field: "save_playbook_version", value: "v3.2" },
+        ],
+      },
+      "repeat-purchase-running": {
+        current: [
+          { title: "Repeat Intent Campaign", detail: "11,040 customers in dynamic offer loop by affinity segment" },
+          { title: "Cart Re-Engagement Run", detail: "2,460 abandoned carts receiving contextual nudges" },
+        ],
+        history: [
+          { title: "May 24 - May 30", detail: "Repeat purchases +4.9% · incremental revenue +11.4%" },
+          { title: "May 17 - May 23", detail: "Offer redemption +6.2% · margin-safe cohorts at 93%" },
+        ],
+        sessions: [
+          { title: "Test behavior-triggered bundles", detail: "Launch bundle recommendations for customers with 2+ category affinity." },
+          { title: "Optimize reorder reminder window", detail: "Advance reminder by 36h for fast-moving basket segments." },
+        ],
+        datalake: [
+          { customer: "CUST-1322", field: "repeat_purchase_propensity", value: "0.79" },
+          { customer: "CUST-2881", field: "offer_affinity_vector", value: "electronics:0.68, accessories:0.57" },
+          { customer: "CUST-4017", field: "margin_guardrail_status", value: "pass" },
+        ],
+      },
+      "proactive-resolution-running": {
+        current: [
+          { title: "Issue Prevention Monitor", detail: "6,980 customers under proactive anomaly watch" },
+          { title: "Guided Resolution Broadcast", detail: "API timeout cluster guidance triggered for 1,220 impacted users" },
+        ],
+        history: [
+          { title: "May 24 - May 30", detail: "Escalations -19% · first-contact resolution +12%" },
+          { title: "May 17 - May 23", detail: "Ticket volume -11% · self-serve completion +15%" },
+        ],
+        sessions: [
+          { title: "Tune anomaly threshold by segment", detail: "Lower trigger for premium users to prevent high-value escalations." },
+          { title: "Expand proactive walkthrough coverage", detail: "Add guided flow for payment setup and login reset journeys." },
+        ],
+        datalake: [
+          { customer: "CUST-1661", field: "issue_risk_score", value: "0.78" },
+          { customer: "CUST-2950", field: "self_serve_likelihood", value: "high" },
+          { customer: "CUST-4183", field: "proactive_resolution_status", value: "completed" },
         ],
       },
     };
@@ -1827,16 +2042,43 @@
     }
 
     function renderSidebar() {
-      const renderRows = (agents) => agents.map(agent => `
-        <div class="agent-row ${agent.id === currentAgentId ? "active" : ""}" onclick="selectAgent('${agent.id}')">
-          <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
-          <div class="agent-meta">
-            <div class="agent-name">${agent.name}</div>
-            <div class="agent-sub">${agent.objective}</div>
-            <div class="pill ${agent.lifecycle === "pre" ? "pre" : "run"}">${agent.lifecycle === "pre" ? "Pre-Execution" : "Running"}</div>
+      const renderRows = (agents) => agents.map(agent => {
+        let subLine = "";
+        let details = "";
+        if (agent.lifecycle === "pre") {
+          const activePhase = currentPhaseByAgent[agent.id] || PHASES[0].id;
+          const phaseIndex = PHASES.findIndex(p => p.id === activePhase);
+          const safeIndex = phaseIndex < 0 ? 0 : phaseIndex;
+          subLine = `Step ${safeIndex + 1} of ${PHASES.length} in progress`;
+          details = `
+            <div class="step-matrix">
+              ${PHASES.map((_, idx) => {
+                const state = idx < safeIndex ? "done" : idx === safeIndex ? "current" : "pending";
+                return `<span class="step-chip ${state}">${idx + 1}</span>`;
+              }).join("")}
+            </div>
+          `;
+        } else {
+          const stateRaw = (agent.runState || "Under Execution").toLowerCase();
+          const isWaiting = stateRaw.includes("wait");
+          const stateClass = isWaiting ? "waiting" : "execution";
+          const stateLabel = isWaiting ? "In Waiting" : "Under Execution";
+          subLine = "Execution State";
+          details = `<div class="run-state ${stateClass}">${stateLabel}</div>`;
+        }
+
+        return `
+          <div class="agent-row ${agent.id === currentAgentId ? "active" : ""}" onclick="selectAgent('${agent.id}')">
+            <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
+            <div class="agent-meta">
+              <div class="agent-name">${agent.name}</div>
+              <div class="agent-sub">${subLine}</div>
+              ${details}
+              <div class="pill ${agent.lifecycle === "pre" ? "pre" : "run"}">${agent.lifecycle === "pre" ? "Pre-Execution" : "Running"}</div>
+            </div>
           </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
       preList.innerHTML = renderRows(byLifecycle("pre"));
       runList.innerHTML = renderRows(byLifecycle("running"));
     }
@@ -2196,16 +2438,39 @@
       }
     }
 
+    function setRunningTab(tabId) {
+      const agent = AGENTS[currentAgentId];
+      if (!agent || agent.lifecycle !== "running") return;
+      currentRunningTabByAgent[agent.id] = tabId;
+      renderRunningWorkspace(agent);
+    }
+
     function renderRunningWorkspace(agent) {
       if (agent.lifecycle !== "running") {
         runningPane.classList.add("hidden");
         return;
       }
       runningPane.classList.remove("hidden");
-      const data = RUNNING_DATA[agent.id] || { current: [], history: [], sessions: [], datalake: [] };
+      const data = RUNNING_DATA[agent.id] || { current: [], history: [], sessions: [], journeyUpdates: [], datalake: [] };
+      const activeTab = currentRunningTabByAgent[agent.id] || RUNNING_TABS[0].id;
+      currentRunningTabByAgent[agent.id] = activeTab;
+
+      runningTabs.innerHTML = RUNNING_TABS.map(tab => `
+        <button class="running-tab ${tab.id === activeTab ? "active" : ""}" onclick="setRunningTab('${tab.id}')">${tab.label}</button>
+      `).join("");
+      runningAnalyticsView.classList.toggle("hidden", activeTab !== "current-analytics");
+      runningJourneyView.classList.toggle("hidden", activeTab !== "update-journey");
+
       renderExecList(runningCurrentList, data.current);
       renderExecList(runningHistoryList, data.history);
       renderExecList(runningSessionList, data.sessions);
+      const updates = (data.journeyUpdates && data.journeyUpdates.length)
+        ? data.journeyUpdates
+        : (data.sessions || []).map(item => ({
+            title: item.title,
+            detail: `${item.detail} · Effective from next execution window after approval.`,
+          }));
+      renderExecList(runningJourneyUpdateList, updates);
       runningDataLakeRows.innerHTML = data.datalake.map(row => `
         <tr>
           <td>${escapeHtml(row.customer)}</td>
@@ -2216,7 +2481,7 @@
     }
 
     function currentRunningData() {
-      return RUNNING_DATA[currentAgentId] || { current: [], history: [], sessions: [], datalake: [] };
+      return RUNNING_DATA[currentAgentId] || { current: [], history: [], sessions: [], journeyUpdates: [], datalake: [] };
     }
 
     function downloadCurrentDataLake() {
@@ -2263,7 +2528,7 @@
           openModule(phase.id, phase.modules[0].id, phase.modules[0].label);
         }
       } else {
-        message("agent", agent.name, agent.initials, agent.color, `<p>Running workspace loaded.</p><ul><li>Review current and historical execution on the right</li><li>Check recommended new sessions and launch updates</li><li>View/export customer data lake anytime</li><li>Edit journey manually via <strong>Open Business Journey Editor</strong></li></ul>`);
+        message("agent", agent.name, agent.initials, agent.color, `<p>Running workspace loaded.</p><ul><li>Use <strong>Current Analytics</strong> for live and historical performance</li><li>Use <strong>Update Business Journey</strong> to apply optimization updates</li><li>View/export customer data lake from analytics tab</li><li>Edit journey manually via <strong>Open Business Journey Editor</strong></li></ul>`);
         message("agent", agent.name, agent.initials, agent.color, `<p><strong>Proactive prompt:</strong> I found 2 new optimization sessions you can run now. Want me to start with the highest-impact one?</p>`);
       }
     }
@@ -2279,6 +2544,7 @@
       if (agent.lifecycle !== "pre") return false;
       if (!(lower.includes("go live") || lower.includes("approve") || lower.includes("launch") || lower.includes("deploy"))) return false;
       agent.lifecycle = "running";
+      agent.runState = "Under Execution";
       agent.suggestions = ["Show execution snapshot", "Explain optimization decisions", "Show ROI trend"];
       message("agent", agent.name, agent.initials, agent.color, `<p>Approved. This pre-execution agent is now promoted to <strong>Running Agent</strong> and handed to Central Orchestration & Execution.</p>`);
       renderSidebar();
@@ -2334,6 +2600,16 @@
       if (agent.lifecycle === "running") {
         const lower = (text || "").toLowerCase();
         const runData = currentRunningData();
+        if ((lower.includes("update") && lower.includes("journey")) || lower.includes("journey tab")) {
+          setRunningTab("update-journey");
+          message("agent", agent.name, agent.initials, agent.color, `<p>Switched to <strong>Update Business Journey</strong>.</p><p>I’ve listed the highest-impact updates and can apply one with effective date controls.</p>`);
+          return;
+        }
+        if (lower.includes("analytics") || lower.includes("current analytics")) {
+          setRunningTab("current-analytics");
+          message("agent", agent.name, agent.initials, agent.color, `<p>Switched to <strong>Current Analytics</strong>.</p><p>You can review live, historical, and data-lake metrics here.</p>`);
+          return;
+        }
         if (lower.includes("history") || lower.includes("past")) {
           const hist = (runData.history || []).map(h => `<li><strong>${escapeHtml(h.title)}:</strong> ${escapeHtml(h.detail)}</li>`).join("");
           message("agent", agent.name, agent.initials, agent.color, `<p>Here is recent historical execution performance:</p><ul>${hist}</ul>`);
@@ -2417,6 +2693,28 @@
       const agent = AGENTS[currentAgentId];
       if (agent.lifecycle !== "running") return;
       message("agent", agent.name, agent.initials, agent.color, `<p><strong>Recommended next actions:</strong></p><ul><li>Run touchpoint timing retune for high-value segment</li><li>Launch low-cost reminder variant experiment</li><li>Review escalation threshold drift in last 48 hours</li></ul>`);
+    });
+
+    applyJourneyUpdateBtn.addEventListener("click", () => {
+      if (!currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      if (agent.lifecycle !== "running") return;
+      const data = currentRunningData();
+      const topUpdate = (data.journeyUpdates && data.journeyUpdates[0]) || (data.sessions && data.sessions[0]);
+      const effectiveDate = new Date(Date.now() + 86400000).toLocaleDateString();
+      if (!topUpdate) {
+        message("agent", agent.name, agent.initials, agent.color, `<p>No pending journey updates found right now.</p>`);
+        return;
+      }
+      showAgentEditing("Applying running-journey update...");
+      message("agent", agent.name, agent.initials, agent.color, `<p>Applied update: <strong>${escapeHtml(topUpdate.title)}</strong>.</p><p>This will start from <strong>${effectiveDate}</strong> after orchestration sync.</p>`);
+    });
+
+    openJourneyEditorFromRunningBtn.addEventListener("click", () => {
+      if (!currentAgentId) return;
+      const agent = AGENTS[currentAgentId];
+      if (agent.lifecycle !== "running") return;
+      openJourneyEditor();
     });
 
     viewDataLakeBtn.addEventListener("click", () => {
