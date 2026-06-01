@@ -299,3 +299,67 @@ For each UX change, validate:
 - is the next step obvious?
 - does action feedback explain outcome and reason?
 - does this still feel lightweight, not dashboard-heavy?
+
+## 18) Enterprise Explainability and Atomicity Requirement (Critical)
+
+Because this is an enterprise product for business users (not only technical users), every AI action must be understandable, trackable, and interaction-safe.
+
+### 18.1 Explainability for Non-Technical Business Users
+
+The end user must be able to follow exactly what the AI is doing without reading technical code or internal logic.
+
+Required UX behavior:
+
+- each major AI decision must be explained in plain business language,
+- journey changes must be shown as understandable flow updates (not opaque background changes),
+- users must be able to follow the flow creation/update in near real time,
+- system language must remain within the mental model of a business operator.
+
+Design implication:
+
+- no "black box" decision surfaces for critical journey modifications,
+- every recommendation and edit must have reason + effect visibility.
+
+### 18.2 Real-Time Flow Traceability
+
+When a journey is being created or updated, the user should be able to see:
+
+- what step is currently being changed,
+- what will be changed next,
+- when the update is completed.
+
+Minimum feedback model:
+
+- in-progress state indicator,
+- step-by-step update messages,
+- completion confirmation with outcome summary.
+
+### 18.3 Atomic Change Transactions (No Mid-Flight Interruption)
+
+If one prompt triggers a business journey update, that update must execute as one atomic operation from start to completion.
+
+Required interaction rule:
+
+- while an AI flow change is in progress, additional conflicting prompts/edits should be blocked or queued,
+- the user should not be allowed to interrupt and mutate the same flow repeatedly before the current transaction completes,
+- once completed, the system re-enables prompting with updated state context.
+
+Design implication:
+
+- provide a clear "processing/locked" state during critical updates,
+- enforce transactional boundaries for journey mutations,
+- prevent partial or overlapping updates that can confuse business users.
+
+### 18.4 Why This Is Mandatory
+
+Without explainability + atomicity:
+
+- business users lose trust,
+- flow state can become inconsistent,
+- decisions become difficult to audit or approve.
+
+With explainability + atomicity:
+
+- enterprise confidence increases,
+- governance and approval quality improves,
+- non-technical operators can safely supervise AI-driven journey creation.
