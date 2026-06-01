@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engage 2028 Version Two</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --border: #dbe5f4;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #1d4ed8;
+      --primary-soft: #eaf1ff;
+      --success: #047857;
+      --amber: #b45309;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, "Segoe UI", Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+    .app { display: grid; grid-template-columns: 260px minmax(560px, 1fr) 360px; gap: 12px; height: 100vh; padding: 10px; }
+    .panel { border: 1px solid var(--border); border-radius: 14px; background: var(--panel); overflow: hidden; }
+
+    .sidebar { display: grid; grid-template-rows: auto 1fr; }
+    .side-head { padding: 14px; border-bottom: 1px solid var(--border); }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: #1d4ed8; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .subtitle { margin-top: 6px; color: var(--muted); font-size: 12px; }
+    .agent-list { overflow: auto; padding: 12px; }
+    .group-title { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin: 10px 6px 8px; }
+    .agent-row { border: 1px solid transparent; border-radius: 12px; padding: 9px; display: flex; gap: 8px; cursor: pointer; margin-bottom: 6px; }
+    .agent-row:hover { border-color: #d9e4f7; background: #f7faff; }
+    .agent-row.active { border-color: #c8d8f1; background: #f0f6ff; }
+    .agent-icon { width: 30px; height: 30px; border-radius: 8px; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .agent-name { font-size: 13px; font-weight: 700; line-height: 1.2; }
+    .agent-sub { margin-top: 2px; font-size: 11px; color: var(--muted); line-height: 1.2; }
+
+    .chat-col { display: grid; grid-template-rows: auto 1fr auto; min-width: 0; }
+    .chat-head { border-bottom: 1px solid var(--border); padding: 12px 14px; }
+    .chat-head h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+    .chat-head p { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .thread { overflow: auto; padding: 14px; display: grid; gap: 12px; }
+    .msg { display: flex; gap: 9px; max-width: 92%; }
+    .msg.user { margin-left: auto; flex-direction: row-reverse; }
+    .avatar { width: 28px; height: 28px; border-radius: 8px; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .bubble { border: 1px solid var(--border); background: #fff; border-radius: 12px; padding: 10px; }
+    .msg.user .bubble { background: #eef4ff; border-color: #bfd2ee; }
+    .name { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; font-weight: 700; }
+    .content { font-size: 13px; line-height: 1.45; }
+    .content ul { margin: 6px 0 0 16px; }
+
+    .composer-wrap { border-top: 1px solid var(--border); padding: 10px 12px; background: #fbfdff; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .suggestion { border: 1px solid #dbe5f4; background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 11px; cursor: pointer; color: #334155; font-weight: 600; }
+    .suggestion:hover { background: #eef5ff; border-color: #bfd3f0; }
+    .composer { border: 1px solid #d7e3f3; border-radius: 12px; background: #fff; padding: 8px; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
+    .meta-chip { border: 1px solid #dbe5f4; background: #f8fbff; color: #334155; border-radius: 999px; padding: 3px 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+    .meta-chip.phase { background: #eef5ff; border-color: #bed1ef; color: #1e3a8a; }
+    .meta-chip.step { background: #ecfdf5; border-color: #bbf7d0; color: var(--success); }
+    .input-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    textarea { width: 100%; border: 0; resize: none; outline: none; min-height: 32px; font-size: 14px; color: var(--text); }
+    .send { border: 1px solid #1d4ed8; background: #1d4ed8; color: #fff; border-radius: 9px; width: 34px; height: 34px; font-size: 16px; cursor: pointer; }
+    .send:disabled { opacity: .4; cursor: not-allowed; }
+
+    .widget { display: grid; grid-template-rows: auto auto 1fr; min-width: 0; }
+    .widget-head { border-bottom: 1px solid var(--border); padding: 12px; }
+    .widget-head h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+    .widget-head strong { display: block; margin-top: 4px; font-size: 15px; }
+    .widget-block { padding: 12px; border-bottom: 1px solid var(--border); }
+    .widget-block h4 { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: .05em; margin-bottom: 6px; }
+    .widget-block p { font-size: 12px; color: #334155; line-height: 1.45; }
+    .widget-list { padding: 12px; overflow: auto; display: grid; gap: 8px; }
+    .widget-item { border: 1px solid #dbe5f4; border-radius: 10px; padding: 9px; background: #f8fbff; }
+    .widget-item strong { font-size: 12px; display: block; margin-bottom: 3px; }
+    .widget-item span { font-size: 11px; color: #475569; line-height: 1.35; display: block; }
+    .flow-loader { margin-top: 8px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #dbe5f4; background: #f8fbff; border-radius: 9px; padding: 6px 9px; font-size: 11px; font-weight: 700; color: #334155; }
+    .flow-loader::before { content: ""; width: 12px; height: 12px; border: 2px solid #cbdcf7; border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel sidebar">
+      <div class="side-head">
+        <div class="brand"><div class="brand-mark">E</div>Exotel Engage Agents</div>
+        <div class="subtitle">Engage 2028 Version Two</div>
+      </div>
+      <div class="agent-list">
+        <div class="group-title">Pre-Execution Agents</div>
+        <div id="preAgentRows"></div>
+        <div class="group-title">Running Agents</div>
+        <div id="runAgentRows"></div>
+      </div>
+    </aside>
+
+    <main class="panel chat-col">
+      <div class="chat-head">
+        <h1 id="chatTitle">Onboarding Assist Agent 1</h1>
+        <p id="chatSub">Structured conversational setup and execution guidance</p>
+      </div>
+      <div class="thread" id="thread"></div>
+      <div class="composer-wrap">
+        <div class="suggestions" id="suggestions"></div>
+        <div class="composer">
+          <div class="meta-row">
+            <span class="meta-chip" id="chipLifecycle">Pre-Execution</span>
+            <span class="meta-chip phase" id="chipPhase">Planning Phase</span>
+            <span class="meta-chip step" id="chipStep">Step 1/6</span>
+            <span class="meta-chip" id="chipMilestone">Objective Clarification</span>
+          </div>
+          <div class="input-row">
+            <textarea id="input" placeholder="Respond to the current milestone..."></textarea>
+            <button class="send" id="sendBtn">↑</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="panel widget">
+      <div class="widget-head">
+        <h3>Always-On Context Widget</h3>
+        <strong id="widgetAgentName">Onboarding Assist Agent 1</strong>
+      </div>
+      <div class="widget-block">
+        <h4>Current Position</h4>
+        <p id="widgetCurrent">Planning Phase · Objective Clarification · Step 1/6</p>
+      </div>
+      <div class="widget-list" id="widgetList"></div>
+    </aside>
+  </div>
+
+  <script>
+    const PHASES = [
+      { id: "p1", title: "Planning Phase", milestones: ["Objective Clarification", "Audience and Data Source", "Channel Readiness"] },
+      { id: "p2", title: "Create Business Journey", milestones: ["Journey Brief", "Touchpoint Strategy", "Journey Skeleton"] },
+      { id: "p3", title: "Configure Journey Nodes", milestones: ["Trigger Nodes", "Action Nodes", "Process and End Nodes"] },
+      { id: "p4", title: "Test Business Journey", milestones: ["Scenario Tests"] },
+      { id: "p5", title: "Execution Validation", milestones: ["Execution Checks", "Gen AI Defaults"] },
+      { id: "p6", title: "Go Live", milestones: ["Approval and Rollout"] },
+    ];
+
+    const AGENTS = {
+      "onboarding-assist-pre-1": { id: "onboarding-assist-pre-1", name: "Onboarding Assist Agent 1", initials: "OA", color: "#2563eb", lifecycle: "pre", department: "Operations" },
+      "repayment-recovery-pre-1": { id: "repayment-recovery-pre-1", name: "Repayment Recovery Agent 1", initials: "RR", color: "#0f766e", lifecycle: "pre", department: "Finance" },
+      "churn-prevention-pre-1": { id: "churn-prevention-pre-1", name: "Churn Prevention Agent 1", initials: "CP", color: "#6d28d9", lifecycle: "pre", department: "Marketing" },
+      "onboarding-assist-run-2": { id: "onboarding-assist-run-2", name: "Onboarding Assist Agent 2", initials: "OA", color: "#1d4ed8", lifecycle: "running", department: "Operations" },
+      "repayment-recovery-run-2": { id: "repayment-recovery-run-2", name: "Repayment Recovery Agent 2", initials: "RR", color: "#0f766e", lifecycle: "running", department: "Finance" },
+    };
+
+    const RECOMMENDED = {
+      "p1:Objective Clarification": "Primary objective is improving onboarding completion while staying within communication policy limits.",
+      "p1:Audience and Data Source": "Fetch data from registration web form and onboarding event stream with KYC stage variables.",
+      "p1:Channel Readiness": "Use WhatsApp and SMS as primary channels, with assisted dialler fallback for high-intent users.",
+      "p2:Journey Brief": "Create a journey brief with KPI target, expected uplift, and rollout boundaries.",
+      "p2:Touchpoint Strategy": "WhatsApp first, then SMS fallback, then assisted escalation for high-intent non-responders.",
+      "p2:Journey Skeleton": "Build segment -> touchpoint -> wait -> decision -> escalation/end branch structure.",
+      "p3:Trigger Nodes": "Trigger on registration completed plus KYC inactivity over 45 minutes.",
+      "p3:Action Nodes": "Configure WhatsApp and SMS with retries and compliance-safe templates.",
+      "p3:Process and End Nodes": "Set wait timers and end states for completed, unresolved, and assisted handoff.",
+      "p4:Scenario Tests": "Run happy path, fallback path, and failure path simulation before rollout.",
+      "p5:Execution Checks": "Validate channel capacity, policy checks, and escalation routing readiness.",
+      "p5:Gen AI Defaults": "Apply conservative defaults where variable confidence is below threshold.",
+      "p6:Approval and Rollout": "Submit approval package and execute controlled rollout window.",
+    };
+
+    const preAgentRows = document.getElementById("preAgentRows");
+    const runAgentRows = document.getElementById("runAgentRows");
+    const thread = document.getElementById("thread");
+    const suggestions = document.getElementById("suggestions");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const chatTitle = document.getElementById("chatTitle");
+    const chatSub = document.getElementById("chatSub");
+    const widgetAgentName = document.getElementById("widgetAgentName");
+    const widgetCurrent = document.getElementById("widgetCurrent");
+    const widgetList = document.getElementById("widgetList");
+    const chipLifecycle = document.getElementById("chipLifecycle");
+    const chipPhase = document.getElementById("chipPhase");
+    const chipStep = document.getElementById("chipStep");
+    const chipMilestone = document.getElementById("chipMilestone");
+
+    let currentAgentId = "onboarding-assist-pre-1";
+    let preState = {};
+
+    function ensurePreState(agentId) {
+      if (!preState[agentId]) preState[agentId] = { phaseIndex: 0, milestoneIndex: 0 };
+      return preState[agentId];
+    }
+
+    function msg(role, name, avatar, color, html) {
+      const el = document.createElement("div");
+      el.className = `msg ${role === "user" ? "user" : ""}`;
+      el.innerHTML = `<div class="avatar" style="background:${color}">${avatar}</div>
+        <div class="bubble"><div class="name">${name}</div><div class="content">${html}</div></div>`;
+      thread.appendChild(el);
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    function renderAgents() {
+      const render = (agent) => `
+        <div class="agent-row ${agent.id === currentAgentId ? "active" : ""}" onclick="selectAgent('${agent.id}')">
+          <div class="agent-icon" style="background:${agent.color}">${agent.initials}</div>
+          <div>
+            <div class="agent-name">${agent.name}</div>
+            <div class="agent-sub">${agent.department}</div>
+          </div>
+        </div>`;
+      preAgentRows.innerHTML = Object.values(AGENTS).filter(a => a.lifecycle === "pre").map(render).join("");
+      runAgentRows.innerHTML = Object.values(AGENTS).filter(a => a.lifecycle === "running").map(render).join("");
+    }
+
+    function renderWidget(agent) {
+      widgetAgentName.textContent = agent.name;
+      if (agent.lifecycle === "pre") {
+        const s = ensurePreState(agent.id);
+        const phase = PHASES[s.phaseIndex];
+        const milestone = phase.milestones[s.milestoneIndex];
+        widgetCurrent.textContent = `${phase.title} · ${milestone} · Step ${s.phaseIndex + 1}/6`;
+        widgetList.innerHTML = `
+          <div class="widget-item"><strong>What is happening now</strong><span>Structured conversation is collecting milestone input for ${milestone}.</span></div>
+          <div class="widget-item"><strong>Why this step exists</strong><span>This step ensures journey logic is created with governance and business clarity.</span></div>
+          <div class="widget-item"><strong>Next transition</strong><span>After this milestone, the assistant moves to the next guided milestone automatically.</span></div>`;
+      } else {
+        widgetCurrent.textContent = "Running Agent · Operational Optimization";
+        widgetList.innerHTML = `
+          <div class="widget-item"><strong>Current focus</strong><span>Monitor execution, optimize journeys, and apply approved updates.</span></div>
+          <div class="widget-item"><strong>Gen AI support</strong><span>Use execution-derived variables to improve targeting and orchestration.</span></div>`;
+      }
+    }
+
+    function renderComposerMeta(agent) {
+      if (agent.lifecycle === "pre") {
+        const s = ensurePreState(agent.id);
+        const phase = PHASES[s.phaseIndex];
+        const milestone = phase.milestones[s.milestoneIndex];
+        chipLifecycle.textContent = "Pre-Execution";
+        chipPhase.textContent = phase.title;
+        chipStep.textContent = `Step ${s.phaseIndex + 1}/6`;
+        chipMilestone.textContent = milestone;
+      } else {
+        chipLifecycle.textContent = "Running";
+        chipPhase.textContent = "Operational Mode";
+        chipStep.textContent = "Live";
+        chipMilestone.textContent = "Execution and Optimization";
+      }
+    }
+
+    function renderSuggestions(agent) {
+      if (agent.lifecycle !== "pre") {
+        suggestions.innerHTML = `<button class="suggestion" onclick="quickSend('Show current analytics and next optimization recommendation.')">Recommended prompt: Show current analytics</button>`;
+        return;
+      }
+      const s = ensurePreState(agent.id);
+      const phase = PHASES[s.phaseIndex];
+      const milestone = phase.milestones[s.milestoneIndex];
+      const key = `${phase.id}:${milestone}`;
+      const rec = RECOMMENDED[key] || "Provide details for this milestone.";
+      suggestions.innerHTML = `<button class="suggestion" onclick="quickSend('${escapeHtml(rec)}')">Recommended Input: ${escapeHtml(rec)}</button>`;
+    }
+
+    function selectAgent(agentId) {
+      currentAgentId = agentId;
+      const agent = AGENTS[agentId];
+      renderAgents();
+      chatTitle.textContent = agent.name;
+      chatSub.textContent = agent.lifecycle === "pre"
+        ? "Structured conversation with explicit phases and milestones"
+        : "Running operations view with recommendations and analytics";
+      thread.innerHTML = "";
+      renderComposerMeta(agent);
+      renderSuggestions(agent);
+      renderWidget(agent);
+      if (agent.lifecycle === "pre") {
+        const s = ensurePreState(agent.id);
+        const phase = PHASES[s.phaseIndex];
+        const milestone = phase.milestones[s.milestoneIndex];
+        msg("agent", agent.name, agent.initials, agent.color, `<p>Welcome. We will move through this in a structured conversation.</p><p><strong>Current milestone:</strong> ${milestone}</p><p>Use the recommended input chip to proceed step by step.</p>`);
+      } else {
+        msg("agent", agent.name, agent.initials, agent.color, `<p>Running workspace ready.</p><ul><li>Track performance in real time</li><li>Apply journey updates safely</li><li>Use AI variables for targeted optimization</li></ul>`);
+      }
+    }
+
+    function quickSend(text) {
+      input.value = text;
+      sendMessage();
+    }
+
+    function sendMessage() {
+      const text = (input.value || "").trim();
+      if (!text) return;
+      const agent = AGENTS[currentAgentId];
+      input.value = "";
+      msg("user", "You", "US", "#6366f1", `<p>${escapeHtml(text)}</p>`);
+      if (agent.lifecycle !== "pre") {
+        msg("agent", agent.name, agent.initials, agent.color, `<p>Captured. I can now recommend a variable-driven update and prepare it for journey editing.</p>`);
+        return;
+      }
+
+      const s = ensurePreState(agent.id);
+      const phase = PHASES[s.phaseIndex];
+      const milestone = phase.milestones[s.milestoneIndex];
+      msg("agent", agent.name, agent.initials, agent.color, `<p>Noted for <strong>${milestone}</strong>.</p><p>I’m updating the journey context.</p><div class="flow-loader">Applying step update...</div>`);
+
+      setTimeout(() => {
+        if (s.milestoneIndex < phase.milestones.length - 1) {
+          s.milestoneIndex += 1;
+        } else if (s.phaseIndex < PHASES.length - 1) {
+          s.phaseIndex += 1;
+          s.milestoneIndex = 0;
+        }
+        const nextPhase = PHASES[s.phaseIndex];
+        const nextMilestone = nextPhase.milestones[s.milestoneIndex];
+        renderComposerMeta(agent);
+        renderSuggestions(agent);
+        renderWidget(agent);
+        msg("agent", agent.name, agent.initials, agent.color, `<p><strong>Next milestone:</strong> ${nextMilestone}</p><p>You are now on <strong>${nextPhase.title}</strong> (${s.phaseIndex + 1}/6).</p>`);
+      }, 900);
+    }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("'", "&#39;").replaceAll('"', "&quot;");
+    }
+
+    window.selectAgent = selectAgent;
+    window.quickSend = quickSend;
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+    sendBtn.addEventListener("click", sendMessage);
+    renderAgents();
+    selectAgent(currentAgentId);
+  </script>
+</body>
+</html>

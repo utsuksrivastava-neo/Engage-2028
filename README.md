@@ -22,6 +22,9 @@ What this project is not:
 
 Open `index.html` in a browser, or use GitHub Pages once published.
 
+- Version One: `/`
+- Version Two (Claude-like structured conversation variant): `/version-two/`
+
 ## Core Concepts in This Project
 
 - **Engage**: the overall AI-led engagement operating model for enterprise teams.
