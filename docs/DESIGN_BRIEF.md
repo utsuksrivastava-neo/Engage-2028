@@ -1,167 +1,301 @@
-# Engage 2028 - Design Brief
+# Engage 2028 - Detailed Design Brief
 
-## 1) Project Title
+## 1) Project Statement
 
-**Exotel Engage Agents - Conversational Enterprise Engagement Mockup**
+**Exotel Engage Agents** is a conversation-first enterprise engagement mockup that demonstrates how AI Business Agents can be created, guided, governed, and operated from planning through execution.
 
-## 2) Project Type
+This is a **UI/UX prototype**, not a production system.
 
-This is a **UI/UX concept and interactive mockup project**.
+## 2) Why This Product Exists
 
-- It is a front-end prototype meant for product/design validation.
-- It is not a final production implementation.
+Enterprise engagement today is fragmented:
 
-## 3) Background
+- onboarding, recovery, retention, and support run in separate tools,
+- workflows are manually configured and slow to evolve,
+- optimization depends on operations and analytics bandwidth.
 
-Enterprise engagement teams typically run onboarding, collections, retention, and support workflows across fragmented systems. Current operating models are often manual, rule-heavy, and slow to optimize.
+The design goal is to show a future where:
 
-Engage 2028 demonstrates a new operating model:
+- AI agents handle planning and optimization,
+- humans remain in control of approvals and governance,
+- orchestration complexity exists underneath, while UX stays simple.
 
-- AI Business Agents plan and optimize engagement,
-- orchestration/execution complexity stays behind the scenes,
-- humans supervise, approve, and govern.
+## 3) Core Design Philosophy (Non-Negotiable)
 
-## 4) Design Challenge
+### 3.1 Conversational, But Structured
 
-Create an experience that feels like:
+This product should **not** be a free-form chat that can go anywhere without progress.
 
-- **"ChatGPT for running customer engagement operations"**
+It should be a **structured conversation** where:
 
-and does **not** feel like:
+- user and agent interact naturally in chat,
+- the system guides users through explicit stages and milestones,
+- users always know:
+  - where they are,
+  - what is next,
+  - what is required to continue.
 
-- a workflow builder,
-- a dashboard-heavy CDP,
-- a BPM control console.
+In short:
 
-## 5) Objective
+- not a static form,
+- not a random chat thread,
+- a guided conversational workflow with stage awareness.
 
-Design a clear, intuitive, conversation-first interface where users can:
+### 3.2 Explainability by Design
 
-- manage multiple business agents,
-- move agents from pre-execution planning into running operations,
-- review analytics and improvement actions,
-- understand and use AI-generated variables,
-- collaborate through dashboard and sharing concepts.
+The user must understand:
 
-## 6) Target Users
+- why the agent asks a specific question,
+- why a journey or variable is recommended,
+- what changes when an action is applied.
 
-- Business operations managers
-- Engagement strategy leads
-- Product managers for lifecycle engagement
-- Supervisors/governance stakeholders
-- Demo viewers evaluating UX direction
+### 3.3 Operational Confidence
 
-## 7) Product Concepts to Communicate
+The system must feel trustworthy for enterprise operations:
 
-The UI must clearly explain these concepts:
+- clear lifecycle states,
+- explicit action outcomes,
+- policy-aware gating for sensitive actions.
+
+## 4) What This Experience Should Feel Like
+
+### Should feel like
+
+- ChatGPT/Claude-level conversational simplicity
+- AI operating partner for engagement teams
+- Fast, guided, clear, and outcome-oriented
+
+### Should not feel like
+
+- drag-and-drop workflow builder as primary UX
+- dashboard-only enterprise reporting console
+- BPM-style process administration tool
+
+## 5) Product Concepts to Communicate Clearly
 
 - **Engage**: AI-driven engagement operating model
-- **Business Agent**: AI operator aligned to business objective
-- **Pre-Execution Agent**: planning/configuration state
-- **Running Agent**: active execution/optimization state
-- **Business Journey**: engagement logic and flow
-- **Execution**: orchestration/runtime operations
-- **Gen AI Variables**: execution-derived intelligence variables for journey optimization
+- **Business Agent**: function-specific AI operator
+- **Pre-Execution Agent**: setup/planning state
+- **Running Agent**: live execution and optimization state
+- **Business Journey**: engagement plan/logic created by the agent
+- **Execution**: runtime orchestration of journeys
+- **Gen AI Variables**: automatically detected intelligence variables from execution data
 
-## 8) Scope of This Brief
+## 6) User Personas
+
+### Persona A - Operations Manager (Primary)
+
+- Owns daily outcomes (completion, recovery, retention, support prevention)
+- Needs fast guided setup and confidence before go-live
+- Values clear next-step recommendations
+
+### Persona B - Engagement Strategist
+
+- Optimizes journeys and channel strategy
+- Wants structured planning inputs and milestone-based progression
+- Needs explainable recommendations and testing confidence
+
+### Persona C - Governance/Approver
+
+- Reviews readiness and operational risk
+- Needs clear lifecycle states and reasoned decisions
+- Cares about policy alignment and rollout control
+
+## 7) Information Architecture
+
+### 7.1 Entry View
+
+- Initial dashboard for portfolio visibility:
+  - all agents
+  - department view
+
+### 7.2 Left Navigation
+
+- agents grouped by:
+  - Pre-Execution
+  - Running
+- each item provides quick state context
+
+### 7.3 Workspace
+
+- top actions (`Agents Dashboard`, `Business Journey`, `Data Sources`, `Business Channels`)
+- main chat pane as primary interaction surface
+- lifecycle-specific supporting panel/tabs
+
+## 8) Lifecycle Design Requirements
+
+## 8.1 Pre-Execution Lifecycle
+
+Pre-Execution must guide users through explicit, visible phases:
+
+1. Planning
+2. Create Business Journey (without node-level configs)
+3. Business Journey Node Configuration
+4. Test Business Journey
+5. Execution Checks and Validation
+6. Go Live
+
+Each phase has milestones/modules. Conversation drives progress, but progression remains explicit.
+
+## 8.2 Running Lifecycle
+
+Running agents provide operational tabs:
+
+- Current Analytics
+- Update Business Journey
+- Gen AI Variables
+
+## 9) Structured Conversation Flow Requirement
+
+For pre-execution setup, the agent must:
+
+- ask focused milestone-specific questions,
+- accept responses in guided sequence,
+- confirm completion of each milestone,
+- move user to next milestone/phase with clear transition messaging.
+
+The user should be able to progress by selecting recommended responses (demo mode), while still retaining ability to type free text.
+
+## 10) Why We Chose This Structure (Decision Rationale)
+
+### Decision: stage-based structure over pure free chat
+
+**Why**:
+
+- enterprise users need predictable progression,
+- teams need clear readiness signals before go-live,
+- governance requires stage-level visibility.
+
+### Decision: chat as primary interaction, not forms
+
+**Why**:
+
+- lowers friction and cognitive load,
+- preserves natural decision-making context,
+- keeps AI reasoning and actions in one place.
+
+### Decision: gated actions (for example Business Journey access)
+
+**Why**:
+
+- enforces process integrity,
+- prevents premature editing without required planning context,
+- improves trust and auditability in enterprise settings.
+
+### Decision: running tab model
+
+**Why**:
+
+- separates monitoring from modification,
+- reduces mixed-context confusion,
+- supports task-focused operator behavior.
+
+## 11) Sample Journey (Detailed) - Onboarding Assist Agent
+
+### Phase 1: Planning
+
+Milestones:
+
+- Objective clarification
+- Audience/data source capture
+- Channel pre-check
+
+Conversation outcomes expected:
+
+- objective and KPI target defined,
+- source identified (for example registration form + onboarding events),
+- allowed communication channels confirmed.
+
+Transition behavior:
+
+- after planning completion, user gets clear progression cue,
+- UI shows loading/transition state,
+- user advances to Phase 2.
+
+### Phase 2: Create Business Journey
+
+- create logical journey scaffold without full node-level parameters,
+- define branches and expected outcomes.
+
+### Phase 3: Configure Nodes
+
+- configure trigger/action/process/end nodes,
+- set channel and retry behavior.
+
+### Phase 4: Test
+
+- run core scenario tests (happy path/fallback/failure path).
+
+### Phase 5: Validate Execution
+
+- run readiness checks and confidence checks.
+
+### Phase 6: Go Live
+
+- approval and rollout transition.
+
+## 12) Sample Running Journey Behavior
+
+For a running agent:
+
+- `Current Analytics` gives live/historical performance,
+- `Update Business Journey` applies optimization updates,
+- `Gen AI Variables` presents detected variables with actionable usage in journey updates.
+
+Gen AI Variable UX requirement:
+
+- table with variable name, description, and action,
+- action includes usage instruction input,
+- applying variable routes to journey update flow.
+
+## 13) UX Writing and Tone Requirements
+
+- concise, professional, operationally clear
+- no unnecessary technical jargon in primary copy
+- every gated/blocked action must explain:
+  - why blocked
+  - what to do next
+
+## 14) Scope Boundaries
 
 ### In Scope
 
-- Login and profile interactions for demo access
-- Agents dashboard and agent selection
-- Department-aligned agent visibility
-- Pre-Execution guided phase flow (step-based)
-- Running workspace with tabbed views
-- Gen AI variables action flow into journey updates
-- Business Journey editing entry points
-- Documentation-first clarity for newcomers
+- interactive front-end mockup
+- guided lifecycle UX
+- dashboard and department concepts
+- conversation-first step progression
 
 ### Out of Scope
 
-- Production backend, persistence, RBAC, and security hardening
-- Final data models/services for enterprise deployment
-- Integration with real customer data sources
-- Complete design system engineering rollout
+- backend and persistent data architecture
+- security/RBAC hardening
+- production orchestration infrastructure
 
-## 9) UX Principles
+## 15) Deliverables
 
-- Conversation-first interactions
-- Minimal but meaningful operational context
-- Progressive disclosure of complexity
-- Clear lifecycle state transitions
-- Explainability and trust cues
-- Fast comprehension for first-time users
-
-## 10) Key Experience Requirements
-
-- User should quickly understand "what this agent is doing now."
-- Pre-Execution must feel guided and sequential.
-- Running state must feel analytical and actionable.
-- Critical actions must have clear affordances and outcomes.
-- All terminology should be business-friendly and consistent.
-
-## 11) Information Architecture (High-Level)
-
-- **Left Sidebar**
-  - agent lists by lifecycle (Pre-Execution / Running)
-  - quick status and department context
-
-- **Top Action Bar**
-  - agents dashboard access
-  - business journey access
-  - data/context quick links
-
-- **Main Area**
-  - conversation thread as primary surface
-  - lifecycle-specific side panel/supporting content
-
-- **Dashboard**
-  - all agents table
-  - department view table
-
-## 12) Functional UX Flows (Priority)
-
-1. Login -> dashboard entry
-2. Open pre-execution agent -> complete planning -> move to create journey
-3. Open running agent -> switch tabs -> analytics and journey updates
-4. Open Gen AI variables -> choose variable -> define usage -> route to update journey
-5. Create new agent -> assign department -> enter pre-execution
-
-## 13) Content and Tone
-
-- Professional, concise, operator-friendly
-- Explain actions in plain business language
-- Avoid deeply technical/internal system jargon in primary UI copy
-
-## 14) Deliverables Expected
-
-- Working browser mockup (`index.html`)
-- UX behavior and interaction flows
-- Supporting docs:
+- interactive prototype (`index.html`)
+- supporting docs:
+  - concepts glossary
   - project documentation
   - UI/UX solution design
-  - concepts glossary
-  - this design brief
+  - this detailed design brief
 
-## 15) Success Criteria
+## 16) Success Criteria
 
-The design is successful when:
+This design is successful when a new viewer can:
 
-- a new viewer can understand the product concept within minutes,
-- lifecycle difference (Pre-Execution vs Running) is obvious,
-- key concept of Business Journey is understandable,
-- Gen AI variables are actionable and tied to journey updates,
-- interface remains conversational and lightweight.
+- understand product concept in < 5 minutes,
+- distinguish Pre-Execution vs Running states immediately,
+- progress through setup in clear staged sequence,
+- understand why recommendations/actions are shown,
+- trust that the experience is conversational **and** structured.
 
-## 16) Constraints and Assumptions
+## 17) Validation Checklist for Future Iterations
 
-- Mockup-first velocity over production architecture
-- Simulated data and in-memory state are acceptable
-- GitHub Pages is the publishing medium for demo review
+For each UX change, validate:
 
-## 17) Future Design Directions (Post-Brief)
-
-- role-aware collaboration (Owner/Editor/Viewer)
-- stronger dashboard filtering/search
-- richer explainability/audit views
-- componentized UI architecture for maintainability
+- does this preserve structured conversational progression?
+- is stage/milestone status visible and unambiguous?
+- is the next step obvious?
+- does action feedback explain outcome and reason?
+- does this still feel lightweight, not dashboard-heavy?
